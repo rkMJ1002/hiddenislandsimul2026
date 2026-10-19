@@ -206,6 +206,8 @@ function executePayment() {
 
 		let wristbandStr = 'Perak (Akses Festival)';
 		if (tierName.includes('VIP')) wristbandStr = 'Emas (Akses Depan & VIP Kit)';
+		else if (tierName.includes('Presale 1')) wristbandStr = 'Zamrud (Akses Standar Presale 1)';
+		else if (tierName.includes('Presale 2')) wristbandStr = 'Safir (Akses Standar Presale 2)';
 		else if (tierName.includes('Presale')) wristbandStr = 'Zamrud (Akses Standar)';
 
 		const newOrderRecord = {
@@ -218,7 +220,8 @@ function executePayment() {
 			total: Math.round(totalRaw),
 			status: 'Lunas',
 			wristband: wristbandStr,
-			checkedIn: false
+			checkedIn: false,
+			date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
 		};
 
 		const existing = JSON.parse(localStorage.getItem('hiddenIslandAllOrders') || '[]');

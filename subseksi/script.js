@@ -1,80 +1,18 @@
 // ============================================================
-// PORTAL ADMINISTRASI PANITIA — KOSAYU ARTFEST 2026
+// PORTAL ADMINISTRASI PANITIA SUBSEKSI — KOSAYU ARTFEST 2026
 // Autentikasi: Username: "artfest", Password: "2026"
 // ============================================================
 
 const VALID_USERNAME = "artfest";
 const VALID_PASSWORD = "2026";
 
-// Demo Base Orders
-let ordersData = [
-	{
-		id: "HI-2026-001",
-		name: "Michelle Angela",
-		email: "michelle.a@example.com",
-		phone: "081234567890",
-		tier: "VIP",
-		qty: 2,
-		total: 300000,
-		status: "Lunas",
-		wristband: "Emas (Akses Depan & VIP Kit)",
-		checkedIn: false
-	},
-	{
-		id: "HI-2026-002",
-		name: "Brian Pratama",
-		email: "brian.p@example.com",
-		phone: "085712345678",
-		tier: "Presale 1",
-		qty: 1,
-		total: 75000,
-		status: "Lunas",
-		wristband: "Zamrud (Akses Standar)",
-		checkedIn: false
-	},
-	{
-		id: "HI-2026-003",
-		name: "Clara Wijaya",
-		email: "clara.w@example.com",
-		phone: "081398765432",
-		tier: "Presale 2",
-		qty: 2,
-		total: 180000,
-		status: "Lunas",
-		wristband: "Zamrud (Akses Standar)",
-		checkedIn: true
-	},
-	{
-		id: "HI-2026-004",
-		name: "David Santoso",
-		email: "david.s@example.com",
-		phone: "082155667788",
-		tier: "Regular",
-		qty: 1,
-		total: 110000,
-		status: "Lunas",
-		wristband: "Perak (Akses Festival)",
-		checkedIn: false
-	},
-	{
-		id: "HI-2026-005",
-		name: "Jessica Tan",
-		email: "jessica.tan@example.com",
-		phone: "081822334455",
-		tier: "VIP",
-		qty: 4,
-		total: 600000,
-		status: "Lunas",
-		wristband: "Emas (Akses Depan & VIP Kit)",
-		checkedIn: false
-	}
-];
+// Real Active Orders (Initialized empty, populated directly from user orders)
+let ordersData = [];
 
 // Initialize on Load
 document.addEventListener("DOMContentLoaded", () => {
 	checkSessionAuth();
 	loadStoredOrders();
-	loadStoredInquiries();
 });
 
 // Check if admin is already logged in for current session
@@ -88,37 +26,11 @@ function checkSessionAuth() {
 		dashboardView.style.display = "flex";
 		renderOrdersTable();
 		updateMetricCards();
+		renderQuickOrderChips();
 		loadTicketControlConfig();
 	} else {
 		loginView.style.display = "flex";
 		dashboardView.style.display = "none";
-	}
-}
-
-// Load and display inquiries submitted via contact page
-function loadStoredInquiries() {
-	const stored = localStorage.getItem("hiddenIslandInquiries");
-	const tbody = document.getElementById("inquiriesTableBody");
-	if (!stored || !tbody) return;
-
-	try {
-		const parsed = JSON.parse(stored);
-		if (Array.isArray(parsed) && parsed.length > 0) {
-			parsed.forEach(inq => {
-				const tr = document.createElement("tr");
-				tr.innerHTML = `
-					<td>${inq.date || "Baru saja"}</td>
-					<td><strong style="color:#B7A97C;">${inq.target || "Panitia"}</strong></td>
-					<td>${inq.name || "-"}</td>
-					<td>${inq.category || "Umum"}</td>
-					<td>${inq.message || "-"}</td>
-					<td><span class="statusBadgeSuccess">${inq.status || "Terkirim"}</span></td>
-				`;
-				tbody.insertBefore(tr, tbody.firstChild);
-			});
-		}
-	} catch (e) {
-		console.log("Error loading stored inquiries", e);
 	}
 }
 
@@ -140,7 +52,7 @@ function handleAdminLogin(event) {
 		passField.value = "";
 
 		checkSessionAuth();
-		showToast("Login berhasil! Selamat datang di Portal Panitia Artfest 2026.");
+		showToast("Login berhasil! Selamat datang di Portal Dasbor Subseksi Artfest 2026.");
 	} else {
 		errorMsg.style.display = "block";
 		errorMsg.textContent = "Kredensial tidak valid. Periksa username dan password panitia.";
@@ -151,7 +63,7 @@ function handleAdminLogin(event) {
 
 // Handle Logout
 function handleAdminLogout() {
-	if (confirm("Apakah Anda yakin ingin keluar dari Portal Panitia?")) {
+	if (confirm("Apakah Anda yakin ingin keluar dari Portal Dasbor Subseksi?")) {
 		sessionStorage.removeItem("artfest_admin_authenticated");
 		checkSessionAuth();
 		showToast("Anda telah keluar dari sesi panitia.");
@@ -168,29 +80,37 @@ function togglePasswordVisibility() {
 	}
 }
 
-// Load any orders saved from site checkout simulation
+// Load orders directly from localStorage
 function loadStoredOrders() {
 	const stored = localStorage.getItem("hiddenIslandAllOrders");
 	if (stored) {
 		try {
 			const parsed = JSON.parse(stored);
-			if (Array.isArray(parsed) && parsed.length > 0) {
-				// Merge without duplicates
-				parsed.forEach(p => {
-					if (!ordersData.some(o => o.id === p.id)) {
-						ordersData.unshift(p);
-					}
-				});
+			if (Array.isArray(parsed)) {
+				ordersData = parsed;
+				return;
 			}
 		} catch (e) {
-			console.log("Error loading stored orders", e);
+			console.error("Error loading stored orders", e);
 		}
 	}
+	ordersData = [];
 }
 
 // Save orders to localStorage
 function saveOrdersToStorage() {
 	localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(ordersData));
+}
+
+// Helper to escape HTML characters
+function escapeHtml(str) {
+	if (!str) return "";
+	return String(str)
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
 }
 
 // Render Orders Table
@@ -200,45 +120,67 @@ function renderOrdersTable(filterQuery = "") {
 
 	tbody.innerHTML = "";
 
+	if (!ordersData || ordersData.length === 0) {
+		tbody.innerHTML = `
+			<tr>
+				<td colspan="9" style="text-align:center; padding: 48px 24px; color:rgba(207,212,208,0.6);">
+					<div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+						<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:rgba(183,169,124,0.4);">
+							<rect x="2" y="4" width="20" height="16" rx="2"></rect>
+							<path d="M7 15h0M2 9.5h20"></path>
+						</svg>
+						<div style="font-size: 15px; font-weight: 600; color: #CFD4D0;">Belum Ada Data Pesanan Tiket</div>
+						<div style="font-size: 13px; max-width: 440px; line-height: 1.5; color: rgba(207,212,208,0.5);">
+							Pesanan dari pengunjung di halaman tiket (/tiket/) dan checkout (/checkout/) atau melalui tombol "+ Input Pesanan Tiket" akan otomatis tercatat di sini.
+						</div>
+					</div>
+				</td>
+			</tr>
+		`;
+		return;
+	}
+
 	const filtered = ordersData.filter(o => {
 		if (!filterQuery) return true;
 		const q = filterQuery.toLowerCase();
-		return o.name.toLowerCase().includes(q) ||
-			o.id.toLowerCase().includes(q) ||
-			o.email.toLowerCase().includes(q) ||
-			o.tier.toLowerCase().includes(q);
+		return (o.name && o.name.toLowerCase().includes(q)) ||
+			(o.id && o.id.toLowerCase().includes(q)) ||
+			(o.email && o.email.toLowerCase().includes(q)) ||
+			(o.tier && o.tier.toLowerCase().includes(q)) ||
+			(o.phone && o.phone.toLowerCase().includes(q));
 	});
 
 	if (filtered.length === 0) {
-		tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 24px; color:rgba(207,212,208,0.5);">Tidak ada pesanan yang sesuai pencarian.</td></tr>`;
+		tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 28px; color:rgba(207,212,208,0.5);">Tidak ada pesanan yang sesuai kata kunci "${escapeHtml(filterQuery)}".</td></tr>`;
 		return;
 	}
 
 	filtered.forEach(order => {
 		const tr = document.createElement("tr");
 
-		const formattedTotal = "Rp " + order.total.toLocaleString("id-ID");
+		const totalNum = Number(order.total) || 0;
+		const formattedTotal = "Rp " + totalNum.toLocaleString("id-ID");
 		const statusBadge = order.status === "Lunas"
 			? `<span class="statusBadgeSuccess">Lunas</span>`
-			: `<span class="statusBadgePending">${order.status}</span>`;
+			: `<span class="statusBadgePending">${escapeHtml(order.status || "Pending")}</span>`;
 
 		const checkInStatus = order.checkedIn
-			? `<span style="color:#a8d58a; font-weight:700; font-size:11px;">✓ Sudah Masuk</span>`
+			? `<span style="color:#a8d58a; font-weight:700; font-size:11px;">✓ Masuk (${escapeHtml(order.checkInTime || "Tervalidasi")})</span>`
 			: `<span style="color:rgba(207,212,208,0.5); font-size:11px;">Belum Check-in</span>`;
 
 		tr.innerHTML = `
-			<td><strong style="color:#CFD4D0;">${order.id}</strong></td>
-			<td><strong>${order.name}</strong></td>
+			<td><strong style="color:#CFD4D0;">${escapeHtml(order.id)}</strong></td>
+			<td><strong>${escapeHtml(order.name)}</strong></td>
 			<td>
-				<div style="font-size:12px;">${order.email}</div>
-				<div style="font-size:11px; color:rgba(207,212,208,0.6);">${order.phone}</div>
+				<div style="font-size:12px;">${escapeHtml(order.email)}</div>
+				<div style="font-size:11px; color:rgba(207,212,208,0.6);">${escapeHtml(order.phone)}</div>
 			</td>
-			<td><span class="tierTagTable">${order.tier}</span></td>
-			<td>${order.qty}</td>
+			<td><span class="tierTagTable">${escapeHtml(order.tier)}</span></td>
+			<td>${order.qty || 1}</td>
 			<td><strong>${formattedTotal}</strong></td>
 			<td>${statusBadge}</td>
 			<td>
-				<div style="font-size:12px;">${order.wristband}</div>
+				<div style="font-size:12px;">${escapeHtml(order.wristband || "Gelang Akses Standar")}</div>
 				<div>${checkInStatus}</div>
 			</td>
 			<td>
@@ -257,14 +199,21 @@ function filterOrdersTable() {
 	renderOrdersTable(query);
 }
 
-// Toggle Check-in status
+// Toggle Check-in status from orders table
 function toggleOrderCheckIn(orderId) {
 	const order = ordersData.find(o => o.id === orderId);
 	if (!order) return;
 
 	order.checkedIn = !order.checkedIn;
+	if (order.checkedIn) {
+		order.checkInTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " WIB";
+	} else {
+		delete order.checkInTime;
+	}
+
 	saveOrdersToStorage();
 	renderOrdersTable(document.getElementById("orderSearchInput").value.trim());
+	renderQuickOrderChips();
 
 	if (order.checkedIn) {
 		showToast(`ID ${orderId} (${order.name}) berhasil di-check-in!`);
@@ -273,21 +222,30 @@ function toggleOrderCheckIn(orderId) {
 	}
 }
 
-// Update Metrics in Cards
+// Update Unboxed Metrics
 function updateMetricCards() {
 	const totalTicketsElem = document.getElementById("metricTotalTickets");
 	const totalRevenueElem = document.getElementById("metricTotalRevenue");
+	const quotaSubtextElem = document.getElementById("metricQuotaSubtext");
+	const revenueSubtextElem = document.getElementById("metricRevenueSubtext");
 
-	const totalQty = ordersData.reduce((acc, o) => acc + (o.qty || 1), 0) + 480;
-	const totalRev = ordersData.reduce((acc, o) => acc + (o.total || 0), 0) + 44000000;
+	const totalQty = ordersData.reduce((acc, o) => acc + (Number(o.qty) || 1), 0);
+	const totalRev = ordersData.reduce((acc, o) => acc + (Number(o.total) || 0), 0);
+
+	const cfg = getStoredTicketConfig();
+	const maxSeatsTotal = (cfg.presale1?.maxSeats || 500) + (cfg.presale2?.maxSeats || 750);
+	const pct = maxSeatsTotal > 0 ? ((totalQty / maxSeatsTotal) * 100).toFixed(1) : "0.0";
 
 	if (totalTicketsElem) totalTicketsElem.textContent = totalQty.toLocaleString("id-ID");
+	if (quotaSubtextElem) quotaSubtextElem.textContent = `Target: ${maxSeatsTotal.toLocaleString("id-ID")} tiket (${pct}% kuota)`;
+
 	if (totalRevenueElem) totalRevenueElem.textContent = "Rp " + totalRev.toLocaleString("id-ID");
+	if (revenueSubtextElem) revenueSubtextElem.textContent = `Dari ${ordersData.length} transaksi pemesanan`;
 }
 
 // Switch between Admin Tabs
 function switchAdminTab(tabName) {
-	const tabs = ["orders", "tickets", "scanner", "inquiries", "settings"];
+	const tabs = ["orders", "tickets", "scanner"];
 
 	tabs.forEach(t => {
 		const btn = document.getElementById(`btnTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
@@ -304,28 +262,55 @@ function switchAdminTab(tabName) {
 	if (activePanel) activePanel.classList.add("active");
 }
 
-// Gate Scanner Verification Handler
+// Gate Check - In Verification Handler
 function processTicketScan() {
 	const input = document.getElementById("scanTicketInput");
 	const resultBox = document.getElementById("scanResultDisplay");
+	if (!input || !resultBox) return;
+
 	const ticketId = input.value.trim().toUpperCase();
 
 	if (!ticketId) {
 		alert("Harap masukkan ID Pesanan tiket.");
+		input.focus();
 		return;
 	}
 
-	const found = ordersData.find(o => o.id.toUpperCase() === ticketId);
+	const found = ordersData.find(o => o.id && o.id.trim().toUpperCase() === ticketId);
 
 	if (found) {
+		// Case A: Ticket is already checked in
+		if (found.checkedIn) {
+			resultBox.className = "scanResultBox alreadyChecked";
+			resultBox.innerHTML = `
+				<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#e6c35c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px;">
+					<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+					<line x1="12" y1="9" x2="12" y2="13"></line>
+					<line x1="12" y1="17" x2="12.01" y2="17"></line>
+				</svg>
+				<h4 style="margin:0 0 4px 0; color:#e6c35c; font-family:'Syne',sans-serif; font-size:18px;">PERINGATAN: TIKET SUDAH DIGUNAKAN</h4>
+				<div style="font-size:14px; margin-bottom:4px;"><strong>${escapeHtml(found.name)}</strong> • ${found.qty || 1} Tiket (${escapeHtml(found.tier)})</div>
+				<div style="font-size:12px; color:rgba(207,212,208,0.7); margin-bottom:10px;">ID: ${escapeHtml(found.id)} • Telah Check-in: <strong>${escapeHtml(found.checkInTime || "Sesi Sebelumnya")}</strong></div>
+				<div class="wristbandBadge" style="background-color:rgba(180,140,40,0.25); border:1px solid #e6c35c; color:#e6c35c;">
+					⚠️ JANGAN BERIKAN GELANG GANDA
+				</div>
+			`;
+			showToast(`Peringatan: ID ${found.id} sudah pernah di-check-in!`);
+			return;
+		}
+
+		// Case B: First-time valid check-in
 		found.checkedIn = true;
+		found.checkInTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " WIB";
 		saveOrdersToStorage();
 		renderOrdersTable();
+		updateMetricCards();
+		renderQuickOrderChips();
 
 		let bandColor = "#B7A97C";
-		if (found.tier === "VIP") bandColor = "#e6c35c";
-		else if (found.tier.includes("Presale")) bandColor = "#5ba862";
-		else bandColor = "#9fb09f";
+		if (found.tier.includes("Presale 1")) bandColor = "#5ba862";
+		else if (found.tier.includes("Presale 2")) bandColor = "#4da3ff";
+		else if (found.tier.includes("VIP")) bandColor = "#e6c35c";
 
 		resultBox.className = "scanResultBox valid";
 		resultBox.innerHTML = `
@@ -333,16 +318,17 @@ function processTicketScan() {
 				<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
 				<polyline points="22 4 12 14.01 9 11.01"></polyline>
 			</svg>
-			<h4 style="margin:0 0 4px 0; color:#a8d58a; font-family:'Syne',sans-serif; font-size:18px;">TIKET VALID — AKSES DITERIMA</h4>
-			<div style="font-size:14px; margin-bottom:4px;"><strong>${found.name}</strong> • ${found.qty} Tiket (${found.tier})</div>
-			<div style="font-size:12px; color:rgba(207,212,208,0.7); margin-bottom:10px;">ID: ${found.id} • Status: ${found.status}</div>
+			<h4 style="margin:0 0 4px 0; color:#a8d58a; font-family:'Syne',sans-serif; font-size:18px;">TIKET VALID — CHECK-IN BERHASIL</h4>
+			<div style="font-size:14px; margin-bottom:4px;"><strong>${escapeHtml(found.name)}</strong> • ${found.qty || 1} Tiket (${escapeHtml(found.tier)})</div>
+			<div style="font-size:12px; color:rgba(207,212,208,0.7); margin-bottom:10px;">ID: ${escapeHtml(found.id)} • Waktu Masuk: ${found.checkInTime}</div>
 			<div class="wristbandBadge" style="background-color:rgba(33,61,58,0.8); border:1px solid ${bandColor}; color:${bandColor};">
-				<span>Gelang Wristband:</span>
-				<strong>${found.wristband}</strong>
+				<span>Serahkan Gelang:</span>
+				<strong>${escapeHtml(found.wristband || "Akses Standar")}</strong>
 			</div>
 		`;
-		showToast(`Verifikasi sukses: ${found.name} diizinkan masuk.`);
+		showToast(`✓ Check-in sukses: ${found.name} (${found.qty || 1} tiket) diizinkan masuk.`);
 	} else {
+		// Case C: ID not found in database
 		resultBox.className = "scanResultBox invalid";
 		resultBox.innerHTML = `
 			<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ff7b7b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px;">
@@ -350,72 +336,208 @@ function processTicketScan() {
 				<line x1="15" y1="9" x2="9" y2="15"></line>
 				<line x1="9" y1="9" x2="15" y2="15"></line>
 			</svg>
-			<h4 style="margin:0 0 4px 0; color:#ff7b7b; font-family:'Syne',sans-serif; font-size:18px;">TIKET TIDAK DITEMUKAN</h4>
-			<div style="font-size:13px; color:rgba(207,212,208,0.75);">Kode ID "${ticketId}" tidak terdaftar dalam basis data resmi Kosayu Artfest 2026.</div>
+			<h4 style="margin:0 0 4px 0; color:#ff7b7b; font-family:'Syne',sans-serif; font-size:18px;">ID TIKET TIDAK DITEMUKAN</h4>
+			<div style="font-size:13px; color:rgba(207,212,208,0.75);">Kode ID "${escapeHtml(ticketId)}" tidak terdaftar dalam database resmi pesanan Artfest 2026.</div>
 		`;
 		showToast("Peringatan: ID Tiket tidak dikenali!");
 	}
 }
 
+// Quick fill chip helper for Gate Check - In
 function quickFillScan(id) {
 	const input = document.getElementById("scanTicketInput");
-	input.value = id;
-	processTicketScan();
+	if (input) {
+		input.value = id;
+		processTicketScan();
+	}
 }
 
-// Add New Simulated Order
-function addNewSimulatedOrder() {
-	const names = ["Felicia Handoko", "Reza Fahlevi", "Stephanie Tan", "Nathaniel Kusuma", "Aurelia Santoso"];
-	const tiers = [
-		{ name: "Presale 1", price: 75000, band: "Zamrud (Akses Standar)" },
-		{ name: "Presale 2", price: 90000, band: "Zamrud (Akses Standar)" },
-		{ name: "VIP", price: 150000, band: "Emas (Akses Depan & VIP Kit)" },
-		{ name: "Regular", price: 110000, band: "Perak (Akses Festival)" }
-	];
+// Render dynamic quick chips from actual orders in Gate Check - In panel
+function renderQuickOrderChips() {
+	const wrapper = document.getElementById("quickOrderChipsWrapper");
+	if (!wrapper) return;
 
-	const randomName = names[Math.floor(Math.random() * names.length)];
-	const randomTier = tiers[Math.floor(Math.random() * tiers.length)];
-	const randomQty = Math.floor(Math.random() * 2) + 1;
-	const newId = "HI-2026-0" + (ordersData.length + 10);
+	wrapper.innerHTML = "";
+
+	if (!ordersData || ordersData.length === 0) {
+		wrapper.innerHTML = `<span style="font-size: 12px; color: rgba(207,212,208,0.5);">Belum ada tiket terdaftar. Buat pesanan via /tiket/ atau klik "+ Input Pesanan Tiket" di atas.</span>`;
+		return;
+	}
+
+	// Show up to the first 8 orders
+	const recentOrders = ordersData.slice(0, 8);
+	recentOrders.forEach(order => {
+		const btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = `quickOrderChip ${order.checkedIn ? 'checked' : ''}`;
+		btn.title = `${order.name} - ${order.tier}`;
+		btn.innerHTML = `
+			<strong>${escapeHtml(order.id)}</strong>
+			<span>${escapeHtml(order.name.split(" ")[0])}</span>
+			<span>(${escapeHtml(order.tier)})</span>
+			${order.checkedIn ? '<span style="color:#a8d58a;">✓</span>' : ''}
+		`;
+		btn.onclick = () => quickFillScan(order.id);
+		wrapper.appendChild(btn);
+	});
+}
+
+// Manual / Walk-in Order Modal Handlers
+function openManualOrderModal() {
+	const modal = document.getElementById("manualOrderModal");
+	if (!modal) return;
+	updateManualOrderPriceCalc();
+	modal.showModal();
+}
+
+function closeManualOrderModal() {
+	const modal = document.getElementById("manualOrderModal");
+	if (modal) modal.close();
+}
+
+function updateManualOrderPriceCalc() {
+	const tierSelect = document.getElementById("manualTierSelect");
+	const qtyInput = document.getElementById("manualQtyInput");
+	const totalDisplay = document.getElementById("manualTotalDisplay");
+	if (!tierSelect || !qtyInput || !totalDisplay) return;
+
+	const cfg = getStoredTicketConfig();
+	const tierKey = tierSelect.value;
+	const price = cfg[tierKey] ? cfg[tierKey].price : (tierKey === "presale1" ? 75000 : 90000);
+	const qty = parseInt(qtyInput.value, 10) || 1;
+	const total = price * qty;
+
+	totalDisplay.textContent = "Rp " + total.toLocaleString("id-ID");
+}
+
+function handleManualOrderSubmit(event) {
+	event.preventDefault();
+
+	const name = document.getElementById("manualCustName").value.trim();
+	const email = document.getElementById("manualCustEmail").value.trim();
+	const phone = document.getElementById("manualCustPhone").value.trim();
+	const tierKey = document.getElementById("manualTierSelect").value;
+	const qty = parseInt(document.getElementById("manualQtyInput").value, 10) || 1;
+
+	const cfg = getStoredTicketConfig();
+	const tierName = cfg[tierKey] ? cfg[tierKey].name : (tierKey === "presale1" ? "Presale 1" : "Presale 2");
+	const unitPrice = cfg[tierKey] ? cfg[tierKey].price : (tierKey === "presale1" ? 75000 : 90000);
+	const total = unitPrice * qty;
+
+	let wristbandStr = "Zamrud (Akses Standar Presale 1)";
+	if (tierKey === "presale2") wristbandStr = "Safir (Akses Standar Presale 2)";
+
+	const randomId = "HI-2026-" + String(Math.floor(100 + Math.random() * 900));
 
 	const newOrder = {
-		id: newId,
-		name: randomName,
-		email: randomName.toLowerCase().replace(" ", ".") + "@example.com",
-		phone: "0812" + Math.floor(10000000 + Math.random() * 90000000),
-		tier: randomTier.name,
-		qty: randomQty,
-		total: randomTier.price * randomQty,
+		id: randomId,
+		name: name,
+		email: email,
+		phone: phone,
+		tier: tierName,
+		qty: qty,
+		total: total,
 		status: "Lunas",
-		wristband: randomTier.band,
-		checkedIn: false
+		wristband: wristbandStr,
+		checkedIn: false,
+		date: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
 	};
 
 	ordersData.unshift(newOrder);
 	saveOrdersToStorage();
+
+	// Update quota in ticket control config
+	if (cfg[tierKey]) {
+		cfg[tierKey].soldSeats = (cfg[tierKey].soldSeats || 0) + qty;
+		localStorage.setItem("artfest_ticket_config", JSON.stringify(cfg));
+		loadTicketControlConfig();
+	}
+
 	renderOrdersTable();
 	updateMetricCards();
-	showToast(`Simulasi pesanan baru ditambahkan: ${newId} (${randomName})`);
+	renderQuickOrderChips();
+	closeManualOrderModal();
+	event.target.reset();
+
+	showToast(`✓ Pesanan baru berhasil ditambahkan: ${randomId} (${name})`);
 }
 
-// Export Orders to CSV
+// Clear All Orders Data (Reset)
+function clearAllOrdersData() {
+	if (ordersData.length === 0) {
+		showToast("Data pesanan tiket sudah kosong.");
+		return;
+	}
+
+	if (confirm("Apakah Anda yakin ingin mengosongkan semua data pesanan tiket? Tindakan ini tidak dapat dibatalkan.")) {
+		ordersData = [];
+		localStorage.removeItem("hiddenIslandAllOrders");
+		renderOrdersTable();
+		updateMetricCards();
+		renderQuickOrderChips();
+		showToast("Data pesanan tiket telah berhasil dikosongkan.");
+	}
+}
+
+// Export Orders to Clean & Readable CSV (UTF-8 BOM + Escaped Formatting)
 function exportOrdersCSV() {
-	let csvContent = "data:text/csv;charset=utf-8,";
-	csvContent += "ID Pesanan,Nama,Email,Telepon,Kategori,Jumlah,Total,Status,Wristband,CheckedIn\n";
+	if (!ordersData || ordersData.length === 0) {
+		showToast("Belum ada data pesanan tiket untuk diekspor.");
+		return;
+	}
 
-	ordersData.forEach(o => {
-		csvContent += `"${o.id}","${o.name}","${o.email}","${o.phone}","${o.tier}",${o.qty},${o.total},"${o.status}","${o.wristband}",${o.checkedIn ? 'Sudah' : 'Belum'}\n`;
-	});
+	const headers = [
+		"No",
+		"ID Pesanan",
+		"Waktu Pesanan",
+		"Nama Pemesan",
+		"Email",
+		"Nomor WhatsApp / Kontak",
+		"Kategori Tiket",
+		"Jumlah (Qty)",
+		"Total Tagihan (IDR)",
+		"Status Pembayaran",
+		"Status Gate Check-in",
+		"Waktu Check-in",
+		"Wristband / Gelang"
+	];
 
-	const encodedUri = encodeURI(csvContent);
+	const escapeCsv = (val) => {
+		if (val === null || val === undefined) return '""';
+		const str = String(val).replace(/"/g, '""');
+		return `"${str}"`;
+	};
+
+	const rows = ordersData.map((o, idx) => [
+		idx + 1,
+		o.id || "-",
+		o.date || o.orderDate || new Date().toLocaleDateString("id-ID"),
+		o.name || "-",
+		o.email || "-",
+		o.phone || "-",
+		o.tier || "-",
+		Number(o.qty) || 1,
+		Number(o.total) || 0,
+		o.status || "Lunas",
+		o.checkedIn ? "Sudah Masuk (Check-in)" : "Belum Check-in",
+		o.checkInTime || "-",
+		o.wristband || "-"
+	].map(escapeCsv).join(","));
+
+	const csvContent = "\uFEFF" + [headers.map(escapeCsv).join(","), ...rows].join("\r\n");
+
+	const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+	const url = URL.createObjectURL(blob);
 	const link = document.createElement("a");
-	link.setAttribute("href", encodedUri);
-	link.setAttribute("download", `pesanan_kosayu_artfest_2026_${new Date().toISOString().slice(0, 10)}.csv`);
+	const dateStr = new Date().toISOString().slice(0, 10);
+	link.setAttribute("href", url);
+	link.setAttribute("download", `Data_Pesanan_Kosayu_Artfest_2026_${dateStr}.csv`);
 	document.body.appendChild(link);
 	link.click();
 	document.body.removeChild(link);
+	URL.revokeObjectURL(url);
 
-	showToast("Data pesanan berhasil diekspor ke format CSV!");
+	showToast("✓ File CSV berhasil diunduh dengan data rapi & terbaca.");
 }
 
 // Show Toast
@@ -441,7 +563,7 @@ const DEFAULT_TICKET_CONFIG = {
 		name: "Presale 1",
 		price: 75000,
 		maxSeats: 500,
-		soldSeats: 182,
+		soldSeats: 0,
 		status: "available", // available, sold_out, paused, coming_soon
 		subtitle: "Akses panggung festival & event kit"
 	},
@@ -449,7 +571,7 @@ const DEFAULT_TICKET_CONFIG = {
 		name: "Presale 2",
 		price: 90000,
 		maxSeats: 750,
-		soldSeats: 214,
+		soldSeats: 0,
 		status: "available",
 		subtitle: "Akses panggung festival & event kit"
 	}
@@ -483,10 +605,10 @@ function loadTicketControlConfig() {
 
 		if (priceInput) priceInput.value = data.price;
 		if (seatsInput) seatsInput.value = data.maxSeats;
-		if (soldInput) soldInput.value = data.soldSeats;
+		if (soldInput) soldInput.value = data.soldSeats || 0;
 		if (statusSelect) statusSelect.value = data.status;
 
-		updateTierVisuals(tier, data.soldSeats, data.maxSeats, data.status);
+		updateTierVisuals(tier, data.soldSeats || 0, data.maxSeats, data.status);
 	});
 }
 
@@ -562,6 +684,7 @@ function saveTicketControlConfig() {
 	};
 
 	localStorage.setItem("artfest_ticket_config", JSON.stringify(config));
+	updateMetricCards();
 
 	const indicator = document.getElementById("saveStatusIndicator");
 	if (indicator) {
@@ -571,13 +694,13 @@ function saveTicketControlConfig() {
 		}, 4000);
 	}
 
-	showToast("Pengaturan harga, kuota kursi, dan ketersediaan tiket berhasil disimpan!");
+	showToast("✓ Pengaturan harga, kuota kursi, dan status ketersediaan tiket berhasil disimpan!");
 }
 
 function resetTicketControlConfig() {
 	if (!confirm("Kembalikan harga dan kuota tiket ke pengaturan default awal?")) return;
 	localStorage.removeItem("artfest_ticket_config");
 	loadTicketControlConfig();
+	updateMetricCards();
 	showToast("Pengaturan tiket telah di-reset ke nilai default.");
 }
-

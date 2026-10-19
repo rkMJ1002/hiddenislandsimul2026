@@ -77,10 +77,6 @@
 			<div class="adminBrand">
 				<span class="adminLogoIcon">✦</span>
 				<span class="adminBrandName">ARTFEST KOSAYU 2026 — DASBOR SUBSEKSI</span>
-				<span class="adminBadgeStatus">
-					<span style="color:#a8d58a;">●</span>
-					<span>AKTIF: artfest</span>
-				</span>
 			</div>
 			<div class="adminUserActions">
 				<a href="../index.html" target="_blank" rel="noopener noreferrer" class="btnViewLiveSite">
@@ -104,27 +100,22 @@
 
 		<!-- Main Dashboard -->
 		<main class="adminMainContent">
-			<!-- Overview Metric Cards -->
+			<!-- Overview Metrics (Unboxed Layout) -->
 			<section class="metricsGrid">
-				<div class="metricCard">
+				<div class="metricStatUnboxed">
 					<span class="metricLabel">Total Tiket Terjual</span>
-					<div class="metricValue" id="metricTotalTickets">486</div>
-					<span class="metricSubtext">Target: 650 tiket (74.8% kuota)</span>
+					<div class="metricValue" id="metricTotalTickets">0</div>
+					<span class="metricSubtext" id="metricQuotaSubtext">Target: 1.250 tiket (0.0% kuota)</span>
 				</div>
-				<div class="metricCard">
+				<div class="metricStatUnboxed">
 					<span class="metricLabel">Estimasi Pendapatan</span>
-					<div class="metricValue" id="metricTotalRevenue">Rp 45.210.000</div>
-					<span class="metricSubtext">Dari simulasi & pemesanan aktif</span>
+					<div class="metricValue" id="metricTotalRevenue">Rp 0</div>
+					<span class="metricSubtext" id="metricRevenueSubtext">Dari 0 transaksi pemesanan</span>
 				</div>
-				<div class="metricCard">
+				<div class="metricStatUnboxed">
 					<span class="metricLabel">Open Gate Festival</span>
-					<div class="metricValue" style="font-size: 21px;">23 Okt 2026</div>
+					<div class="metricValue" style="font-size: 24px;">23 Okt 2026</div>
 					<span class="metricSubtext">15:00 WIB • BDI Sukolilo</span>
-				</div>
-				<div class="metricCard">
-					<span class="metricLabel">Narahubung Siaga</span>
-					<div class="metricValue" style="font-size: 21px;">Ivy & Cherise</div>
-					<span class="metricSubtext">081522620878 / 02223521067</span>
 				</div>
 			</section>
 
@@ -152,20 +143,7 @@
 						<rect x="14" y="14" width="7" height="7"></rect>
 						<rect x="3" y="14" width="7" height="7"></rect>
 					</svg>
-					<span>Simulasi Gate Check-in</span>
-				</button>
-				<button type="button" class="adminTabBtn" id="btnTabInquiries" onclick="switchAdminTab('inquiries')">
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-					</svg>
-					<span>Pesan Kontak Masuk</span>
-				</button>
-				<button type="button" class="adminTabBtn" id="btnTabSettings" onclick="switchAdminTab('settings')">
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<circle cx="12" cy="12" r="3"></circle>
-						<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-					</svg>
-					<span>Informasi Penyelenggara</span>
+					<span>Gate Check - In</span>
 				</button>
 			</nav>
 
@@ -188,12 +166,19 @@
 							</svg>
 							<span>Ekspor Data (CSV)</span>
 						</button>
-						<button type="button" class="btnSecondaryAction" onclick="addNewSimulatedOrder()">
+						<button type="button" class="btnSecondaryAction" onclick="openManualOrderModal()">
 							<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 								<line x1="12" y1="5" x2="12" y2="19"></line>
 								<line x1="5" y1="12" x2="19" y2="12"></line>
 							</svg>
-							<span>Simulasi Pesanan Baru</span>
+							<span>+ Input Pesanan Tiket</span>
+						</button>
+						<button type="button" class="btnSecondaryAction" style="color: #ff9d9d; border-color: rgba(220,60,60,0.3);" onclick="clearAllOrdersData()">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<polyline points="3 6 5 6 21 6"></polyline>
+								<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+							</svg>
+							<span>Reset Data</span>
 						</button>
 					</div>
 				</div>
@@ -370,127 +355,95 @@
 				</div>
 			</section>
 
-			<!-- PANEL 2: GATE SCANNER SIMULATION -->
+			<!-- PANEL 3: GATE CHECK - IN -->
 			<section class="tabPanel" id="panelScanner">
 				<div class="scannerContainer">
 					<div class="scannerCard">
-						<h3 class="scannerCardTitle">Verifikasi Pintu Masuk (Open Gate)</h3>
+						<h3 class="scannerCardTitle">Gate Check - In (Pintu Masuk Festival)</h3>
 						<p class="scannerCardDesc">
-							Gunakan alat ini saat Open Gate pada 23 Oktober 2026 di Bukit Doa Immanuel Sukolilo untuk memvalidasi e-ticket dan menerbitkan wristband.
+							Verifikasi e-ticket pengunjung saat Open Gate di Bukit Doa Immanuel Sukolilo (23 Oktober 2026) dan validasi penyerahan gelang wristband secara langsung.
 						</p>
 
 						<div class="scanInputRow">
-							<input type="text" id="scanTicketInput" class="formInput" placeholder="Masukkan ID Pesanan (cth: HI-2026-001)">
+							<input type="text" id="scanTicketInput" class="formInput" placeholder="Masukkan ID Pesanan (cth: HI-2026-xxx)" onkeydown="if(event.key==='Enter') processTicketScan()">
 							<button type="button" class="btnLoginSubmit" style="margin-top:0; white-space:nowrap;" onclick="processTicketScan()">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+									<polyline points="20 6 9 17 4 12"></polyline>
+								</svg>
 								<span>Verifikasi Tiket</span>
 							</button>
 						</div>
 
-						<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
-							<button type="button" class="btnSecondaryAction" style="font-size:12px; padding:6px 12px;" onclick="quickFillScan('HI-2026-001')">Coba ID: HI-2026-001 (VIP)</button>
-							<button type="button" class="btnSecondaryAction" style="font-size:12px; padding:6px 12px;" onclick="quickFillScan('HI-2026-002')">Coba ID: HI-2026-002 (Presale 1)</button>
-							<button type="button" class="btnSecondaryAction" style="font-size:12px; padding:6px 12px;" onclick="quickFillScan('INVALID-CODE')">Coba Kode Palsu</button>
+						<div style="margin-top: 14px;">
+							<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #B7A97C; text-transform: uppercase; display: block; margin-bottom: 8px;">
+								Pesanan Tiket Terdaftar (Klik untuk Verifikasi Cepat):
+							</span>
+							<div style="display:flex; gap:8px; flex-wrap:wrap;" id="quickOrderChipsWrapper">
+								<!-- Populated dynamically from actual orders by script.js -->
+							</div>
 						</div>
 					</div>
 
 					<div class="scannerCard">
-						<h3 class="scannerCardTitle">Status Pemeriksaan Tiket</h3>
+						<h3 class="scannerCardTitle">Status Verifikasi & Gelang Wristband</h3>
 						<div class="scanResultBox" id="scanResultDisplay">
 							<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:rgba(207,212,208,0.4); margin-bottom:10px;">
 								<circle cx="12" cy="12" r="10"></circle>
 								<line x1="12" y1="8" x2="12" y2="12"></line>
 								<line x1="12" y1="16" x2="12.01" y2="16"></line>
 							</svg>
-							<span style="color:rgba(207,212,208,0.6); font-size:14px;">Masukkan ID Tiket untuk memulai verifikasi</span>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<!-- PANEL 3: INQUIRIES LOG -->
-			<section class="tabPanel" id="panelInquiries">
-				<div class="tableContainer">
-					<table class="dataTable">
-						<thead>
-							<tr>
-								<th>Tanggal</th>
-								<th>Narahubung</th>
-								<th>Nama Pengirim</th>
-								<th>Kategori</th>
-								<th>Pesan / Pertanyaan</th>
-								<th>Status Penanganan</th>
-							</tr>
-						</thead>
-						<tbody id="inquiriesTableBody">
-							<tr>
-								<td>19 Okt 2026, 10:14</td>
-								<td><strong style="color:#B7A97C;">Ivy</strong></td>
-								<td>Jonathan Aditya</td>
-								<td>Pemesanan & Pembayaran Tiket</td>
-								<td>Halo, apakah e-voucher bisa ditukar dengan wristband H-1 sebelum open gate?</td>
-								<td><span class="statusBadgeSuccess">Terjawab via WA</span></td>
-							</tr>
-							<tr>
-								<td>19 Okt 2026, 09:30</td>
-								<td><strong style="color:#B7A97C;">Cherise</strong></td>
-								<td>Maria Theresa</td>
-								<td>Lokasi, Akses & Parkir Venue</td>
-								<td>Apakah disediakan shuttle bus dari stasiun Pasuruan ke Bukit Doa Immanuel?</td>
-								<td><span class="statusBadgeSuccess">Terkonfirmasi</span></td>
-							</tr>
-							<tr>
-								<td>18 Okt 2026, 21:05</td>
-								<td><strong style="color:#B7A97C;">Ivy</strong></td>
-								<td>Kevin Sanjaya</td>
-								<td>Aturan & Barang Bawaan</td>
-								<td>Bolehkah membawa kamera DSLR untuk dokumentasi pribadi di area festival?</td>
-								<td><span class="statusBadgeSuccess">Terjawab via WA</span></td>
-							</tr>
-							<tr>
-								<td>18 Okt 2026, 17:40</td>
-								<td><strong style="color:#B7A97C;">Cherise</strong></td>
-								<td>Sponsorship Team Kosayu</td>
-								<td>Kemitraan, Sponsor & Media</td>
-								<td>Konfirmasi booth tenant makanan untuk persiapan instalasi listrik venue.</td>
-								<td><span class="statusBadgePending">Dalam Koordinasi</span></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</section>
-
-			<!-- PANEL 4: EVENT SETTINGS -->
-			<section class="tabPanel" id="panelSettings">
-				<div style="background-color:rgba(33,61,58,0.3); border:1px solid rgba(183,169,124,0.25); border-radius:8px; padding:28px; max-width:760px;">
-					<h3 class="scannerCardTitle" style="margin-bottom:18px;">Informasi Utama Pelaksanaan Acara</h3>
-					
-					<div style="display:flex; flex-direction:column; gap:16px; font-size:14px;">
-						<div>
-							<span style="color:#B7A97C; font-weight:700; font-size:12px; letter-spacing:0.1em; display:block; text-transform:uppercase;">Nama Acara</span>
-							<strong>Simulasi Artfest Kolese Santo Yusup 2026 — The Hidden Island</strong>
-						</div>
-						<div>
-							<span style="color:#B7A97C; font-weight:700; font-size:12px; letter-spacing:0.1em; display:block; text-transform:uppercase;">Tanggal & Waktu Open Gate</span>
-							<strong>Jumat, 23 Oktober 2026 • 15:00:00 WIB</strong>
-						</div>
-						<div>
-							<span style="color:#B7A97C; font-weight:700; font-size:12px; letter-spacing:0.1em; display:block; text-transform:uppercase;">Lokasi Penyelenggaraan</span>
-							<strong>Bukit Doa Immanuel (BDI) Sukolilo, Jl. Raya Junggo, Prigen, Pasuruan, Jawa Timur</strong>
-							<span style="color:rgba(207,212,208,0.6); font-size:12px; display:block; margin-top:2px;">Koordinat: -7.688735, 112.651474</span>
-						</div>
-						<div>
-							<span style="color:#B7A97C; font-weight:700; font-size:12px; letter-spacing:0.1em; display:block; text-transform:uppercase;">Narahubung Panitia</span>
-							<span>Ivy (0815-2262-0878) &amp; Cherise (022-2352-1067)</span>
-						</div>
-						<div>
-							<span style="color:#B7A97C; font-weight:700; font-size:12px; letter-spacing:0.1em; display:block; text-transform:uppercase;">Kontak Penyelenggara Resmi</span>
-							<span>+62 8156584430 - Rakyan Natha Prastama</span>
+							<span style="color:rgba(207,212,208,0.6); font-size:14px;">Masukkan ID Pesanan untuk memverifikasi tiket pengunjung</span>
 						</div>
 					</div>
 				</div>
 			</section>
 		</main>
 	</div>
+
+	<!-- Modal Tambah Pesanan Tiket (Manual / OTS) -->
+	<dialog class="adminModal" id="manualOrderModal">
+		<div class="adminModalContent">
+			<div class="adminModalHeader">
+				<h3 class="adminModalTitle">Input Pesanan Tiket Baru</h3>
+				<button type="button" class="adminModalClose" onclick="closeManualOrderModal()">&times;</button>
+			</div>
+			<form id="formManualOrder" onsubmit="handleManualOrderSubmit(event)">
+				<div class="formGroup">
+					<label for="manualCustName" class="formLabel">Nama Lengkap Pembeli</label>
+					<input type="text" id="manualCustName" class="formInput" placeholder="cth: Jonathan Aditya" required>
+				</div>
+				<div class="formGroup">
+					<label for="manualCustEmail" class="formLabel">Alamat Email</label>
+					<input type="email" id="manualCustEmail" class="formInput" placeholder="cth: nama@email.com" required>
+				</div>
+				<div class="formGroup">
+					<label for="manualCustPhone" class="formLabel">Nomor WhatsApp / Kontak</label>
+					<input type="text" id="manualCustPhone" class="formInput" placeholder="cth: 081234567890" required>
+				</div>
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+					<div class="formGroup">
+						<label for="manualTierSelect" class="formLabel">Kategori Tiket</label>
+						<select id="manualTierSelect" class="formInput" onchange="updateManualOrderPriceCalc()">
+							<option value="presale1">Presale 1</option>
+							<option value="presale2">Presale 2</option>
+						</select>
+					</div>
+					<div class="formGroup">
+						<label for="manualQtyInput" class="formLabel">Jumlah Tiket (Qty)</label>
+						<input type="number" id="manualQtyInput" class="formInput" min="1" max="10" value="1" oninput="updateManualOrderPriceCalc()" required>
+					</div>
+				</div>
+				<div style="margin-top: 10px; padding: 12px 14px; background: rgba(33,61,58,0.4); border: 1px solid rgba(183,169,124,0.25); border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+					<span style="font-size: 13px; color: rgba(207,212,208,0.8);">Total Tagihan:</span>
+					<strong id="manualTotalDisplay" style="font-size: 16px; color: #CFD4D0; font-family: 'Syne', sans-serif;">Rp 75.000</strong>
+				</div>
+				<div style="display: flex; gap: 10px; margin-top: 20px;">
+					<button type="button" class="btnSecondaryAction" style="flex: 1;" onclick="closeManualOrderModal()">Batal</button>
+					<button type="submit" class="btnLoginSubmit" style="flex: 2; margin-top: 0;">Simpan Pesanan</button>
+				</div>
+			</form>
+		</div>
+	</dialog>
 
 	<!-- Toast Element -->
 	<div class="adminToast" id="adminToast">Pemberitahuan</div>
