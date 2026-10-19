@@ -4,12 +4,21 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>404 - Koordinat Tidak Ditemukan | The Hidden Island</title>
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+	<link rel="alternate icon" type="image/png" href="/favicon.png">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 	<style>
 		* {
 			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			max-width: 100%;
+			overflow-x: hidden;
+			width: 100%;
 		}
 
 		body {
@@ -22,7 +31,6 @@
 			min-height: 100vh;
 			display: flex;
 			flex-direction: column;
-			overflow-x: hidden;
 		}
 
 		.navBar {
@@ -63,11 +71,67 @@
 			letter-spacing: 0.04em;
 			text-transform: uppercase;
 			text-decoration: none;
+			flex-shrink: 0;
+			white-space: nowrap;
 		}
 
 		.logoIcon {
 			color: #B7A97C;
 			font-size: 16px;
+		}
+
+		.navMobileActions {
+			display: none;
+		}
+
+		.navHamburgerBtn {
+			display: none;
+			background: none;
+			border: 1px solid rgba(183, 169, 124, 0.25);
+			border-radius: 8px;
+			padding: 8px 9px;
+			cursor: pointer;
+			color: #CFD4D0;
+			transition: all 0.2s ease;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.navHamburgerBtn:hover,
+		.navHamburgerBtn.active {
+			background-color: rgba(183, 169, 124, 0.15);
+			border-color: #B7A97C;
+			color: #B7A97C;
+		}
+
+		.hamburgerIcon {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			width: 18px;
+			height: 13px;
+			position: relative;
+		}
+
+		.hamburgerIcon span {
+			display: block;
+			height: 2px;
+			width: 100%;
+			background-color: currentColor;
+			border-radius: 2px;
+			transition: all 0.25s ease;
+		}
+
+		.navHamburgerBtn.active .hamburgerIcon span:nth-child(1) {
+			transform: translateY(5.5px) rotate(45deg);
+		}
+
+		.navHamburgerBtn.active .hamburgerIcon span:nth-child(2) {
+			opacity: 0;
+		}
+
+		.navHamburgerBtn.active .hamburgerIcon span:nth-child(3) {
+			transform: translateY(-5.5px) rotate(-45deg);
 		}
 
 		.navMenu {
@@ -85,12 +149,14 @@
 			transition: opacity 0.2s, color 0.2s;
 		}
 
-		.navLink:hover {
+		.navLink:hover,
+		.navLink.active {
 			opacity: 1;
 			color: #B7A97C;
 		}
 
-		.navBtnTicket {
+		.navBtnTicket,
+		.navBtnTicketDesktop {
 			background-color: #4B5E35;
 			color: #CFD4D0;
 			padding: 9px 20px;
@@ -101,7 +167,8 @@
 			transition: background-color 0.2s, color 0.2s;
 		}
 
-		.navBtnTicket:hover {
+		.navBtnTicket:hover,
+		.navBtnTicketDesktop:hover {
 			background-color: #B7A97C;
 			color: #282B28;
 			border-color: #B7A97C;
@@ -246,37 +313,118 @@
 		/* Responsive */
 		@media (max-width: 960px) {
 			.navBar {
-				padding: 20px 24px;
+				padding: 16px 20px;
 			}
 
 			.navBar.scrolled {
-				padding: 16px 24px;
+				padding: 14px 20px;
+			}
+
+			.navMobileActions {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+
+			.navBtnTicketMobile {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				background-color: #B7A97C;
+				color: #282B28;
+				font-size: 12px;
+				font-weight: 700;
+				padding: 7px 15px;
+				border-radius: 9999px;
+				text-decoration: none;
+				border: 1px solid #B7A97C;
+				line-height: 1;
+				transition: background-color 0.2s, color 0.2s;
+			}
+
+			.navBtnTicketMobile:hover {
+				background-color: #CFD4D0;
+				color: #282B28;
+			}
+
+			.navHamburgerBtn {
+				display: inline-flex;
+			}
+
+			.navMenu {
+				display: none;
+				position: absolute;
+				top: 100%;
+				left: 0;
+				width: 100%;
+				background-color: rgba(26, 30, 27, 0.98);
+				backdrop-filter: blur(16px);
+				-webkit-backdrop-filter: blur(16px);
+				border-bottom: 1px solid rgba(183, 169, 124, 0.25);
+				box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+				padding: 16px 20px 22px 20px;
+				flex-direction: column;
+				align-items: stretch;
+				gap: 6px;
+				z-index: 999;
+			}
+
+			.navMenu.open {
+				display: flex;
+				animation: navSlideDown 0.22s ease-out;
+			}
+
+			.navLink {
+				padding: 12px 14px;
+				font-size: 15px;
+				font-weight: 600;
+				border-radius: 8px;
+				border-bottom: 1px solid rgba(183, 169, 124, 0.08);
+			}
+
+			.navLink:hover {
+				background-color: rgba(183, 169, 124, 0.12);
+			}
+
+			.navBtnTicketDesktop {
+				display: none;
 			}
 
 			.errorContainer {
-				padding: 110px 20px 50px 20px;
+				padding: 95px 16px 50px 16px;
 			}
 
 			.giantDigit {
-				font-size: 90px;
+				font-size: clamp(60px, 18vw, 90px);
 			}
 
 			.compassCenter {
-				width: 65px;
-				height: 65px;
+				width: 54px;
+				height: 54px;
 			}
 
 			.compassCenter svg {
-				width: 56px;
-				height: 56px;
+				width: 44px;
+				height: 44px;
 			}
 
 			.errorHeadline {
-				font-size: 24px;
+				font-size: clamp(20px, 5.5vw, 24px);
 			}
 
 			.errorDescription {
 				font-size: 14px;
+			}
+		}
+
+		@keyframes navSlideDown {
+			from {
+				opacity: 0;
+				transform: translateY(-8px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
 			}
 		}
 	</style>
@@ -288,10 +436,20 @@
 			<span class="logoIcon">✦</span>
 			<span class="logoText">The Hidden Island</span>
 		</a>
-		<nav class="navMenu">
-			<a href="/#tentang" class="navLink">Tentang</a>
-			<a href="/kontak/" class="navLink">Kontak</a>
-			<a href="/tiket/" class="navLink navBtnTicket">Beli Tiket</a>
+		<div class="navMobileActions">
+			<a href="/tiket/" class="navBtnTicketMobile">Beli Tiket</a>
+			<button type="button" class="navHamburgerBtn" id="navHamburgerBtn" onclick="toggleMobileNav()" aria-label="Menu Navigasi" aria-expanded="false">
+				<span class="hamburgerIcon">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+			</button>
+		</div>
+		<nav class="navMenu" id="mainNavMenu">
+			<a href="/#tentang" class="navLink" onclick="closeMobileNav()">Tentang</a>
+			<a href="/kontak/" class="navLink" onclick="closeMobileNav()">Kontak</a>
+			<a href="/tiket/" class="navLink navBtnTicketDesktop">Beli Tiket</a>
 		</nav>
 	</header>
 
@@ -396,6 +554,36 @@
 
 		window.addEventListener('scroll', handleNavbarScroll, { passive: true });
 		handleNavbarScroll();
+
+		// Mobile Navigation Toggle
+		function toggleMobileNav() {
+			const menu = document.getElementById('mainNavMenu');
+			const btn = document.getElementById('navHamburgerBtn');
+			if (!menu || !btn) return;
+			const isOpen = menu.classList.toggle('open');
+			btn.classList.toggle('active', isOpen);
+			btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+		}
+
+		function closeMobileNav() {
+			const menu = document.getElementById('mainNavMenu');
+			const btn = document.getElementById('navHamburgerBtn');
+			if (menu) menu.classList.remove('open');
+			if (btn) {
+				btn.classList.remove('active');
+				btn.setAttribute('aria-expanded', 'false');
+			}
+		}
+
+		document.addEventListener('click', (e) => {
+			const nav = document.getElementById('mainNavBar');
+			const menu = document.getElementById('mainNavMenu');
+			if (nav && menu && menu.classList.contains('open')) {
+				if (!nav.contains(e.target)) {
+					closeMobileNav();
+				}
+			}
+		});
 	</script>
 </body>
 </html>

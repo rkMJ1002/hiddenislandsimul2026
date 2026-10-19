@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#213D3A"/>
+      <stop offset="100%" stop-color="#142422"/>
+    </linearGradient>
+    <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e6c35c" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#213D3A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Background Tile with Soft Rounded Corners -->
+  <rect width="64" height="64" rx="16" fill="url(#bgGrad)" stroke="#B7A97C" stroke-width="1.5" stroke-opacity="0.35"/>
+  <!-- Ambient Glow Behind Star -->
+  <circle cx="32" cy="32" r="26" fill="url(#starGlow)"/>
+  <!-- Artfest Signature 4-Point Golden Star -->
+  <path d="M32 10 C32 21.5 21.5 32 10 32 C21.5 32 32 42.5 32 54 C32 42.5 42.5 32 54 32 C42.5 32 32 21.5 32 10 Z" fill="#B7A97C"/>
+  <circle cx="32" cy="32" r="3.5" fill="#FFEBB2"/>
+</svg>

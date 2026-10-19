@@ -4,6 +4,8 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>The Hidden Island — Simulasi Artfest Kolese Santo Yusup 2026</title>
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="alternate icon" type="image/png" href="favicon.png">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -15,10 +17,21 @@
 			<span class="logoIcon">✦</span>
 			<span class="logoText">The Hidden Island</span>
 		</a>
-		<nav class="navMenu">
-			<a href="#tentang" class="navLink">Tentang</a>
-			<a href="kontak/index.html" class="navLink">Kontak</a>
-			<a href="tiket/index.html" class="navLink navBtnTicket">Beli Tiket</a>
+		<div class="navMobileActions">
+			<a href="tiket/index.html" class="navBtnTicketMobile">Beli Tiket</a>
+			<button type="button" class="navHamburgerBtn" id="navHamburgerBtn" onclick="toggleMobileNav()" aria-label="Menu Navigasi" aria-expanded="false">
+				<span class="hamburgerIcon">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+			</button>
+		</div>
+		<nav class="navMenu" id="mainNavMenu">
+			<a href="#tentang" class="navLink" onclick="closeMobileNav()">Tentang</a>
+			<a href="#lokasi" class="navLink" onclick="closeMobileNav()">Lokasi</a>
+			<a href="kontak/index.html" class="navLink" onclick="closeMobileNav()">Kontak</a>
+			<a href="tiket/index.html" class="navLink navBtnTicketDesktop">Beli Tiket</a>
 		</nav>
 	</header>
 

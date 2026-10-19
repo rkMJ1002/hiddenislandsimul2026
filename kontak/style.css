@@ -2,9 +2,15 @@
 	box-sizing: border-box;
 }
 
-body {
+html, body {
 	margin: 0;
 	padding: 0;
+	max-width: 100%;
+	overflow-x: hidden;
+	width: 100%;
+}
+
+body {
 	font-family: 'Plus Jakarta Sans', sans-serif;
 	background-color: #282B28;
 	background: radial-gradient(circle at 75% 25%, #213D3A 0%, #282B28 65%);
@@ -12,12 +18,10 @@ body {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-	overflow-x: hidden;
 }
 
 /* ============================================================
    NAVBAR: Sits in place, follows on scroll with shade & shadow
-   (Exact same navbar feature across all pages)
    ============================================================ */
 .navBar {
 	position: fixed;
@@ -57,11 +61,67 @@ body {
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
 	text-decoration: none;
+	flex-shrink: 0;
+	white-space: nowrap;
 }
 
 .logoIcon {
 	color: #B7A97C;
 	font-size: 16px;
+}
+
+.navMobileActions {
+	display: none;
+}
+
+.navHamburgerBtn {
+	display: none;
+	background: none;
+	border: 1px solid rgba(183, 169, 124, 0.25);
+	border-radius: 8px;
+	padding: 8px 9px;
+	cursor: pointer;
+	color: #CFD4D0;
+	transition: all 0.2s ease;
+	align-items: center;
+	justify-content: center;
+}
+
+.navHamburgerBtn:hover,
+.navHamburgerBtn.active {
+	background-color: rgba(183, 169, 124, 0.15);
+	border-color: #B7A97C;
+	color: #B7A97C;
+}
+
+.hamburgerIcon {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 18px;
+	height: 13px;
+	position: relative;
+}
+
+.hamburgerIcon span {
+	display: block;
+	height: 2px;
+	width: 100%;
+	background-color: currentColor;
+	border-radius: 2px;
+	transition: all 0.25s ease;
+}
+
+.navHamburgerBtn.active .hamburgerIcon span:nth-child(1) {
+	transform: translateY(5.5px) rotate(45deg);
+}
+
+.navHamburgerBtn.active .hamburgerIcon span:nth-child(2) {
+	opacity: 0;
+}
+
+.navHamburgerBtn.active .hamburgerIcon span:nth-child(3) {
+	transform: translateY(-5.5px) rotate(-45deg);
 }
 
 .navMenu {
@@ -85,7 +145,9 @@ body {
 	color: #B7A97C;
 }
 
-.navBtnTicket {
+/* Beli Tiket Button in Navbar */
+.navBtnTicket,
+.navBtnTicketDesktop {
 	background-color: #4B5E35;
 	color: #CFD4D0;
 	padding: 9px 20px;
@@ -96,7 +158,8 @@ body {
 	transition: background-color 0.2s, color 0.2s;
 }
 
-.navBtnTicket:hover {
+.navBtnTicket:hover,
+.navBtnTicketDesktop:hover {
 	background-color: #B7A97C;
 	color: #282B28;
 	border-color: #B7A97C;
@@ -184,7 +247,6 @@ body {
 	letter-spacing: 0.04em;
 }
 
-/* Contact Action Buttons (Sharp 6px, No Generic Pillbox) */
 .contactActions {
 	display: flex;
 	align-items: center;
@@ -501,19 +563,19 @@ body {
 /* Responsive */
 @media (max-width: 960px) {
 	.navBar {
-		padding: 20px 24px;
+		padding: 18px 32px;
 	}
 
 	.navBar.scrolled {
-		padding: 16px 24px;
+		padding: 14px 32px;
 	}
 
 	.contactPage {
-		padding: 110px 20px 60px 20px;
+		padding: 100px 24px 60px 24px;
 	}
 
 	.contactTitle {
-		font-size: 38px;
+		font-size: 42px;
 	}
 
 	.contactListGrid {
@@ -526,17 +588,174 @@ body {
 	}
 
 	.siteFooter {
-		padding: 40px 24px 24px 24px;
+		padding: 50px 32px 28px 32px;
+	}
+}
+
+@media (max-width: 768px) {
+	.navBar {
+		padding: 14px 18px;
+	}
+
+	.navBar.scrolled {
+		padding: 12px 18px;
+	}
+
+	.logo {
+		font-size: 14px;
+		gap: 8px;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.logoIcon {
+		font-size: 13px;
+	}
+
+	.navMobileActions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.navBtnTicketMobile {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background-color: #B7A97C;
+		color: #282B28;
+		font-size: 12px;
+		font-weight: 700;
+		padding: 7px 15px;
+		border-radius: 9999px;
+		text-decoration: none;
+		border: 1px solid #B7A97C;
+		line-height: 1;
+		transition: background-color 0.2s, color 0.2s;
+	}
+
+	.navBtnTicketMobile:hover {
+		background-color: #CFD4D0;
+		color: #282B28;
+	}
+
+	.navHamburgerBtn {
+		display: inline-flex;
+	}
+
+	.navMenu {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		width: 100%;
+		background-color: rgba(26, 30, 27, 0.98);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border-bottom: 1px solid rgba(183, 169, 124, 0.25);
+		box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+		padding: 16px 20px 22px 20px;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 6px;
+		z-index: 999;
+	}
+
+	.navMenu.open {
+		display: flex;
+		animation: navSlideDown 0.22s ease-out;
+	}
+
+	.navLink {
+		padding: 12px 14px;
+		font-size: 15px;
+		font-weight: 600;
+		border-radius: 8px;
+		border-bottom: 1px solid rgba(183, 169, 124, 0.08);
+	}
+
+	.navLink:hover {
+		background-color: rgba(183, 169, 124, 0.12);
+	}
+
+	.navBtnTicketDesktop {
+		display: none;
+	}
+
+	.contactPage {
+		padding: 85px 16px 50px 16px;
+	}
+
+	.contactHeader {
+		margin-bottom: 32px;
+	}
+
+	.contactTitle {
+		font-size: clamp(28px, 8vw, 40px);
+		line-height: 1.05;
+	}
+
+	.contactSubtitle {
+		font-size: 14px;
+	}
+
+	.contactPersonName {
+		font-size: 26px;
+	}
+
+	.contactNumberDisplay {
+		font-size: 18px;
+		margin-bottom: 12px;
+	}
+
+	.btnActionPrimary,
+	.btnActionSecondary {
+		padding: 9px 15px;
+		font-size: 12px;
+	}
+
+	.inquirySection {
+		padding-top: 36px;
+	}
+
+	.inquiryTitle {
+		font-size: 20px;
+	}
+
+	.btnSubmitInquiry {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.siteFooter {
+		padding: 40px 20px 24px 20px;
 	}
 
 	.footerColumns {
 		grid-template-columns: 1fr;
-		gap: 32px;
+		gap: 28px;
 	}
 
 	.footerBottomBar {
 		flex-direction: column;
-		gap: 16px;
+		gap: 14px;
 		text-align: center;
+	}
+
+	.footerLegalLinks {
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 14px;
+	}
+}
+
+@keyframes navSlideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
 	}
 }

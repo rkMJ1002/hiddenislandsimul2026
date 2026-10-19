@@ -2,9 +2,15 @@
 	box-sizing: border-box;
 }
 
-body {
+html, body {
 	margin: 0;
 	padding: 0;
+	max-width: 100%;
+	overflow-x: hidden;
+	width: 100%;
+}
+
+body {
 	font-family: 'Plus Jakarta Sans', sans-serif;
 	background-color: #282B28;
 	background: radial-gradient(circle at 75% 35%, #213D3A 0%, #282B28 65%);
@@ -50,11 +56,67 @@ body {
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
 	text-decoration: none;
+	flex-shrink: 0;
+	white-space: nowrap;
 }
 
 .logoIcon {
 	color: #B7A97C;
 	font-size: 16px;
+}
+
+.navMobileActions {
+	display: none;
+}
+
+.navHamburgerBtn {
+	display: none;
+	background: none;
+	border: 1px solid rgba(183, 169, 124, 0.25);
+	border-radius: 8px;
+	padding: 8px 9px;
+	cursor: pointer;
+	color: #CFD4D0;
+	transition: all 0.2s ease;
+	align-items: center;
+	justify-content: center;
+}
+
+.navHamburgerBtn:hover,
+.navHamburgerBtn.active {
+	background-color: rgba(183, 169, 124, 0.15);
+	border-color: #B7A97C;
+	color: #B7A97C;
+}
+
+.hamburgerIcon {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 18px;
+	height: 13px;
+	position: relative;
+}
+
+.hamburgerIcon span {
+	display: block;
+	height: 2px;
+	width: 100%;
+	background-color: currentColor;
+	border-radius: 2px;
+	transition: all 0.25s ease;
+}
+
+.navHamburgerBtn.active .hamburgerIcon span:nth-child(1) {
+	transform: translateY(5.5px) rotate(45deg);
+}
+
+.navHamburgerBtn.active .hamburgerIcon span:nth-child(2) {
+	opacity: 0;
+}
+
+.navHamburgerBtn.active .hamburgerIcon span:nth-child(3) {
+	transform: translateY(-5.5px) rotate(-45deg);
 }
 
 .navMenu {
@@ -78,7 +140,8 @@ body {
 }
 
 /* Beli Tiket Button in Navbar */
-.navBtnTicket {
+.navBtnTicket,
+.navBtnTicketDesktop {
 	background-color: #4B5E35;
 	color: #CFD4D0;
 	padding: 9px 20px;
@@ -90,7 +153,8 @@ body {
 }
 
 .navBtnTicket:hover,
-.navBtnTicket.active {
+.navBtnTicket.active,
+.navBtnTicketDesktop:hover {
 	background-color: #B7A97C;
 	color: #282B28;
 	border-color: #B7A97C;
@@ -467,26 +531,24 @@ body {
 /* Responsive adjustments */
 @media (max-width: 960px) {
 	.navBar {
-		padding: 20px 24px;
+		padding: 18px 32px;
 	}
 
 	.navBar.scrolled {
-		padding: 16px 24px;
+		padding: 14px 32px;
 	}
 
 	.heroSection {
-		flex-direction: column;
-		text-align: left;
-		padding: 90px 24px 60px 24px;
-		gap: 40px;
+		padding: 100px 32px 50px 32px;
+		gap: 36px;
 	}
 
 	.heroTitle {
-		font-size: 56px;
+		font-size: 64px;
 	}
 
 	.heroSubtitle {
-		font-size: 17px;
+		font-size: 18px;
 	}
 
 	.heroVisual img {
@@ -494,212 +556,270 @@ body {
 	}
 
 	.countdownSection {
-		padding: 50px 20px 70px 20px;
-	}
-
-	.countdownWrapper {
-		gap: 12px;
-	}
-
-	.countdownUnit {
-		min-width: 65px;
-	}
-
-	.countdownNumber {
-		font-size: 46px;
-	}
-
-	.countdownSeparator {
-		font-size: 32px;
-		margin-top: 6px;
-	}
-
-	.countdownLabel {
-		font-size: 11px;
-		letter-spacing: 0.12em;
+		padding: 50px 20px 60px 20px;
 	}
 
 	.aboutSection {
-		padding: 70px 20px 60px 20px;
-	}
-
-	.sectionTitle {
-		font-size: 32px;
-	}
-
-	.aboutBody {
-		font-size: 15px;
-		line-height: 1.75;
-	}
-
-	.aboutBody p {
-		text-align: left;
+		padding: 60px 32px;
 	}
 
 	.locationSection {
-		padding: 70px 20px 70px 20px;
+		padding: 60px 32px;
+	}
+
+	.siteFooter {
+		padding: 50px 32px 28px 32px;
+	}
+}
+
+@media (max-width: 768px) {
+	.navBar {
+		padding: 14px 18px;
+	}
+
+	.navBar.scrolled {
+		padding: 12px 18px;
+	}
+
+	.logo {
+		font-size: 14px;
+		gap: 8px;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.logoIcon {
+		font-size: 13px;
+	}
+
+	.navMobileActions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.navBtnTicketMobile {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background-color: #B7A97C;
+		color: #282B28;
+		font-size: 12px;
+		font-weight: 700;
+		padding: 7px 15px;
+		border-radius: 9999px;
+		text-decoration: none;
+		border: 1px solid #B7A97C;
+		line-height: 1;
+		transition: background-color 0.2s, color 0.2s;
+	}
+
+	.navBtnTicketMobile:hover {
+		background-color: #CFD4D0;
+		color: #282B28;
+	}
+
+	.navHamburgerBtn {
+		display: inline-flex;
+	}
+
+	.navMenu {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		width: 100%;
+		background-color: rgba(26, 30, 27, 0.98);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border-bottom: 1px solid rgba(183, 169, 124, 0.25);
+		box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+		padding: 16px 20px 22px 20px;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 6px;
+		z-index: 999;
+	}
+
+	.navMenu.open {
+		display: flex;
+		animation: navSlideDown 0.22s ease-out;
+	}
+
+	.navLink {
+		padding: 12px 14px;
+		font-size: 15px;
+		font-weight: 600;
+		border-radius: 8px;
+		border-bottom: 1px solid rgba(183, 169, 124, 0.08);
+	}
+
+	.navLink:hover {
+		background-color: rgba(183, 169, 124, 0.12);
+	}
+
+	.navBtnTicketDesktop {
+		display: none;
+	}
+
+	.heroSection {
+		flex-direction: column;
+		text-align: left;
+		min-height: auto;
+		padding: 85px 20px 36px 20px;
+		gap: 28px;
+	}
+
+	.heroContent {
+		max-width: 100%;
+	}
+
+	.heroTitle {
+		font-size: clamp(38px, 10.5vw, 56px);
+		line-height: 0.95;
+		margin: 0 0 14px 0;
+		word-break: break-word;
+	}
+
+	.heroSubtitle {
+		font-size: clamp(14px, 4vw, 17px);
+		margin: 0 0 22px 0;
+		line-height: 1.45;
+	}
+
+	.heroActions {
+		gap: 12px;
+		flex-wrap: wrap;
+	}
+
+	.btnPrimary,
+	.btnSecondary {
+		padding: 12px 22px;
+		font-size: 14px;
+	}
+
+	.heroVisual {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		margin-top: 6px;
+	}
+
+	.heroVisual img {
+		max-width: min(280px, 75vw);
+		height: auto;
+	}
+
+	.countdownSection {
+		padding: 40px 16px 50px 16px;
+	}
+
+	.countdownTitle {
+		font-size: clamp(14px, 4.2vw, 18px);
+		margin-bottom: 24px;
+		text-align: center;
+		letter-spacing: 0.12em;
+	}
+
+	.countdownWrapper {
+		gap: clamp(4px, 1.8vw, 12px);
+		justify-content: center;
+		width: 100%;
+	}
+
+	.countdownUnit {
+		min-width: 0;
+		flex: 1;
+		max-width: 72px;
+		padding: 4px 2px;
+	}
+
+	.countdownNumber {
+		font-size: clamp(26px, 8vw, 44px);
+		line-height: 1;
+	}
+
+	.countdownSeparator {
+		font-size: clamp(18px, 5vw, 30px);
+		margin-top: 2px;
+	}
+
+	.countdownLabel {
+		font-size: clamp(9px, 2.4vw, 11px);
+		letter-spacing: 0.08em;
+	}
+
+	.aboutSection {
+		padding: 50px 20px;
+	}
+
+	.sectionTitle {
+		font-size: clamp(24px, 7vw, 36px);
+		line-height: 1.15;
+	}
+
+	.aboutBody {
+		font-size: 14px;
+		line-height: 1.7;
+	}
+
+	.locationSection {
+		padding: 50px 18px;
 	}
 
 	.locationMetaGrid {
 		grid-template-columns: 1fr;
-		gap: 14px;
+		gap: 12px;
 	}
 
 	.mapFrameWrapper {
-		height: 350px;
+		height: 280px;
+		border-radius: 12px;
 	}
 
 	.mapActions {
 		flex-direction: column;
 		width: 100%;
+		gap: 10px;
 	}
 
 	.btnMapPrimary,
 	.btnMapSecondary {
 		width: 100%;
 		justify-content: center;
+		padding: 12px 18px;
+		font-size: 13px;
 	}
-}
 
-.siteFooter {
-	background-color: #1a1c1a;
-	background: linear-gradient(180deg, rgba(40, 43, 40, 0.5) 0%, #161816 100%);
-	border-top: 1px solid rgba(183, 169, 124, 0.18);
-	padding: 60px 80px 32px 80px;
-	color: #CFD4D0;
-	margin-top: auto;
-}
-
-.footerTopBrand {
-	text-align: center;
-	margin-bottom: 44px;
-}
-
-.footerLogo {
-	display: inline-flex;
-	align-items: center;
-	gap: 10px;
-	font-family: 'Syne', sans-serif;
-	font-size: 20px;
-	font-weight: 700;
-	color: #CFD4D0;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	text-decoration: none;
-	transition: color 0.2s;
-}
-
-.footerLogo:hover {
-	color: #B7A97C;
-}
-
-.footerLogoIcon {
-	color: #B7A97C;
-	font-size: 16px;
-}
-
-.footerSubBrand {
-	margin: 6px 0 0 0;
-	font-size: 13px;
-	font-weight: 500;
-	color: #B7A97C;
-	letter-spacing: 0.04em;
-	opacity: 0.85;
-}
-
-.footerColumns {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 40px;
-	max-width: 1100px;
-	margin: 0 auto 48px auto;
-	text-align: center;
-	align-items: start;
-}
-
-.footerColTitle {
-	font-family: 'Syne', sans-serif;
-	font-size: 13px;
-	font-weight: 700;
-	letter-spacing: 0.1em;
-	color: #CFD4D0;
-	text-transform: uppercase;
-	margin: 0 0 14px 0;
-}
-
-.footerColText {
-	font-size: 14px;
-	line-height: 1.6;
-	color: rgba(207, 212, 208, 0.75);
-	margin: 0;
-}
-
-.footerSocialIcons {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 18px;
-}
-
-.socialIconLink {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	color: #CFD4D0;
-	transition: color 0.2s, transform 0.2s;
-}
-
-.socialIconLink:hover {
-	color: #B7A97C;
-	transform: translateY(-2px);
-}
-
-.footerBottomBar {
-	max-width: 1100px;
-	margin: 0 auto;
-	padding-top: 24px;
-	border-top: 1px solid rgba(183, 169, 124, 0.12);
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	font-size: 12px;
-	letter-spacing: 0.06em;
-	color: rgba(207, 212, 208, 0.55);
-}
-
-.footerLegalLinks {
-	display: flex;
-	align-items: center;
-	gap: 24px;
-}
-
-.legalLink {
-	color: rgba(207, 212, 208, 0.55);
-	text-decoration: none;
-	font-size: 12px;
-	font-weight: 600;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	transition: color 0.2s;
-}
-
-.legalLink:hover {
-	color: #B7A97C;
-}
-
-@media (max-width: 860px) {
 	.siteFooter {
-		padding: 40px 24px 24px 24px;
+		padding: 40px 20px 24px 20px;
 	}
 
 	.footerColumns {
 		grid-template-columns: 1fr;
-		gap: 32px;
+		gap: 28px;
 	}
 
 	.footerBottomBar {
 		flex-direction: column;
-		gap: 16px;
+		gap: 14px;
 		text-align: center;
+	}
+
+	.footerLegalLinks {
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 14px;
+	}
+}
+
+@keyframes navSlideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
 	}
 }
