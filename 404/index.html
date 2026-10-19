@@ -61,18 +61,30 @@
 		}
 
 		.logo {
-			display: flex;
+			display: inline-flex;
 			align-items: center;
 			gap: 12px;
-			font-family: 'Syne', sans-serif;
-			font-size: 18px;
-			font-weight: 700;
-			color: #CFD4D0;
-			letter-spacing: 0.04em;
-			text-transform: uppercase;
 			text-decoration: none;
 			flex-shrink: 0;
 			white-space: nowrap;
+			transition: opacity 0.2s ease;
+		}
+
+		.logo:hover {
+			opacity: 0.9;
+		}
+
+		.logoImg {
+			height: 44px;
+			width: auto;
+			max-height: 44px;
+			object-fit: contain;
+			display: block;
+			transition: transform 0.2s ease;
+		}
+
+		.logo:hover .logoImg {
+			transform: scale(1.03);
 		}
 
 		.logoIcon {
@@ -390,6 +402,11 @@
 				display: none;
 			}
 
+			.logoImg {
+				height: 36px;
+				max-height: 36px;
+			}
+
 			.errorContainer {
 				padding: 95px 16px 50px 16px;
 			}
@@ -432,9 +449,8 @@
 <body>
 	<!-- Fixed Navbar -->
 	<header class="navBar" id="mainNavBar">
-		<a href="/" class="logo">
-			<span class="logoIcon">✦</span>
-			<span class="logoText">The Hidden Island</span>
+		<a href="/" class="logo" aria-label="The Hidden Island">
+			<img src="../logo.png" alt="The Hidden Island" class="logoImg">
 		</a>
 		<div class="navMobileActions">
 			<a href="/tiket/" class="navBtnTicketMobile">Beli Tiket</a>

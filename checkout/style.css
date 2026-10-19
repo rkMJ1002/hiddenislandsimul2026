@@ -50,6 +50,14 @@ body {
 	color: #1a1f36;
 }
 
+.checkoutLogoImg {
+	height: 38px;
+	width: auto;
+	max-height: 38px;
+	object-fit: contain;
+	display: block;
+}
+
 .brandName {
 	font-size: 14px;
 	font-weight: 800;

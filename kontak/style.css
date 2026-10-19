@@ -51,18 +51,30 @@ body {
 }
 
 .logo {
-	display: flex;
+	display: inline-flex;
 	align-items: center;
 	gap: 12px;
-	font-family: 'Syne', sans-serif;
-	font-size: 18px;
-	font-weight: 700;
-	color: #CFD4D0;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
 	text-decoration: none;
 	flex-shrink: 0;
 	white-space: nowrap;
+	transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+	opacity: 0.9;
+}
+
+.logoImg {
+	height: 44px;
+	width: auto;
+	max-height: 44px;
+	object-fit: contain;
+	display: block;
+	transition: transform 0.2s ease;
+}
+
+.logo:hover .logoImg {
+	transform: scale(1.03);
 }
 
 .logoIcon {
@@ -451,19 +463,27 @@ body {
 .footerLogo {
 	display: inline-flex;
 	align-items: center;
-	gap: 10px;
-	font-family: 'Syne', sans-serif;
-	font-size: 20px;
-	font-weight: 700;
-	color: #CFD4D0;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
+	justify-content: center;
 	text-decoration: none;
-	transition: color 0.2s;
+	transition: opacity 0.2s;
 }
 
 .footerLogo:hover {
-	color: #B7A97C;
+	opacity: 0.9;
+}
+
+.footerLogoImg {
+	height: 60px;
+	width: auto;
+	max-height: 60px;
+	object-fit: contain;
+	display: block;
+	margin: 0 auto;
+	transition: transform 0.2s ease;
+}
+
+.footerLogo:hover .footerLogoImg {
+	transform: scale(1.04);
 }
 
 .footerLogoIcon {
@@ -514,15 +534,18 @@ body {
 	gap: 18px;
 }
 
-.socialIconLink {
+.socialIconLink,
+.socialIconLink:visited {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	color: #CFD4D0;
+	text-decoration: none;
 	transition: color 0.2s, transform 0.2s;
 }
 
-.socialIconLink:hover {
+.socialIconLink:hover,
+.socialIconLink:visited:hover {
 	color: #B7A97C;
 	transform: translateY(-2px);
 }
@@ -546,7 +569,8 @@ body {
 	gap: 24px;
 }
 
-.legalLink {
+.legalLink,
+.legalLink:visited {
 	color: rgba(207, 212, 208, 0.55);
 	text-decoration: none;
 	font-size: 12px;
@@ -556,7 +580,8 @@ body {
 	transition: color 0.2s;
 }
 
-.legalLink:hover {
+.legalLink:hover,
+.legalLink:visited:hover {
 	color: #B7A97C;
 }
 
