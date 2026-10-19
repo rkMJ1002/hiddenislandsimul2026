@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 500" width="100%" height="100%" fill="none">
+  <!-- Sculptural Island Graphic with Zero Glow -->
+  <!-- Background Deep Atmosphere Shards / Ridges -->
+  <path d="M 120 420 Q 280 180 520 220 Q 640 240 680 380 Q 420 460 120 420 Z" fill="#213D3A" opacity="0.6" />
+  <path d="M 220 380 Q 360 120 580 180 Q 660 210 650 340 Q 480 410 220 380 Z" fill="#4B5E35" opacity="0.35" />
+
+  <!-- Sharp Minimalist Moon / Celestial Body (No glow, flat matte) -->
+  <circle cx="560" cy="110" r="38" fill="#B7A97C" />
+
+  <!-- Distant Mountain Ridges -->
+  <path d="M 80 430 L 220 310 L 330 360 L 460 260 L 590 340 L 680 430 Z" fill="#213D3A" />
+  <!-- Highlight facets on mountains -->
+  <path d="M 220 310 L 330 360 L 280 410 L 170 380 Z" fill="#4B5E35" opacity="0.5" />
+  <path d="M 460 260 L 590 340 L 520 400 L 410 350 Z" fill="#B7A97C" opacity="0.25" />
+
+  <!-- Ocean / Shore Level Line Accents (Clean, sharp geometric strokes) -->
+  <line x1="140" y1="440" x2="310" y2="440" stroke="#CFD4D0" stroke-width="2" stroke-linecap="round" opacity="0.3" />
+  <line x1="340" y1="455" x2="520" y2="455" stroke="#B7A97C" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
+  <line x1="220" y1="470" x2="420" y2="470" stroke="#CFD4D0" stroke-width="1.5" stroke-linecap="round" opacity="0.2" />
+
+  <!-- Main Sculptural Island Body -->
+  <path d="M 50 450 Q 180 340 360 370 Q 520 390 640 440 Q 380 490 50 450 Z" fill="#282B28" />
+  <path d="M 90 445 Q 210 360 370 385 Q 490 405 580 440 Q 360 480 90 445 Z" fill="#4B5E35" opacity="0.75" />
+
+  <!-- Sculptural Foreground Palm Tree 1 -->
+  <path d="M 260 420 Q 275 320 320 220 Q 323 226 295 325 Q 275 390 270 420 Z" fill="#282B28" />
+  <!-- Sharp Geometric Palm Fronds -->
+  <path d="M 320 220 Q 230 205 180 245 Q 240 225 320 220 Z" fill="#B7A97C" />
+  <path d="M 320 220 Q 255 160 205 175 Q 265 185 320 220 Z" fill="#4B5E35" />
+  <path d="M 320 220 Q 320 140 350 135 Q 340 185 320 220 Z" fill="#282B28" />
+  <path d="M 320 220 Q 390 150 440 170 Q 380 185 320 220 Z" fill="#4B5E35" />
+  <path d="M 320 220 Q 405 205 435 240 Q 370 225 320 220 Z" fill="#B7A97C" />
+
+  <!-- Palm Tree 2 -->
+  <path d="M 350 425 Q 375 330 420 250 Q 422 256 390 335 Q 365 395 360 425 Z" fill="#213D3A" />
+  <!-- Sharp Fronds -->
+  <path d="M 420 250 Q 350 235 310 270 Q 360 255 420 250 Z" fill="#4B5E35" />
+  <path d="M 420 250 Q 370 190 330 205 Q 380 215 420 250 Z" fill="#B7A97C" />
+  <path d="M 420 250 Q 440 170 470 165 Q 455 210 420 250 Z" fill="#4B5E35" />
+  <path d="M 420 250 Q 480 190 525 210 Q 470 220 420 250 Z" fill="#282B28" />
+
+  <!-- Minimalist Sharp Constellations -->
+  <circle cx="160" cy="90" r="1.5" fill="#CFD4D0" />
+  <circle cx="240" cy="130" r="1.5" fill="#CFD4D0" />
+  <circle cx="360" cy="70" r="1.5" fill="#CFD4D0" />
+  <circle cx="480" cy="95" r="1.5" fill="#CFD4D0" />
+  <circle cx="620" cy="140" r="1.5" fill="#B7A97C" />
+</svg>
