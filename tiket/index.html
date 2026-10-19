@@ -33,10 +33,15 @@
 		<!-- Ticket Tiers Grid -->
 		<div class="ticketGrid">
 			<!-- Tier 1: Presale 1 -->
-			<div class="ticketCard" id="card-presale1" onclick="openTicketModal('Presale 1', 75000, 'Akses panggung festival & event kit')">
+			<div class="ticketCard" id="card-presale1" onclick="handleCardClick('presale1')">
+				<div class="ticketBadgeWrapper" id="badgeWrapper-presale1"></div>
 				<div class="ticketCardHeader">
 					<h3 class="tierTag">Presale 1</h3>
-					<div class="ticketPrice">Rp 75.000</div>
+					<div class="ticketPrice" id="priceDisplay-presale1">Rp 75.000</div>
+				</div>
+				<div class="quotaIndicator" id="quotaIndicator-presale1">
+					<span class="quotaDot" id="quotaDot-presale1"></span>
+					<span id="quotaText-presale1">Sisa <strong>318</strong> dari 500 kursi</span>
 				</div>
 				<ul class="ticketFeatures">
 					<li>Akses seluruh panggung festival musik & teater</li>
@@ -44,15 +49,21 @@
 					<li>Akses instalasi seni interaktif</li>
 					<li>Free welcome drink & exclusive sticker pack</li>
 				</ul>
-				<button type="button" class="btnTicket">Pilih Presale 1</button>
+				<button type="button" class="btnTicket" id="btnAction-presale1">Pilih Presale 1</button>
 			</div>
 
 			<!-- Tier 2: Presale 2 -->
-			<div class="ticketCard popular" id="card-presale2" onclick="openTicketModal('Presale 2', 90000, 'Akses panggung festival & event kit')">
-				<div class="popularBadge">POPULER</div>
+			<div class="ticketCard popular" id="card-presale2" onclick="handleCardClick('presale2')">
+				<div class="ticketBadgeWrapper" id="badgeWrapper-presale2">
+					<div class="popularBadge">POPULER</div>
+				</div>
 				<div class="ticketCardHeader">
 					<h3 class="tierTag">Presale 2</h3>
-					<div class="ticketPrice">Rp 90.000</div>
+					<div class="ticketPrice" id="priceDisplay-presale2">Rp 90.000</div>
+				</div>
+				<div class="quotaIndicator" id="quotaIndicator-presale2">
+					<span class="quotaDot" id="quotaDot-presale2"></span>
+					<span id="quotaText-presale2">Sisa <strong>536</strong> dari 750 kursi</span>
 				</div>
 				<ul class="ticketFeatures">
 					<li>Akses seluruh panggung festival musik & teater</li>
@@ -60,7 +71,7 @@
 					<li>Akses instalasi seni interaktif</li>
 					<li>Free welcome drink & exclusive sticker pack</li>
 				</ul>
-				<button type="button" class="btnTicket primary">Pilih Presale 2</button>
+				<button type="button" class="btnTicket primary" id="btnAction-presale2">Pilih Presale 2</button>
 			</div>
 
 		</div>
@@ -244,6 +255,26 @@
 	</footer>
 
 	<script>
+		const DEFAULT_TICKET_CONFIG = {
+			presale1: {
+				name: "Presale 1",
+				price: 75000,
+				maxSeats: 500,
+				soldSeats: 182,
+				status: "available",
+				subtitle: "Akses panggung festival & event kit"
+			},
+			presale2: {
+				name: "Presale 2",
+				price: 90000,
+				maxSeats: 750,
+				soldSeats: 214,
+				status: "available",
+				subtitle: "Akses panggung festival & event kit"
+			}
+		};
+
+		let ticketConfig = DEFAULT_TICKET_CONFIG;
 		let currentTier = 'Presale 1';
 		let currentPrice = 75000;
 		let currentSubtitle = 'Akses panggung festival & event kit';
@@ -251,7 +282,114 @@
 
 		const modal = document.getElementById('ticketModal');
 
+		function loadPublicTicketConfig() {
+			const saved = localStorage.getItem('artfest_ticket_config');
+			if (saved) {
+				try {
+					const parsed = JSON.parse(saved);
+					ticketConfig = {
+						presale1: { ...DEFAULT_TICKET_CONFIG.presale1, ...parsed.presale1 },
+						presale2: { ...DEFAULT_TICKET_CONFIG.presale2, ...parsed.presale2 }
+					};
+				} catch (e) {
+					ticketConfig = DEFAULT_TICKET_CONFIG;
+				}
+			}
+
+			applyPublicTierData('presale1', ticketConfig.presale1);
+			applyPublicTierData('presale2', ticketConfig.presale2);
+		}
+
+		function applyPublicTierData(tierKey, data) {
+			const card = document.getElementById(`card-${tierKey}`);
+			const priceDisplay = document.getElementById(`priceDisplay-${tierKey}`);
+			const quotaDot = document.getElementById(`quotaDot-${tierKey}`);
+			const quotaText = document.getElementById(`quotaText-${tierKey}`);
+			const btnAction = document.getElementById(`btnAction-${tierKey}`);
+			const badgeWrapper = document.getElementById(`badgeWrapper-${tierKey}`);
+			const modalPlan = document.getElementById(`plan-${tierKey}`);
+
+			const remaining = Math.max(0, data.maxSeats - data.soldSeats);
+			const formattedPrice = 'Rp ' + data.price.toLocaleString('id-ID');
+
+			if (priceDisplay) priceDisplay.textContent = formattedPrice;
+
+			// Modal plan box
+			if (modalPlan) {
+				const planPrice = modalPlan.querySelector('.planBoxPrice');
+				if (planPrice) planPrice.textContent = formattedPrice + ' / tiket';
+			}
+
+			// Quota Indicator
+			if (quotaText) {
+				quotaText.innerHTML = `Sisa <strong>${remaining.toLocaleString('id-ID')}</strong> dari ${data.maxSeats.toLocaleString('id-ID')} kursi`;
+			}
+			if (quotaDot) {
+				quotaDot.className = 'quotaDot';
+				if (remaining <= 50) quotaDot.classList.add('danger');
+				else if (remaining <= 150) quotaDot.classList.add('warning');
+			}
+
+			// Reset basic classes
+			card.className = `ticketCard ${tierKey === 'presale2' ? 'popular' : ''}`;
+			if (btnAction) {
+				btnAction.className = `btnTicket ${tierKey === 'presale2' ? 'primary' : ''}`;
+				btnAction.disabled = false;
+				btnAction.textContent = `Pilih ${data.name}`;
+			}
+			if (modalPlan) modalPlan.classList.remove('disabled');
+
+			if (data.status === 'sold_out' || remaining <= 0) {
+				card.classList.add('soldOut');
+				if (badgeWrapper) badgeWrapper.innerHTML = '<div class="soldOutBadge">SOLD OUT</div>';
+				if (btnAction) {
+					btnAction.classList.add('disabled');
+					btnAction.disabled = true;
+					btnAction.textContent = 'Tiket Habis';
+				}
+				if (modalPlan) modalPlan.classList.add('disabled');
+			} else if (data.status === 'paused') {
+				card.classList.add('paused');
+				if (badgeWrapper) badgeWrapper.innerHTML = '<div class="pausedBadge">DITUTUP SEMENTARA</div>';
+				if (btnAction) {
+					btnAction.classList.add('disabled');
+					btnAction.disabled = true;
+					btnAction.textContent = 'Penjualan Ditutup';
+				}
+				if (modalPlan) modalPlan.classList.add('disabled');
+			} else if (data.status === 'coming_soon') {
+				card.classList.add('comingSoon');
+				if (badgeWrapper) badgeWrapper.innerHTML = '<div class="comingBadge">SEGERA HADIR</div>';
+				if (btnAction) {
+					btnAction.classList.add('disabled');
+					btnAction.disabled = true;
+					btnAction.textContent = 'Segera Hadir';
+				}
+				if (modalPlan) modalPlan.classList.add('disabled');
+			} else {
+				if (badgeWrapper) {
+					badgeWrapper.innerHTML = tierKey === 'presale2' ? '<div class="popularBadge">POPULER</div>' : '';
+				}
+			}
+		}
+
+		function handleCardClick(tierKey) {
+			const data = ticketConfig[tierKey];
+			if (!data) return;
+			const remaining = Math.max(0, data.maxSeats - data.soldSeats);
+			if (data.status !== 'available' || remaining <= 0) return;
+
+			openTicketModal(data.name, data.price, data.subtitle);
+		}
+
 		function openTicketModal(tierName, price, subtitle) {
+			// Resolve live price from config if matching
+			const tierKey = tierName.toLowerCase().replace(' ', '');
+			if (ticketConfig[tierKey]) {
+				price = ticketConfig[tierKey].price;
+				subtitle = ticketConfig[tierKey].subtitle;
+			}
+
 			setModalTier(tierName, price, subtitle);
 			currentQty = 1;
 			document.getElementById('qtyDisplay').textContent = currentQty;
@@ -274,6 +412,18 @@
 		});
 
 		function setModalTier(tierName, price, subtitle) {
+			const tierKey = tierName.toLowerCase().replace(' ', '');
+			if (ticketConfig[tierKey]) {
+				const data = ticketConfig[tierKey];
+				const rem = Math.max(0, data.maxSeats - data.soldSeats);
+				if (data.status !== 'available' || rem <= 0) {
+					// Cannot select disabled tier
+					return;
+				}
+				price = data.price;
+				subtitle = data.subtitle;
+			}
+
 			currentTier = tierName;
 			currentPrice = price;
 			if (subtitle) currentSubtitle = subtitle;
@@ -289,7 +439,16 @@
 		function changeQty(delta) {
 			currentQty += delta;
 			if (currentQty < 1) currentQty = 1;
-			if (currentQty > 5) currentQty = 5;
+
+			// Check remaining seats for active tier
+			const tierKey = currentTier.toLowerCase().replace(' ', '');
+			let maxAllowed = 5;
+			if (ticketConfig[tierKey]) {
+				const rem = Math.max(0, ticketConfig[tierKey].maxSeats - ticketConfig[tierKey].soldSeats);
+				maxAllowed = Math.min(5, rem);
+			}
+
+			if (currentQty > maxAllowed) currentQty = maxAllowed;
 			document.getElementById('qtyDisplay').textContent = currentQty;
 			updateModalCalculations();
 		}
@@ -309,6 +468,13 @@
 			const custName = document.getElementById('custName').value;
 			const custEmail = document.getElementById('custEmail').value;
 			const custWa = document.getElementById('custWa').value;
+
+			// Update sold quota in artfest_ticket_config
+			const tierKey = currentTier.toLowerCase().replace(' ', '');
+			if (ticketConfig[tierKey]) {
+				ticketConfig[tierKey].soldSeats += currentQty;
+				localStorage.setItem('artfest_ticket_config', JSON.stringify(ticketConfig));
+			}
 
 			const orderData = {
 				tier: currentTier,
@@ -339,6 +505,10 @@
 
 		window.addEventListener('scroll', handleNavbarScroll, { passive: true });
 		handleNavbarScroll();
+
+		document.addEventListener('DOMContentLoaded', () => {
+			loadPublicTicketConfig();
+		});
 	</script>
 	<script src="../shared/cookie-consent.js"></script>
 </body>

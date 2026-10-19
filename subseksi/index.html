@@ -137,6 +137,14 @@
 					</svg>
 					<span>Data Pesanan & Tiket</span>
 				</button>
+				<button type="button" class="adminTabBtn" id="btnTabTickets" onclick="switchAdminTab('tickets')">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"></path>
+						<line x1="9" y1="9" x2="9.01" y2="9"></line>
+						<line x1="15" y1="9" x2="15.01" y2="9"></line>
+					</svg>
+					<span>Kontrol Tiket & Kuota</span>
+				</button>
 				<button type="button" class="adminTabBtn" id="btnTabScanner" onclick="switchAdminTab('scanner')">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 						<rect x="3" y="3" width="7" height="7"></rect>
@@ -209,6 +217,156 @@
 							<!-- Filled dynamically by script.js -->
 						</tbody>
 					</table>
+				</div>
+			</section>
+
+			<!-- PANEL: TICKET & SEAT MANAGEMENT -->
+			<section class="tabPanel" id="panelTickets">
+				<div class="tableToolbar" style="margin-bottom: 24px;">
+					<div>
+						<h3 class="scannerCardTitle" style="margin: 0 0 6px 0;">Manajemen Harga, Kuota & Ketersediaan Tiket</h3>
+						<p style="color: rgba(207,212,208,0.7); font-size: 13px; margin: 0;">
+							Pengaturan ini secara langsung menentukan harga aktif, kapasitas kursi maksimal (max seat), serta status ketersediaan tiket pada halaman tiket publik (/tiket/) dan checkout.
+						</p>
+					</div>
+					<div class="toolbarActions">
+						<a href="../tiket/index.html" target="_blank" rel="noopener noreferrer" class="btnSecondaryAction" style="text-decoration:none;">
+							<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+								<polyline points="15 3 21 3 21 9"></polyline>
+								<line x1="10" y1="14" x2="21" y2="3"></line>
+							</svg>
+							<span>Pratinjau Halaman Tiket ↗</span>
+						</a>
+						<button type="button" class="btnSecondaryAction" onclick="resetTicketControlConfig()">
+							<span>Reset Default</span>
+						</button>
+					</div>
+				</div>
+
+				<div class="ticketControlGrid">
+					<!-- TIER 1: PRESALE 1 -->
+					<div class="ticketControlCard" id="controlCard-presale1">
+						<div class="ticketControlHeader">
+							<div>
+								<h4 class="ticketTierName">Presale 1</h4>
+								<span style="font-size: 12px; color: rgba(207,212,208,0.6);">Tier Pembelian Awal</span>
+							</div>
+							<span class="ticketStatusPill available" id="statusPill-presale1">
+								<span id="statusDot-presale1">●</span>
+								<span id="statusText-presale1">Tersedia</span>
+							</span>
+						</div>
+
+						<!-- Seat / Quota Progress -->
+						<div class="seatProgressWrapper">
+							<div class="seatStatsRow">
+								<span>Kapasitas Terisi: <strong id="statsRatio-presale1" style="color:#CFD4D0;">182 / 500</strong></span>
+								<span>Sisa Kursi: <strong id="statsRemain-presale1" style="color:#B7A97C;">318</strong></span>
+							</div>
+							<div class="seatProgressBarBg">
+								<div class="seatProgressBarFill" id="progressFill-presale1" style="width: 36.4%;"></div>
+							</div>
+						</div>
+
+						<!-- Controls -->
+						<div class="controlFieldGroup">
+							<label for="priceInput-presale1" class="controlLabel">Harga Tiket (IDR)</label>
+							<input type="number" id="priceInput-presale1" class="formInput" min="0" step="5000" value="75000" oninput="handleTicketFieldChange('presale1')">
+							<p class="controlHint">Harga resmi per lembar tiket yang ditagihkan saat checkout.</p>
+						</div>
+
+						<div class="controlFieldGroup">
+							<label for="seatsInput-presale1" class="controlLabel">Maksimal Kuota Kursi (Max Seat)</label>
+							<input type="number" id="seatsInput-presale1" class="formInput" min="1" max="10000" value="500" oninput="handleTicketFieldChange('presale1')">
+							<p class="controlHint">Batas maksimal tiket yang dapat diterbitkan untuk kategori ini.</p>
+						</div>
+
+						<div class="controlFieldGroup">
+							<label for="soldInput-presale1" class="controlLabel">Tiket Terjual Saat Ini (Sold Seats)</label>
+							<input type="number" id="soldInput-presale1" class="formInput" min="0" max="10000" value="182" oninput="handleTicketFieldChange('presale1')">
+							<p class="controlHint">Akumulasi tiket yang telah dibeli pemesan.</p>
+						</div>
+
+						<div class="controlFieldGroup">
+							<label for="statusSelect-presale1" class="controlLabel">Status Ketersediaan Tiket</label>
+							<select id="statusSelect-presale1" class="formInput" onchange="handleTicketFieldChange('presale1')">
+								<option value="available">Tersedia (Bisa Dipesan Pengunjung)</option>
+								<option value="sold_out">Habis Terjual (Sold Out)</option>
+								<option value="paused">Ditutup Sementara (Paused)</option>
+								<option value="coming_soon">Segera Hadir (Coming Soon)</option>
+							</select>
+							<p class="controlHint">Pilih status ketersediaan pada tampilan kartu tiket publik.</p>
+						</div>
+					</div>
+
+					<!-- TIER 2: PRESALE 2 -->
+					<div class="ticketControlCard" id="controlCard-presale2">
+						<div class="ticketControlHeader">
+							<div>
+								<h4 class="ticketTierName">Presale 2</h4>
+								<span style="font-size: 12px; color: rgba(207,212,208,0.6);">Tier Populer</span>
+							</div>
+							<span class="ticketStatusPill available" id="statusPill-presale2">
+								<span id="statusDot-presale2">●</span>
+								<span id="statusText-presale2">Tersedia</span>
+							</span>
+						</div>
+
+						<!-- Seat / Quota Progress -->
+						<div class="seatProgressWrapper">
+							<div class="seatStatsRow">
+								<span>Kapasitas Terisi: <strong id="statsRatio-presale2" style="color:#CFD4D0;">214 / 750</strong></span>
+								<span>Sisa Kursi: <strong id="statsRemain-presale2" style="color:#B7A97C;">536</strong></span>
+							</div>
+							<div class="seatProgressBarBg">
+								<div class="seatProgressBarFill" id="progressFill-presale2" style="width: 28.5%;"></div>
+							</div>
+						</div>
+
+						<!-- Controls -->
+						<div class="controlFieldGroup">
+							<label for="priceInput-presale2" class="controlLabel">Harga Tiket (IDR)</label>
+							<input type="number" id="priceInput-presale2" class="formInput" min="0" step="5000" value="90000" oninput="handleTicketFieldChange('presale2')">
+							<p class="controlHint">Harga resmi per lembar tiket yang ditagihkan saat checkout.</p>
+						</div>
+
+						<div class="controlFieldGroup">
+							<label for="seatsInput-presale2" class="controlLabel">Maksimal Kuota Kursi (Max Seat)</label>
+							<input type="number" id="seatsInput-presale2" class="formInput" min="1" max="10000" value="750" oninput="handleTicketFieldChange('presale2')">
+							<p class="controlHint">Batas maksimal tiket yang dapat diterbitkan untuk kategori ini.</p>
+						</div>
+
+						<div class="controlFieldGroup">
+							<label for="soldInput-presale2" class="controlLabel">Tiket Terjual Saat Ini (Sold Seats)</label>
+							<input type="number" id="soldInput-presale2" class="formInput" min="0" max="10000" value="214" oninput="handleTicketFieldChange('presale2')">
+							<p class="controlHint">Akumulasi tiket yang telah dibeli pemesan.</p>
+						</div>
+
+						<div class="controlFieldGroup">
+							<label for="statusSelect-presale2" class="controlLabel">Status Ketersediaan Tiket</label>
+							<select id="statusSelect-presale2" class="formInput" onchange="handleTicketFieldChange('presale2')">
+								<option value="available">Tersedia (Bisa Dipesan Pengunjung)</option>
+								<option value="sold_out">Habis Terjual (Sold Out)</option>
+								<option value="paused">Ditutup Sementara (Paused)</option>
+								<option value="coming_soon">Segera Hadir (Coming Soon)</option>
+							</select>
+							<p class="controlHint">Pilih status ketersediaan pada tampilan kartu tiket publik.</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Save Button Row -->
+				<div style="margin-top: 28px; display: flex; align-items: center; gap: 16px;">
+					<button type="button" class="btnLoginSubmit" style="margin-top:0; max-width: 270px;" onclick="saveTicketControlConfig()">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+							<polyline points="17 21 17 13 7 13 7 21"></polyline>
+							<polyline points="7 3 7 8 15 8"></polyline>
+						</svg>
+						<span>Simpan Perubahan Tiket</span>
+					</button>
+					<span id="saveStatusIndicator" style="font-size: 13px; color: #a8d58a; display: none;">✓ Pengaturan tersimpan dan aktif di halaman tiket</span>
 				</div>
 			</section>
 

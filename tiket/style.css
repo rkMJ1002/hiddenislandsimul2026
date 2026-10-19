@@ -242,6 +242,119 @@ body {
 	border-color: #B7A97C;
 }
 
+/* Quota Indicator on Card */
+.quotaIndicator {
+	margin-top: -12px;
+	margin-bottom: 22px;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	color: rgba(207, 212, 208, 0.7);
+}
+
+.quotaDot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: #4B5E35;
+	display: inline-block;
+	box-shadow: 0 0 6px #4B5E35;
+}
+
+.quotaDot.warning {
+	background-color: #B7A97C;
+	box-shadow: 0 0 6px #B7A97C;
+}
+
+.quotaDot.danger {
+	background-color: #c95c5c;
+	box-shadow: 0 0 6px #c95c5c;
+}
+
+/* Status Badges */
+.soldOutBadge {
+	position: absolute;
+	top: -12px;
+	right: 24px;
+	background-color: #8c3b3b;
+	color: #ffffff;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	padding: 4px 14px;
+	border-radius: 9999px;
+}
+
+.pausedBadge {
+	position: absolute;
+	top: -12px;
+	right: 24px;
+	background-color: #4a4e47;
+	color: #CFD4D0;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	padding: 4px 14px;
+	border-radius: 9999px;
+	border: 1px solid rgba(183, 169, 124, 0.3);
+}
+
+.comingBadge {
+	position: absolute;
+	top: -12px;
+	right: 24px;
+	background-color: #213D3A;
+	color: #B7A97C;
+	border: 1px solid #B7A97C;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	padding: 4px 14px;
+	border-radius: 9999px;
+}
+
+/* Disabled Card & Button States */
+.ticketCard.soldOut {
+	opacity: 0.6;
+	filter: grayscale(0.65);
+	cursor: not-allowed !important;
+}
+
+.ticketCard.soldOut:hover {
+	transform: none;
+	background-color: transparent;
+	border-color: rgba(183, 169, 124, 0.1);
+}
+
+.ticketCard.paused,
+.ticketCard.comingSoon {
+	opacity: 0.75;
+	cursor: not-allowed !important;
+}
+
+.ticketCard.paused:hover,
+.ticketCard.comingSoon:hover {
+	transform: none;
+	background-color: transparent;
+}
+
+.btnTicket.disabled,
+.btnTicket:disabled {
+	background-color: rgba(45, 48, 45, 0.6) !important;
+	color: rgba(207, 212, 208, 0.4) !important;
+	border-color: rgba(207, 212, 208, 0.15) !important;
+	cursor: not-allowed !important;
+	pointer-events: none;
+}
+
+.planBox.disabled {
+	opacity: 0.35;
+	cursor: not-allowed;
+	pointer-events: none;
+	border-color: rgba(207, 212, 208, 0.1);
+}
+
 /* ============================================================
    HOVERING FORM MENU (MODAL POPUP - MATCHING REFERENCE IMAGE)
    ============================================================ */

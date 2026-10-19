@@ -88,6 +88,7 @@ function checkSessionAuth() {
 		dashboardView.style.display = "flex";
 		renderOrdersTable();
 		updateMetricCards();
+		loadTicketControlConfig();
 	} else {
 		loginView.style.display = "flex";
 		dashboardView.style.display = "none";
@@ -286,7 +287,7 @@ function updateMetricCards() {
 
 // Switch between Admin Tabs
 function switchAdminTab(tabName) {
-	const tabs = ["orders", "scanner", "inquiries", "settings"];
+	const tabs = ["orders", "tickets", "scanner", "inquiries", "settings"];
 
 	tabs.forEach(t => {
 		const btn = document.getElementById(`btnTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
@@ -430,3 +431,153 @@ function showToast(msg) {
 		toast.classList.remove("show");
 	}, 3500);
 }
+
+// ============================================================
+// TICKET PRICING, MAX SEAT & AVAILABILITY CONTROL
+// ============================================================
+
+const DEFAULT_TICKET_CONFIG = {
+	presale1: {
+		name: "Presale 1",
+		price: 75000,
+		maxSeats: 500,
+		soldSeats: 182,
+		status: "available", // available, sold_out, paused, coming_soon
+		subtitle: "Akses panggung festival & event kit"
+	},
+	presale2: {
+		name: "Presale 2",
+		price: 90000,
+		maxSeats: 750,
+		soldSeats: 214,
+		status: "available",
+		subtitle: "Akses panggung festival & event kit"
+	}
+};
+
+function getStoredTicketConfig() {
+	const raw = localStorage.getItem("artfest_ticket_config");
+	if (!raw) return JSON.parse(JSON.stringify(DEFAULT_TICKET_CONFIG));
+	try {
+		const parsed = JSON.parse(raw);
+		return {
+			presale1: { ...DEFAULT_TICKET_CONFIG.presale1, ...parsed.presale1 },
+			presale2: { ...DEFAULT_TICKET_CONFIG.presale2, ...parsed.presale2 }
+		};
+	} catch (e) {
+		return JSON.parse(JSON.stringify(DEFAULT_TICKET_CONFIG));
+	}
+}
+
+function loadTicketControlConfig() {
+	const cfg = getStoredTicketConfig();
+
+	['presale1', 'presale2'].forEach(tier => {
+		const data = cfg[tier];
+		if (!data) return;
+
+		const priceInput = document.getElementById(`priceInput-${tier}`);
+		const seatsInput = document.getElementById(`seatsInput-${tier}`);
+		const soldInput = document.getElementById(`soldInput-${tier}`);
+		const statusSelect = document.getElementById(`statusSelect-${tier}`);
+
+		if (priceInput) priceInput.value = data.price;
+		if (seatsInput) seatsInput.value = data.maxSeats;
+		if (soldInput) soldInput.value = data.soldSeats;
+		if (statusSelect) statusSelect.value = data.status;
+
+		updateTierVisuals(tier, data.soldSeats, data.maxSeats, data.status);
+	});
+}
+
+function handleTicketFieldChange(tier) {
+	const seatsInput = document.getElementById(`seatsInput-${tier}`);
+	const soldInput = document.getElementById(`soldInput-${tier}`);
+	const statusSelect = document.getElementById(`statusSelect-${tier}`);
+
+	const max = parseInt(seatsInput.value, 10) || 1;
+	const sold = parseInt(soldInput.value, 10) || 0;
+	const status = statusSelect.value;
+
+	updateTierVisuals(tier, sold, max, status);
+}
+
+function updateTierVisuals(tier, sold, max, status) {
+	const ratioEl = document.getElementById(`statsRatio-${tier}`);
+	const remainEl = document.getElementById(`statsRemain-${tier}`);
+	const progressFill = document.getElementById(`progressFill-${tier}`);
+	const statusPill = document.getElementById(`statusPill-${tier}`);
+	const statusText = document.getElementById(`statusText-${tier}`);
+
+	const remaining = Math.max(0, max - sold);
+	const pct = Math.min(100, Math.max(0, (sold / max) * 100));
+
+	if (ratioEl) ratioEl.textContent = `${sold.toLocaleString("id-ID")} / ${max.toLocaleString("id-ID")}`;
+	if (remainEl) remainEl.textContent = remaining.toLocaleString("id-ID");
+	if (progressFill) progressFill.style.width = `${pct.toFixed(1)}%`;
+
+	if (statusPill && statusText) {
+		statusPill.className = `ticketStatusPill ${status}`;
+		if (status === 'available') {
+			statusText.textContent = remaining <= 0 ? 'Habis (Kuota Penuh)' : 'Tersedia';
+			if (remaining <= 0) statusPill.className = 'ticketStatusPill sold_out';
+		} else if (status === 'sold_out') {
+			statusText.textContent = 'Sold Out';
+		} else if (status === 'paused') {
+			statusText.textContent = 'Ditutup';
+		} else if (status === 'coming_soon') {
+			statusText.textContent = 'Segera Hadir';
+		}
+	}
+}
+
+function saveTicketControlConfig() {
+	const p1Price = parseInt(document.getElementById("priceInput-presale1").value, 10) || 0;
+	const p1Max = parseInt(document.getElementById("seatsInput-presale1").value, 10) || 1;
+	const p1Sold = parseInt(document.getElementById("soldInput-presale1").value, 10) || 0;
+	const p1Status = document.getElementById("statusSelect-presale1").value;
+
+	const p2Price = parseInt(document.getElementById("priceInput-presale2").value, 10) || 0;
+	const p2Max = parseInt(document.getElementById("seatsInput-presale2").value, 10) || 1;
+	const p2Sold = parseInt(document.getElementById("soldInput-presale2").value, 10) || 0;
+	const p2Status = document.getElementById("statusSelect-presale2").value;
+
+	const config = {
+		presale1: {
+			name: "Presale 1",
+			price: p1Price,
+			maxSeats: p1Max,
+			soldSeats: p1Sold,
+			status: p1Status,
+			subtitle: "Akses panggung festival & event kit"
+		},
+		presale2: {
+			name: "Presale 2",
+			price: p2Price,
+			maxSeats: p2Max,
+			soldSeats: p2Sold,
+			status: p2Status,
+			subtitle: "Akses panggung festival & event kit"
+		}
+	};
+
+	localStorage.setItem("artfest_ticket_config", JSON.stringify(config));
+
+	const indicator = document.getElementById("saveStatusIndicator");
+	if (indicator) {
+		indicator.style.display = "inline";
+		setTimeout(() => {
+			indicator.style.display = "none";
+		}, 4000);
+	}
+
+	showToast("Pengaturan harga, kuota kursi, dan ketersediaan tiket berhasil disimpan!");
+}
+
+function resetTicketControlConfig() {
+	if (!confirm("Kembalikan harga dan kuota tiket ke pengaturan default awal?")) return;
+	localStorage.removeItem("artfest_ticket_config");
+	loadTicketControlConfig();
+	showToast("Pengaturan tiket telah di-reset ke nilai default.");
+}
+
