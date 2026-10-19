@@ -1,0 +1,1083 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	background-color: #ffffff;
+	color: #1a1f36;
+	min-height: 100vh;
+	-webkit-font-smoothing: antialiased;
+}
+
+.checkoutContainer {
+	display: grid;
+	grid-template-columns: 1fr 1.15fr;
+	min-height: 100vh;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.summaryColumn {
+	background-color: #fcfcfd;
+	border-right: 1px solid #e3e8ee;
+	padding: 56px 60px 40px 60px;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.summaryContent {
+	width: 100%;
+	max-width: 440px;
+}
+
+.backBrandLink {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	color: #697386;
+	text-decoration: none;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	margin-bottom: 32px;
+	transition: color 0.15s;
+}
+
+.backBrandLink:hover {
+	color: #1a1f36;
+}
+
+.brandName {
+	font-size: 14px;
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	color: #3c4257;
+}
+
+.productHeader {
+	margin-bottom: 24px;
+}
+
+.productSubtitle {
+	font-size: 13px;
+	color: #697386;
+	display: block;
+	margin-bottom: 6px;
+}
+
+.productTitle {
+	font-size: 24px;
+	font-weight: 700;
+	color: #1a1f36;
+	margin: 0 0 16px 0;
+	line-height: 1.25;
+	letter-spacing: -0.02em;
+}
+
+.bigPriceRow {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+}
+
+.bigPrice {
+	font-size: 38px;
+	font-weight: 800;
+	color: #1a1f36;
+	letter-spacing: -0.03em;
+}
+
+.perTicketLabel {
+	font-size: 13px;
+	color: #697386;
+}
+
+/* Currency Switcher Pill with SVG Flags */
+.currencyPillWrapper {
+	display: inline-flex;
+	background-color: #f0f2f5;
+	border-radius: 8px;
+	padding: 3px;
+	margin: 18px 0 8px 0;
+}
+
+.currencyTab {
+	background: none;
+	border: none;
+	padding: 6px 14px;
+	border-radius: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #697386;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	transition: all 0.15s;
+}
+
+.currencyTab.active {
+	background-color: #ffffff;
+	color: #1a1f36;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.flagSvg {
+	border-radius: 2px;
+	flex-shrink: 0;
+}
+
+.currencyNote {
+	font-size: 11px;
+	color: #8792a2;
+	margin: 0 0 28px 0;
+	line-height: 1.4;
+}
+
+/* Breakdown Table */
+.breakdownTable {
+	width: 100%;
+}
+
+.breakdownRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	font-size: 14px;
+	color: #3c4257;
+	padding: 4px 0;
+}
+
+.itemNameGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.itemName {
+	font-weight: 600;
+	color: #1a1f36;
+}
+
+.itemSub {
+	font-size: 12px;
+	color: #8792a2;
+}
+
+.itemPrice {
+	font-weight: 600;
+	color: #1a1f36;
+}
+
+.breakdownDivider {
+	height: 1px;
+	background-color: #e3e8ee;
+	margin: 18px 0;
+}
+
+.subtotalRow {
+	color: #4f566b;
+	font-weight: 500;
+}
+
+/* Promotion Code */
+.promoSection {
+	margin: 14px 0;
+}
+
+.btnPromo {
+	background-color: #f7f9fa;
+	border: 1px solid #e3e8ee;
+	border-radius: 6px;
+	color: #4f566b;
+	font-size: 12px;
+	font-weight: 600;
+	padding: 6px 12px;
+	cursor: pointer;
+	transition: background-color 0.15s;
+}
+
+.btnPromo:hover {
+	background-color: #edf2f7;
+	color: #1a1f36;
+}
+
+.promoInputGroup {
+	display: flex;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+.promoInput {
+	flex: 1;
+	padding: 7px 10px;
+	border: 1px solid #dcdfe4;
+	border-radius: 6px;
+	font-size: 13px;
+	outline: none;
+}
+
+.btnApplyPromo {
+	background-color: #3c4257;
+	color: #ffffff;
+	border: none;
+	border-radius: 6px;
+	padding: 7px 14px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.promoStatusText {
+	font-size: 12px;
+	margin: 6px 0 0 0;
+}
+
+.totalDueRow {
+	padding-top: 4px;
+}
+
+.totalDueLabel {
+	font-size: 15px;
+	font-weight: 600;
+	color: #1a1f36;
+}
+
+.totalDuePrice {
+	font-size: 18px;
+	font-weight: 800;
+	color: #1a1f36;
+	letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   RIGHT COLUMN: Checkout Form & Payment Methods
+   ============================================================ */
+.formColumn {
+	background-color: #ffffff;
+	padding: 56px 60px 50px 60px;
+	display: flex;
+	justify-content: flex-start;
+}
+
+.formContent {
+	width: 100%;
+	max-width: 460px;
+}
+
+/* Express Pay Buttons: Pear Pay & Dpay */
+.expressPayRow {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+	margin-bottom: 24px;
+}
+
+.btnPearPay {
+	background-color: #000000;
+	color: #ffffff;
+	border: none;
+	border-radius: 6px;
+	height: 44px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	font-size: 17px;
+	font-weight: 600;
+	transition: opacity 0.15s;
+}
+
+.btnPearPay:hover {
+	opacity: 0.9;
+}
+
+.pearIcon {
+	margin-top: -2px;
+}
+
+.payLabel {
+	font-size: 18px;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+}
+
+.btnDPay {
+	background-color: #000000;
+	color: #ffffff;
+	border: none;
+	border-radius: 6px;
+	height: 44px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 3px;
+	font-size: 17px;
+	font-weight: 700;
+	transition: opacity 0.15s;
+}
+
+.btnDPay:hover {
+	opacity: 0.9;
+}
+
+.dpayLogoSvg {
+	margin-top: -1px;
+}
+
+.dpayText {
+	font-size: 18px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.orDivider {
+	display: flex;
+	align-items: center;
+	text-align: center;
+	margin: 20px 0 24px 0;
+	color: #8792a2;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+}
+
+.orDivider::before,
+.orDivider::after {
+	content: '';
+	flex: 1;
+	border-bottom: 1px solid #e3e8ee;
+}
+
+.orDivider span {
+	padding: 0 12px;
+}
+
+/* Contact Section */
+.checkoutSection {
+	margin-bottom: 28px;
+}
+
+.sectionHeading {
+	display: block;
+	font-size: 13px;
+	font-weight: 600;
+	color: #3c4257;
+	margin-bottom: 10px;
+}
+
+.inputFieldWrapper {
+	margin-bottom: 14px;
+}
+
+.floatingLabel {
+	display: block;
+	font-size: 12px;
+	color: #4f566b;
+	margin-bottom: 4px;
+}
+
+.stripeInput {
+	width: 100%;
+	height: 42px;
+	padding: 0 14px;
+	background-color: #ffffff;
+	border: 1px solid #dcdfe4;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #1a1f36;
+	outline: none;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+	transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.stripeInput:focus {
+	border-color: #0055ff;
+	box-shadow: 0 0 0 3px rgba(0, 85, 255, 0.15);
+}
+
+/* Phone verification card */
+.phoneVerifyCard {
+	background-color: #f7f9fa;
+	border: 1px solid #e3e8ee;
+	border-radius: 8px;
+	padding: 16px 18px;
+	margin-top: 12px;
+}
+
+.phoneCardHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 12px;
+}
+
+.phoneCardTitle {
+	font-size: 13px;
+	font-weight: 700;
+	color: #1a1f36;
+	margin: 0 0 2px 0;
+}
+
+.phoneCardDesc {
+	font-size: 11px;
+	color: #697386;
+	margin: 0;
+	line-height: 1.35;
+}
+
+.phoneCardClose {
+	background: none;
+	border: none;
+	font-size: 18px;
+	color: #8792a2;
+	cursor: pointer;
+	padding: 0;
+}
+
+.phoneInputRow {
+	display: flex;
+	align-items: center;
+	background-color: #ffffff;
+	border: 1px solid #dcdfe4;
+	border-radius: 6px;
+	overflow: hidden;
+	height: 40px;
+	margin-bottom: 12px;
+}
+
+.countryBadge {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 0 10px;
+	border-right: 1px solid #e3e8ee;
+}
+
+.countryArrow {
+	font-size: 10px;
+	color: #8792a2;
+}
+
+.phoneInnerInput {
+	flex: 1;
+	border: none;
+	padding: 0 12px;
+	font-size: 13px;
+	outline: none;
+	color: #1a1f36;
+}
+
+.btnVerifyPhone {
+	width: 100%;
+	height: 38px;
+	background-color: #1a1f36;
+	color: #ffffff;
+	border: none;
+	border-radius: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.15s;
+}
+
+.btnVerifyPhone:hover {
+	background-color: #000000;
+}
+
+/* ============================================================
+   PAYMENT TABS: Custom Vector Icons
+   ============================================================ */
+.paymentTabsGrid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 8px;
+	margin-bottom: 16px;
+}
+
+.payTab {
+	background-color: #f7f9fa;
+	border: 1px solid #e3e8ee;
+	border-radius: 6px;
+	padding: 10px 8px;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	transition: all 0.15s;
+}
+
+.payTab:hover {
+	border-color: #b2bccb;
+}
+
+.payTab.active {
+	background-color: #ffffff;
+	border-color: #0055ff;
+	box-shadow: 0 0 0 1px #0055ff, 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.tabSvgIcon {
+	color: #4f566b;
+	transition: color 0.15s;
+}
+
+.payTab.active .tabSvgIcon {
+	color: #0055ff;
+}
+
+.tabTitle {
+	font-size: 12px;
+	font-weight: 600;
+	color: #3c4257;
+}
+
+.payTab.active .tabTitle {
+	color: #0055ff;
+}
+
+.methodView {
+	display: none;
+}
+
+.methodView.active {
+	display: block;
+}
+
+/* Card Inputs Container with Bisa & Servantcard */
+.cardBoxContainer {
+	background-color: #ffffff;
+	border: 1px solid #dcdfe4;
+	border-radius: 8px;
+	padding: 18px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.cardHeaderRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.cardSublabel {
+	font-size: 12px;
+	color: #4f566b;
+	font-weight: 500;
+}
+
+.cardBrandIcons {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+/* Bisa Badge (Visa Parody) */
+.brandBadge.bisa {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-style: italic;
+	font-size: 11px;
+	font-weight: 900;
+	padding: 2px 6px;
+	border-radius: 3px;
+	border: 1px solid #002d9c;
+	color: #002d9c;
+	background-color: #ffffff;
+	letter-spacing: -0.03em;
+}
+
+/* Servantcard Badge (Mastercard Parody) */
+.brandBadge.servantcard {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 2px 6px;
+	border-radius: 3px;
+	border: 1px solid #dcdfe4;
+	background-color: #1a1f36;
+}
+
+.scCircles {
+	display: flex;
+	align-items: center;
+}
+
+.scDot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	display: inline-block;
+}
+
+.scDot.red {
+	background-color: #EB001B;
+	margin-right: -3px;
+}
+
+.scDot.yellow {
+	background-color: #F79E1B;
+	opacity: 0.9;
+}
+
+.scLabel {
+	font-size: 8px;
+	font-weight: 700;
+	color: #ffffff;
+	letter-spacing: -0.02em;
+}
+
+.inputRowGroup {
+	border: 1px solid #dcdfe4;
+	border-radius: 6px;
+	overflow: hidden;
+	margin-bottom: 14px;
+}
+
+.cardRowInput {
+	width: 100%;
+	height: 40px;
+	padding: 0 12px;
+	border: none;
+	border-bottom: 1px solid #e3e8ee;
+	font-size: 13px;
+	outline: none;
+	color: #1a1f36;
+}
+
+.dualInputRow {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+.cardRowInput.half {
+	border-bottom: none;
+}
+
+.cardRowInput.half:first-child {
+	border-right: 1px solid #e3e8ee;
+}
+
+.cardFieldGroup {
+	margin-bottom: 14px;
+}
+
+.cardFieldLabel {
+	display: block;
+	font-size: 12px;
+	color: #4f566b;
+	margin-bottom: 5px;
+}
+
+.selectWrapper {
+	position: relative;
+}
+
+.stripeSelect {
+	width: 100%;
+	height: 40px;
+	padding: 0 12px;
+	background-color: #ffffff;
+	border: 1px solid #dcdfe4;
+	border-radius: 6px;
+	font-size: 13px;
+	color: #1a1f36;
+	outline: none;
+	cursor: pointer;
+}
+
+/* QRIS Section */
+.qrisContainer {
+	background-color: #fcfcfd;
+	border: 1px solid #dcdfe4;
+	border-radius: 8px;
+	padding: 20px;
+	text-align: center;
+}
+
+.qrisHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+.qrisLogo {
+	font-weight: 800;
+	font-size: 16px;
+	color: #c90000;
+	letter-spacing: -0.02em;
+}
+
+.qrisLogo span {
+	font-size: 10px;
+	background: #1a1f36;
+	color: #ffffff;
+	padding: 2px 4px;
+	border-radius: 3px;
+	vertical-align: middle;
+}
+
+.qrisTimer {
+	font-size: 12px;
+	color: #4f566b;
+}
+
+.qrisQrWrapper {
+	display: inline-block;
+	background: #ffffff;
+	padding: 12px;
+	border: 1px solid #e3e8ee;
+	border-radius: 8px;
+	margin-bottom: 12px;
+}
+
+.qrisHint {
+	font-size: 12px;
+	color: #4f566b;
+	line-height: 1.45;
+	margin: 0;
+}
+
+/* Virtual Account Section (BCE, Sendiri, BNA, BRIS) */
+.vaContainer {
+	background-color: #ffffff;
+	border: 1px solid #dcdfe4;
+	border-radius: 8px;
+	padding: 18px;
+}
+
+.bankOptionsGrid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 6px;
+	margin-bottom: 16px;
+}
+
+.bankOption {
+	background-color: #f7f9fa;
+	border: 1px solid #dcdfe4;
+	border-radius: 6px;
+	height: 36px;
+	font-size: 12px;
+	font-weight: 700;
+	color: #3c4257;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.bankOption.active {
+	background-color: #0055ff;
+	color: #ffffff;
+	border-color: #0055ff;
+}
+
+.vaNumberBox {
+	background-color: #f7f9fa;
+	border: 1px solid #e3e8ee;
+	border-radius: 6px;
+	padding: 14px 16px;
+}
+
+.vaNumberHeader {
+	display: flex;
+	justify-content: space-between;
+	font-size: 12px;
+	color: #4f566b;
+	margin-bottom: 8px;
+}
+
+.autoCheck {
+	color: #00875a;
+	font-weight: 600;
+}
+
+.vaCodeRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.vaNumber {
+	font-size: 18px;
+	font-family: monospace;
+	letter-spacing: 0.05em;
+	color: #1a1f36;
+}
+
+.btnCopy {
+	background-color: #ffffff;
+	border: 1px solid #dcdfe4;
+	border-radius: 4px;
+	padding: 4px 10px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #3c4257;
+	cursor: pointer;
+}
+
+/* E-Wallets (Stop Pay, Defisit, Opo) */
+.walletBox {
+	background-color: #fcfcfd;
+	border: 1px solid #dcdfe4;
+	border-radius: 8px;
+	padding: 24px 20px;
+	text-align: center;
+}
+
+.walletCustomLogo {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	padding: 6px 16px;
+	border-radius: 6px;
+	margin-bottom: 12px;
+}
+
+.walletCustomLogo.stopPay {
+	background-color: #e6f9ed;
+	color: #00880f;
+}
+
+.walletCustomLogo.defisit {
+	background-color: #e8f4fd;
+	color: #118eea;
+}
+
+.walletCustomLogo.opo {
+	background-color: #f2eefa;
+	color: #4c3494;
+}
+
+.walletHint {
+	font-size: 13px;
+	color: #4f566b;
+	margin: 0;
+	line-height: 1.4;
+}
+
+/* Terms Checkbox */
+.checkboxRow {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 20px 0 6px 0;
+}
+
+.stripeCheckbox {
+	width: 16px;
+	height: 16px;
+	accent-color: #0055ff;
+	cursor: pointer;
+	margin-top: 2px;
+}
+
+.checkboxLabel {
+	font-size: 13px;
+	color: #4f566b;
+	line-height: 1.4;
+	cursor: pointer;
+}
+
+.termsError {
+	font-size: 12px;
+	color: #de350b;
+	margin: 0 0 12px 0;
+}
+
+/* Primary Stripe Pay Button */
+.btnStripePay {
+	width: 100%;
+	height: 48px;
+	background-color: #0055ff;
+	color: #ffffff;
+	border: none;
+	border-radius: 8px;
+	font-size: 15px;
+	font-weight: 700;
+	cursor: pointer;
+	box-shadow: 0 2px 4px rgba(0, 85, 255, 0.25);
+	transition: background-color 0.15s, transform 0.1s;
+	margin-top: 8px;
+}
+
+.btnStripePay:hover {
+	background-color: #0044cc;
+}
+
+.btnStripePay:active {
+	transform: scale(0.99);
+}
+
+.legalDisclaimer {
+	font-size: 11px;
+	color: #8792a2;
+	line-height: 1.45;
+	margin: 16px 0 32px 0;
+}
+
+.stripeFooter {
+	border-top: 1px solid #e3e8ee;
+	padding-top: 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 12px;
+	color: #8792a2;
+}
+
+.poweredByRakhyan {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: #697386;
+}
+
+.rakhyanLogo {
+	font-family: 'Syne', sans-serif;
+	font-size: 15px;
+	font-weight: 800;
+	color: #3c4257;
+	letter-spacing: -0.03em;
+	transform: skewX(-6deg);
+	display: inline-block;
+}
+
+.footerLinks {
+	display: flex;
+	gap: 16px;
+}
+
+.footerLinks a {
+	color: #697386;
+	text-decoration: none;
+}
+
+.footerLinks a:hover {
+	color: #1a1f36;
+}
+
+dialog.successDialog {
+	border: none;
+	background: transparent;
+	padding: 0;
+	margin: auto;
+	max-width: 440px;
+	width: 90%;
+}
+
+dialog.successDialog::backdrop {
+	background: rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(6px);
+}
+
+.successCard {
+	background: #ffffff;
+	border-radius: 16px;
+	padding: 36px 30px;
+	text-align: center;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.checkCircle {
+	width: 56px;
+	height: 56px;
+	background-color: #00875a;
+	color: #ffffff;
+	font-size: 26px;
+	font-weight: bold;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto 18px auto;
+}
+
+.successTitle {
+	font-size: 22px;
+	font-weight: 700;
+	color: #1a1f36;
+	margin: 0 0 8px 0;
+}
+
+.successSubtitle {
+	font-size: 14px;
+	color: #4f566b;
+	margin: 0 0 24px 0;
+	line-height: 1.4;
+}
+
+.receiptSummary {
+	background-color: #f7f9fa;
+	border: 1px solid #e3e8ee;
+	border-radius: 8px;
+	padding: 14px 16px;
+	margin-bottom: 18px;
+	text-align: left;
+}
+
+.receiptRow {
+	display: flex;
+	justify-content: space-between;
+	font-size: 13px;
+	color: #4f566b;
+	padding: 4px 0;
+}
+
+.receiptRow strong {
+	color: #1a1f36;
+}
+
+.receiptNote {
+	font-size: 12px;
+	color: #8792a2;
+	margin: 0 0 24px 0;
+	line-height: 1.4;
+}
+
+.btnReturnHome {
+	display: block;
+	width: 100%;
+	height: 44px;
+	line-height: 44px;
+	background-color: #1a1f36;
+	color: #ffffff;
+	text-decoration: none;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.btnReturnHome:hover {
+	background-color: #000000;
+}
+
+@media (max-width: 900px) {
+	.checkoutContainer {
+		grid-template-columns: 1fr;
+	}
+
+	.summaryColumn {
+		border-right: none;
+		border-bottom: 1px solid #e3e8ee;
+		padding: 32px 24px;
+		justify-content: center;
+	}
+
+	.formColumn {
+		padding: 32px 24px 60px 24px;
+		justify-content: center;
+	}
+
+	.paymentTabsGrid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}

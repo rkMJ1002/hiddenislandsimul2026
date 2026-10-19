@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>The Hidden Island</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<header class="navBar" id="mainNavBar">
+		<a href="index.html" class="logo">
+			<span class="logoIcon">✦</span>
+			<span class="logoText">The Hidden Island</span>
+		</a>
+		<nav class="navMenu">
+			<a href="#tentang" class="navLink">Tentang</a>
+			<a href="../kontak/index.html" class="navLink">Kontak</a>
+			<a href="../tiket/index.html" class="navLink navBtnTicket">Beli Tiket</a>
+		</nav>
+	</header>
+
+	<!-- Seamless Hero Section -->
+	<main class="heroSection">
+		<div class="heroContent">
+			<h1 class="heroTitle">
+				The Hidden<br>Island
+			</h1>
+			<p class="heroSubtitle">
+				Simulasi Artfest Kolese Santo Yusup 2026
+			</p>
+			<div class="heroActions">
+				<a href="../tiket/index.html" class="btnPrimary">
+					<span>Tiket</span>
+					<span class="btnArrow">›</span>
+				</a>
+				<a href="../kontak/index.html" class="btnSecondary">Hubungi Kami</a>
+			</div>
+		</div>
+
+		<div class="heroVisual">
+			<img src="island.svg" alt="The Hidden Island">
+		</div>
+	</main>
+
+	<!-- Open Gate Countdown Section -->
+	<section class="countdownSection">
+		<h2 class="countdownTitle">Hitung Mundur Menuju Open Gate</h2>
+		<div class="countdownWrapper">
+			<div class="countdownUnit">
+				<span class="countdownNumber" id="days">00</span>
+				<span class="countdownLabel">HARI</span>
+			</div>
+			<span class="countdownSeparator">:</span>
+			<div class="countdownUnit">
+				<span class="countdownNumber" id="hours">00</span>
+				<span class="countdownLabel">JAM</span>
+			</div>
+			<span class="countdownSeparator">:</span>
+			<div class="countdownUnit">
+				<span class="countdownNumber" id="minutes">00</span>
+				<span class="countdownLabel">MENIT</span>
+			</div>
+			<span class="countdownSeparator">:</span>
+			<div class="countdownUnit">
+				<span class="countdownNumber" id="seconds">00</span>
+				<span class="countdownLabel">DETIK</span>
+			</div>
+		</div>
+	</section>
+
+	<!-- About / Landasan Teori Event Section -->
+	<section class="aboutSection" id="tentang">
+		<div class="aboutContainer">
+			<div class="sectionHeader">
+				<h2 class="sectionTitle">Tentang Kosayu Artfest</h2>
+			</div>
+
+			<div class="aboutBody">
+				<p>
+					Kosayu Artfest adalah acara pentas seni tahunan yang diadakan oleh OSIS SMAK Kolese Santo Yusup sebagai wadah untuk mengekspresikan kreativitas dan bakat siswa dalam seni pertunjukan. Acara ini tidak hanya menjadi ajang untuk menunjukkan potensi, tetapi juga sarana untuk mempererat hubungan antar anggota komunitas sekolah. Selain itu, Kosayu Artfest bertujuan menghadirkan pengalaman seni yang menginspirasi dan menghibur, baik bagi warga sekolah maupun masyarakat umum.
+				</p>
+				<p>
+					Pada tahun ini, Kosayu Artfest mengambil tema “The Hidden Island”, sebuah tema yang mengajak kita untuk menjelajahi sebuah pulau tersembunyi yang menyimpan berbagai keajaiban, keindahan, dan misteri di dalamnya. Pulau ini menjadi gambaran dari dunia penuh imajinasi, tempat setiap sudut menyimpan cerita dan setiap penemuan membuka kesempatan untuk melihat sesuatu dari perspektif yang baru.
+				</p>
+				<p>
+					Melalui tema ini, Kosayu Artfest ingin mengajak kita semua untuk berani mengeksplorasi kreativitas, menemukan hal-hal baru, dan menuangkan ide melalui berbagai bentuk karya seni. Layaknya sebuah pulau yang belum banyak dijelajahi, setiap individu memiliki imajinasi dan potensi unik yang dapat dikembangkan. “The Hidden Island” menjadi simbol dari petualangan untuk menemukan keindahan yang tersembunyi, menciptakan pengalaman yang berkesan, dan menyatukan berbagai kreativitas dalam satu perayaan seni.
+				</p>
+				<p>
+					Kosayu Artfest bukan sekadar panggung seni, melainkan momen untuk merayakan kreativitas, kerja keras, dan semangat dalam kebersamaan. Acara ini diharapkan menjadi inspirasi bagi setiap individu untuk terus berkarya dan menghadapi perjalanan hidup dengan penuh makna. Dengan semangat tersebut, Kosayu Artfest siap menjadi pengalaman yang membekas di hati dan membawa kebahagiaan bagi semua yang hadir.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Event Location & Interactive Real Map Section -->
+	<section class="locationSection" id="lokasi">
+		<div class="locationContainer">
+			<div class="sectionHeader">
+				<span class="sectionTag">LOKASI PENYELENGGARAAN</span>
+				<h2 class="sectionTitle">Bukit Doa Immanuel (BDI) Sukolilo</h2>
+				<p class="sectionSubtitle">Jl. Raya Junggo, Desa Sukolilo, Kec. Prigen, Kabupaten Pasuruan, Jawa Timur 67157</p>
+			</div>
+
+			<!-- Location Highlights / Metadata Grid -->
+			<div class="locationMetaGrid">
+				<div class="locationMetaItem">
+					<div class="metaIcon">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+							<circle cx="12" cy="10" r="3"></circle>
+						</svg>
+					</div>
+					<div class="metaContent">
+						<span class="metaLabel">VENUE UTAMA</span>
+						<span class="metaValue">Bukit Doa Immanuel (BDI)</span>
+					</div>
+				</div>
+
+				<div class="locationMetaItem">
+					<div class="metaIcon">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"></circle>
+							<polyline points="12 6 12 12 16 14"></polyline>
+						</svg>
+					</div>
+					<div class="metaContent">
+						<span class="metaLabel">WAKTU OPEN GATE</span>
+						<span class="metaValue">23 Oktober 2026 • 15:00 WIB</span>
+					</div>
+				</div>
+
+				<div class="locationMetaItem">
+					<div class="metaIcon">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
+							<line x1="9" y1="3" x2="9" y2="18"></line>
+							<line x1="15" y1="6" x2="15" y2="21"></line>
+						</svg>
+					</div>
+					<div class="metaContent">
+						<span class="metaLabel">KOORDINAT GPS</span>
+						<span class="metaValue">-7.688735, 112.651474</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Real Interactive Map Frame -->
+			<div class="mapFrameWrapper">
+				<iframe 
+					class="interactiveMapFrame"
+					src="https://maps.google.com/maps?q=-7.6887346,112.6514743+(Bukit+Doa+Immanuel+BDI+Sukolilo)&amp;t=&amp;z=16&amp;ie=UTF8&amp;iwloc=B&amp;output=embed" 
+					allowfullscreen="" 
+					loading="lazy" 
+					referrerpolicy="no-referrer-when-downgrade"
+					title="Peta Interaktif Lokasi Acara - Bukit Doa Immanuel Sukolilo">
+				</iframe>
+			</div>
+
+			<!-- Direct Navigation & Action Links -->
+			<div class="mapActions">
+				<a href="https://www.google.com/maps/place/Bukit+Doa+Immanuel/@-7.6887346,112.6514743,17z" target="_blank" rel="noopener noreferrer" class="btnMapPrimary">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+						<polyline points="15 3 21 3 21 9"></polyline>
+						<line x1="10" y1="14" x2="21" y2="3"></line>
+					</svg>
+					<span>Buka di Google Maps</span>
+				</a>
+				<a href="https://www.google.com/maps/dir/?api=1&destination=-7.6887346,112.6514743" target="_blank" rel="noopener noreferrer" class="btnMapSecondary">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="12" cy="12" r="10"></circle>
+						<polyline points="12 8 8 12 12 16"></polyline>
+						<line x1="16" y1="12" x2="8" y2="12"></line>
+					</svg>
+					<span>Petunjuk Arah</span>
+				</a>
+				<button type="button" class="btnMapSecondary" onclick="copyCoordinates('-7.688735, 112.651474')">
+					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+						<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+					</svg>
+					<span>Salin Koordinat</span>
+				</button>
+			</div>
+		</div>
+	</section>
+
+	<!-- Toast Notification for Copy -->
+	<div class="copyToast" id="homeToast">Koordinat GPS berhasil disalin ke papan klip!</div>
+
+	<!-- Main Festival Footer (Reference: Kosayu Invictus 2026) -->
+	<footer class="siteFooter" id="kontak">
+		<!-- Top Center Event Brand / Logo -->
+		<div class="footerTopBrand">
+			<a href="index.html" class="footerLogo">
+				<span class="footerLogoIcon">✦</span>
+				<span class="footerLogoText">The Hidden Island</span>
+			</a>
+			<p class="footerSubBrand">Simulasi Artfest Kolese Santo Yusup 2026</p>
+		</div>
+
+		<!-- 3-Column Info Row -->
+		<div class="footerColumns">
+			<!-- Col 1: Lokasi Penyelenggara -->
+			<div class="footerCol">
+				<h4 class="footerColTitle">LOKASI PENYELENGGARA</h4>
+				<p class="footerColText">
+					Bukit Doa Immanuel (BDI) Sukolilo<br>
+					Jl. Junggo Sukolelo, Pasuruan, Jawa Timur
+				</p>
+			</div>
+
+			<!-- Col 2: Kontak Panitia -->
+			<div class="footerCol">
+				<h4 class="footerColTitle">KONTAK PANITIA</h4>
+				<p class="footerColText">+62 8156584430 - Rakyan Natha Prastama</p>
+			</div>
+
+			<!-- Col 3: Media Sosial -->
+			<div class="footerCol">
+				<h4 class="footerColTitle">MEDIA SOSIAL</h4>
+				<div class="footerSocialIcons">
+					<!-- Instagram SVG Icon -->
+					<a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="socialIconLink" aria-label="Instagram">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+							<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+							<line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+						</svg>
+					</a>
+					<!-- YouTube SVG Icon -->
+					<a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="socialIconLink" aria-label="YouTube">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+							<polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor"></polygon>
+						</svg>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Bottom Copyright Bar -->
+		<div class="footerBottomBar">
+			<div class="footerCopyright">
+				© ARTFEST KOSAYU 2026. ALL RIGHTS RESERVED.
+			</div>
+			<div class="footerLegalLinks">
+				<a href="../legal/index.html#privasi" class="legalLink">KEBIJAKAN PRIVASI</a>
+				<a href="../legal/index.html#syarat" class="legalLink">SYARAT PENGGUNAAN</a>
+			</div>
+		</div>
+	</footer>
+
+	<script src="script.js"></script>
+	<script src="../shared/cookie-consent.js"></script>
+</body>
+</html>

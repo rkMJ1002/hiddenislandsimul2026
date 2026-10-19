@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Kontak & Layanan Informasi | The Hidden Island</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<!-- Fixed Navbar: Identical feature across all pages -->
+	<header class="navBar" id="mainNavBar">
+		<a href="../home/index.html" class="logo">
+			<span class="logoIcon">✦</span>
+			<span class="logoText">The Hidden Island</span>
+		</a>
+		<nav class="navMenu">
+			<a href="../home/index.html#tentang" class="navLink">Tentang</a>
+			<a href="index.html" class="navLink active">Kontak</a>
+			<a href="../tiket/index.html" class="navLink navBtnTicket">Beli Tiket</a>
+		</nav>
+	</header>
+
+	<!-- Main Contact Content Section -->
+	<main class="contactPage">
+		<!-- Header / Title -->
+		<div class="contactHeader">
+			<h1 class="contactTitle">Hubungi Kami</h1>
+			<p class="contactSubtitle">Simulasi Artfest Kolese Santo Yusup 2026 - The Hidden Island</p>
+			<p class="contactLead">
+				Ada pertanyaan seputar festival, pemesanan tiket, kemitraan, atau informasi teknis? Tim panitia kami siap membantu Anda secara langsung.
+			</p>
+		</div>
+
+		<!-- Direct Contacts (Open, Seamless, No Box) -->
+		<div class="contactListGrid">
+			<!-- Contact 1: Ivy -->
+			<div class="contactItem">
+				<h2 class="contactPersonName">Ivy</h2>
+				<div class="contactNumberDisplay">0815-2262-0878</div>
+				<div class="contactActions">
+					<a href="https://wa.me/6281522620878?text=Halo%20Ivy%2C%20saya%20ingin%20bertanya%20mengenai%20Artfest%20The%20Hidden%20Island%202026." target="_blank" rel="noopener noreferrer" class="btnActionPrimary">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+						</svg>
+						<span>WhatsApp</span>
+					</a>
+					<a href="tel:081522620878" class="btnActionSecondary">
+						<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+						</svg>
+						<span>Panggil</span>
+					</a>
+					<button type="button" class="btnActionSecondary" onclick="copyContactNumber('081522620878', 'Ivy')">
+						<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+							<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+						</svg>
+						<span>Salin Nomor</span>
+					</button>
+				</div>
+			</div>
+
+			<!-- Contact 2: Cherise -->
+			<div class="contactItem">
+				<h2 class="contactPersonName">Cherise</h2>
+				<div class="contactNumberDisplay">022-2352-1067</div>
+				<div class="contactActions">
+					<a href="tel:02223521067" class="btnActionPrimary">
+						<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+						</svg>
+						<span>Panggil Sekarang</span>
+					</a>
+					<button type="button" class="btnActionSecondary" onclick="copyContactNumber('02223521067', 'Cherise')">
+						<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+							<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+						</svg>
+						<span>Salin Nomor</span>
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Quick Inquiry / Message Form -->
+		<section class="inquirySection">
+			<h3 class="inquiryTitle">Kirim Pesan Cepat</h3>
+			<p class="inquiryDesc">
+				Pilih narahubung dan ketik pertanyaan Anda. Pesan akan disiapkan dan diteruskan langsung.
+			</p>
+
+			<form class="inquiryForm" onsubmit="handleInquirySubmit(event)">
+				<div class="formRowGrid">
+					<div class="formField">
+						<label for="inquiryName" class="formLabel">Nama Lengkap</label>
+						<input type="text" id="inquiryName" class="formInput" placeholder="Masukkan nama Anda" required>
+					</div>
+					<div class="formField">
+						<label for="inquiryTarget" class="formLabel">Tujuan Kontak</label>
+						<select id="inquiryTarget" class="formSelect">
+							<option value="ivy">Ivy (0815-2262-0878)</option>
+							<option value="cherise">Cherise (022-2352-1067)</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="formField">
+					<label for="inquiryCategory" class="formLabel">Kategori Pertanyaan</label>
+					<select id="inquiryCategory" class="formSelect">
+						<option value="Pemesanan & Pembayaran Tiket">Pemesanan & Pembayaran Tiket</option>
+						<option value="Lokasi, Akses & Parkir Venue">Lokasi, Akses & Parkir Venue</option>
+						<option value="Jadwal Acara & Lineup">Jadwal Acara & Lineup</option>
+						<option value="Aturan & Barang Bawaan">Aturan & Barang Bawaan</option>
+						<option value="Kemitraan, Sponsor & Media">Kemitraan, Sponsor & Media</option>
+						<option value="Lainnya">Lainnya</option>
+					</select>
+				</div>
+
+				<div class="formField">
+					<label for="inquiryMessage" class="formLabel">Isi Pesan</label>
+					<textarea id="inquiryMessage" class="formTextarea" placeholder="Tuliskan pertanyaan atau informasi yang Anda butuhkan..." required></textarea>
+				</div>
+
+				<button type="submit" class="btnSubmitInquiry">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="22" y1="2" x2="11" y2="13"></line>
+						<polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+					</svg>
+					<span>Kirim Pertanyaan</span>
+				</button>
+			</form>
+		</section>
+
+		<!-- Copy Toast Element -->
+		<div class="copyToast" id="copyToast">Nomor kontak berhasil disalin!</div>
+	</main>
+
+	<!-- Main Festival Footer (Reference: Kosayu Invictus 2026) -->
+	<footer class="siteFooter">
+		<!-- Top Center Event Brand / Logo -->
+		<div class="footerTopBrand">
+			<a href="../home/index.html" class="footerLogo">
+				<span class="footerLogoIcon">✦</span>
+				<span class="footerLogoText">The Hidden Island</span>
+			</a>
+			<p class="footerSubBrand">Simulasi Artfest Kolese Santo Yusup 2026</p>
+		</div>
+
+		<!-- 3-Column Info Row -->
+		<div class="footerColumns">
+			<!-- Col 1: Lokasi Penyelenggara -->
+			<div class="footerCol">
+				<h4 class="footerColTitle">LOKASI PENYELENGGARA</h4>
+				<p class="footerColText">
+					Bukit Doa Immanuel (BDI) Sukolilo<br>
+					Jl. Junggo Sukolelo, Pasuruan, Jawa Timur
+				</p>
+			</div>
+
+			<!-- Col 2: Kontak Panitia -->
+			<div class="footerCol">
+				<h4 class="footerColTitle">KONTAK PANITIA</h4>
+				<p class="footerColText">+62 8156584430 - Rakyan Natha Prastama</p>
+			</div>
+
+			<!-- Col 3: Media Sosial -->
+			<div class="footerCol">
+				<h4 class="footerColTitle">MEDIA SOSIAL</h4>
+				<div class="footerSocialIcons">
+					<!-- Instagram SVG Icon -->
+					<a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="socialIconLink" aria-label="Instagram">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+							<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+							<line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+						</svg>
+					</a>
+					<!-- YouTube SVG Icon -->
+					<a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="socialIconLink" aria-label="YouTube">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+							<polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor"></polygon>
+						</svg>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Bottom Copyright Bar -->
+		<div class="footerBottomBar">
+			<div class="footerCopyright">
+				© ARTFEST KOSAYU 2026. ALL RIGHTS RESERVED.
+			</div>
+			<div class="footerLegalLinks">
+				<a href="../legal/index.html#privasi" class="legalLink">KEBIJAKAN PRIVASI</a>
+				<a href="../legal/index.html#syarat" class="legalLink">SYARAT PENGGUNAAN</a>
+			</div>
+		</div>
+	</footer>
+
+	<!-- Navbar scroll & interactions script -->
+	<script>
+		// Navbar sticky scroll feature
+		const navBar = document.getElementById('mainNavBar');
+		function handleNavScroll() {
+			if (window.scrollY > 20) {
+				navBar.classList.add('scrolled');
+			} else {
+				navBar.classList.remove('scrolled');
+			}
+		}
+		window.addEventListener('scroll', handleNavScroll);
+		handleNavScroll();
+
+		// Copy contact number with toast notification
+		let toastTimer = null;
+		function copyContactNumber(number, name) {
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				navigator.clipboard.writeText(number).then(() => {
+					showToast('Nomor ' + name + ' (' + number + ') berhasil disalin ke papan klip!');
+				}).catch(() => {
+					fallbackCopy(number, name);
+				});
+			} else {
+				fallbackCopy(number, name);
+			}
+		}
+
+		function fallbackCopy(text, name) {
+			const tempInput = document.createElement('input');
+			tempInput.value = text;
+			document.body.appendChild(tempInput);
+			tempInput.select();
+			document.execCommand('copy');
+			document.body.removeChild(tempInput);
+			showToast('Nomor ' + name + ' (' + text + ') berhasil disalin ke papan klip!');
+		}
+
+		function showToast(msg) {
+			const toast = document.getElementById('copyToast');
+			if (!toast) return;
+			toast.textContent = msg;
+			toast.classList.add('show');
+			clearTimeout(toastTimer);
+			toastTimer = setTimeout(() => {
+				toast.classList.remove('show');
+			}, 3000);
+		}
+
+		// Quick inquiry form dispatch
+		function handleInquirySubmit(e) {
+			e.preventDefault();
+			const name = document.getElementById('inquiryName').value.trim();
+			const contactTarget = document.getElementById('inquiryTarget').value;
+			const category = document.getElementById('inquiryCategory').value;
+			const message = document.getElementById('inquiryMessage').value.trim();
+
+			if (!name || !message) {
+				alert('Harap lengkapi nama dan pesan Anda.');
+				return;
+			}
+
+			try {
+				const now = new Date();
+				const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' +
+					String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+				const inquiryRecord = {
+					date: dateStr,
+					target: contactTarget === 'cherise' ? 'Cherise' : 'Ivy',
+					name: name,
+					category: category,
+					message: message,
+					status: 'Terkirim'
+				};
+				const savedInquiries = JSON.parse(localStorage.getItem('hiddenIslandInquiries') || '[]');
+				savedInquiries.unshift(inquiryRecord);
+				localStorage.setItem('hiddenIslandInquiries', JSON.stringify(savedInquiries));
+			} catch(err) {
+				console.log(err);
+			}
+
+			if (contactTarget === 'cherise') {
+				// Cherise is telephone
+				alert('Mengarahkan ke panggilan telepon untuk Cherise (022-2352-1067)...');
+				window.location.href = 'tel:02223521067';
+			} else {
+				// Ivy has WhatsApp
+				const text = 'Halo Ivy, saya ' + name + '.\n' +
+					'Kategori: ' + category + '\n' +
+					'Pesan: ' + message + '\n\n' +
+					'(Dikirim dari formulir Kontak The Hidden Island 2026)';
+				const waUrl = 'https://wa.me/6281522620878?text=' + encodeURIComponent(text);
+				window.open(waUrl, '_blank');
+			}
+		}
+	</script>
+	<script src="../shared/cookie-consent.js"></script>
+</body>
+</html>

@@ -1,0 +1,474 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	background-color: #282B28;
+	background: radial-gradient(circle at 75% 25%, #213D3A 0%, #282B28 65%);
+	color: #CFD4D0;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	overflow-x: hidden;
+}
+
+/* ============================================================
+   NAVBAR: Sits in place, follows on scroll with shade & shadow
+   ============================================================ */
+.navBar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 24px 80px;
+	background-color: transparent;
+	border-bottom: 1px solid transparent;
+	box-shadow: none;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
+}
+
+.navBar.scrolled {
+	background-color: rgba(33, 61, 58, 0.92);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-bottom: 1px solid rgba(183, 169, 124, 0.2);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+	padding: 18px 80px;
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	font-family: 'Syne', sans-serif;
+	font-size: 18px;
+	font-weight: 700;
+	color: #CFD4D0;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	text-decoration: none;
+}
+
+.logoIcon {
+	color: #B7A97C;
+	font-size: 16px;
+}
+
+.navMenu {
+	display: flex;
+	align-items: center;
+	gap: 28px;
+}
+
+.navLink {
+	color: #CFD4D0;
+	text-decoration: none;
+	font-size: 15px;
+	font-weight: 500;
+	opacity: 0.85;
+	transition: opacity 0.2s, color 0.2s;
+}
+
+.navLink:hover {
+	opacity: 1;
+	color: #B7A97C;
+}
+
+.navBtnTicket {
+	background-color: #4B5E35;
+	color: #CFD4D0;
+	padding: 9px 20px;
+	border-radius: 9999px;
+	border: 1px solid rgba(183, 169, 124, 0.3);
+	font-weight: 600;
+	opacity: 1;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.navBtnTicket:hover {
+	background-color: #B7A97C;
+	color: #282B28;
+	border-color: #B7A97C;
+}
+
+/* ============================================================
+   LEGAL MAIN CONTAINER
+   ============================================================ */
+.legalPage {
+	flex: 1;
+	width: 100%;
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 130px 40px 80px 40px;
+}
+
+/* Header Banner */
+.legalHeader {
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+.legalTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 46px;
+	font-weight: 800;
+	color: #CFD4D0;
+	letter-spacing: -0.03em;
+	margin: 0 0 12px 0;
+	text-transform: uppercase;
+}
+
+.legalSubtitle {
+	font-size: 16px;
+	color: #B7A97C;
+	margin: 0;
+	font-weight: 600;
+}
+
+/* ============================================================
+   LEGAL TABS NAVIGATION (Seamless Text Tabs, No Clunky Boxes)
+   ============================================================ */
+.legalTabsNav {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 32px;
+	margin-bottom: 40px;
+	border-bottom: 1px solid rgba(183, 169, 124, 0.18);
+	padding-bottom: 14px;
+	flex-wrap: wrap;
+}
+
+.tabBtn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 4px;
+	background-color: transparent;
+	border: none;
+	border-bottom: 2px solid transparent;
+	color: #CFD4D0;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+	opacity: 0.7;
+	transition: all 0.2s ease;
+	text-decoration: none;
+}
+
+.tabBtn:hover {
+	opacity: 1;
+	color: #B7A97C;
+}
+
+.tabBtn.active {
+	opacity: 1;
+	color: #B7A97C;
+	border-bottom-color: #B7A97C;
+}
+
+/* ============================================================
+   DOCUMENT CONTENT (Seamless with Background, No Covering Box)
+   ============================================================ */
+.legalContentBox {
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	padding: 0;
+	box-shadow: none;
+}
+
+.tabPanel {
+	display: none;
+}
+
+.tabPanel.active {
+	display: block;
+	animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.docHeading {
+	font-family: 'Syne', sans-serif;
+	font-size: 26px;
+	font-weight: 700;
+	color: #CFD4D0;
+	margin: 0 0 16px 0;
+	letter-spacing: -0.01em;
+}
+
+.docLead {
+	font-size: 15px;
+	line-height: 1.7;
+	color: rgba(207, 212, 208, 0.85);
+	margin-bottom: 32px;
+	padding-bottom: 24px;
+	border-bottom: 1px solid rgba(183, 169, 124, 0.15);
+}
+
+.legalSection {
+	margin-bottom: 32px;
+}
+
+.legalSection:last-child {
+	margin-bottom: 0;
+}
+
+.sectionTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 17px;
+	font-weight: 700;
+	color: #B7A97C;
+	margin: 0 0 12px 0;
+	letter-spacing: 0.02em;
+}
+
+.sectionBody {
+	font-size: 14px;
+	line-height: 1.75;
+	color: rgba(207, 212, 208, 0.8);
+	margin: 0 0 12px 0;
+}
+
+.sectionBody strong {
+	color: #CFD4D0;
+}
+
+.legalList {
+	margin: 10px 0 16px 20px;
+	padding: 0;
+	color: rgba(207, 212, 208, 0.8);
+	font-size: 14px;
+	line-height: 1.75;
+}
+
+.legalList li {
+	margin-bottom: 6px;
+}
+
+/* Callout Box inside Legal Doc */
+.legalCallout {
+	background-color: rgba(75, 94, 53, 0.25);
+	border-left: 3px solid #B7A97C;
+	border-radius: 4px;
+	padding: 16px 20px;
+	margin: 20px 0;
+	font-size: 13px;
+	line-height: 1.6;
+	color: #CFD4D0;
+}
+
+/* Table styling for Cookie Types */
+.cookieTable {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 18px 0;
+	font-size: 13px;
+}
+
+.cookieTable th,
+.cookieTable td {
+	padding: 12px 16px;
+	text-align: left;
+	border-bottom: 1px solid rgba(183, 169, 124, 0.15);
+}
+
+.cookieTable th {
+	background-color: rgba(33, 61, 58, 0.5);
+	color: #B7A97C;
+	font-family: 'Syne', sans-serif;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.cookieTable td {
+	color: rgba(207, 212, 208, 0.8);
+}
+
+/* ============================================================
+   FESTIVAL FOOTER (Reference: Kosayu Invictus 2026)
+   ============================================================ */
+.siteFooter {
+	background-color: #1a1c1a;
+	background: linear-gradient(180deg, rgba(40, 43, 40, 0.5) 0%, #161816 100%);
+	border-top: 1px solid rgba(183, 169, 124, 0.18);
+	padding: 60px 80px 32px 80px;
+	color: #CFD4D0;
+	margin-top: auto;
+}
+
+.footerTopBrand {
+	text-align: center;
+	margin-bottom: 44px;
+}
+
+.footerLogo {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-family: 'Syne', sans-serif;
+	font-size: 20px;
+	font-weight: 700;
+	color: #CFD4D0;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.footerLogo:hover {
+	color: #B7A97C;
+}
+
+.footerLogoIcon {
+	color: #B7A97C;
+	font-size: 16px;
+}
+
+.footerSubBrand {
+	margin: 6px 0 0 0;
+	font-size: 13px;
+	font-weight: 500;
+	color: #B7A97C;
+	letter-spacing: 0.04em;
+	opacity: 0.85;
+}
+
+.footerColumns {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 40px;
+	max-width: 1100px;
+	margin: 0 auto 48px auto;
+	text-align: center;
+	align-items: start;
+}
+
+.footerColTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	color: #CFD4D0;
+	text-transform: uppercase;
+	margin: 0 0 14px 0;
+}
+
+.footerColText {
+	font-size: 14px;
+	line-height: 1.6;
+	color: rgba(207, 212, 208, 0.75);
+	margin: 0;
+}
+
+.footerSocialIcons {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 18px;
+}
+
+.socialIconLink {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: #CFD4D0;
+	transition: color 0.2s, transform 0.2s;
+}
+
+.socialIconLink:hover {
+	color: #B7A97C;
+	transform: translateY(-2px);
+}
+
+.footerBottomBar {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding-top: 24px;
+	border-top: 1px solid rgba(183, 169, 124, 0.12);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 12px;
+	letter-spacing: 0.06em;
+	color: rgba(207, 212, 208, 0.55);
+}
+
+.footerLegalLinks {
+	display: flex;
+	align-items: center;
+	gap: 24px;
+}
+
+.legalLink {
+	color: rgba(207, 212, 208, 0.55);
+	text-decoration: none;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	transition: color 0.2s;
+}
+
+.legalLink:hover {
+	color: #B7A97C;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+	.navBar {
+		padding: 20px 24px;
+	}
+
+	.navBar.scrolled {
+		padding: 16px 24px;
+	}
+
+	.legalPage {
+		padding: 110px 20px 60px 20px;
+	}
+
+	.legalTitle {
+		font-size: 32px;
+	}
+
+	.legalContentBox {
+		padding: 28px 20px;
+	}
+
+	.siteFooter {
+		padding: 40px 24px 24px 24px;
+	}
+
+	.footerColumns {
+		grid-template-columns: 1fr;
+		gap: 32px;
+	}
+
+	.footerBottomBar {
+		flex-direction: column;
+		gap: 16px;
+		text-align: center;
+	}
+}

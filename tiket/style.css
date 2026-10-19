@@ -1,0 +1,776 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	background-color: #282B28;
+	background: radial-gradient(circle at 75% 35%, #213D3A 0%, #282B28 65%);
+	color: #CFD4D0;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+/* ============================================================
+   NAVBAR: Sits in place, follows on scroll with shade & shadow
+   (No shape morphing, keeps everything in exact same position)
+   ============================================================ */
+.navBar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 24px 80px;
+	background-color: transparent;
+	border-bottom: 1px solid transparent;
+	box-shadow: none;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
+}
+
+/* Scrolled State: Stays full width, only adds shade, blur & shadow */
+.navBar.scrolled {
+	background-color: rgba(33, 61, 58, 0.92);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-bottom: 1px solid rgba(183, 169, 124, 0.2);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+	padding: 18px 80px;
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	font-family: 'Syne', sans-serif;
+	font-size: 18px;
+	font-weight: 700;
+	color: #CFD4D0;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	text-decoration: none;
+}
+
+.logoIcon {
+	color: #B7A97C;
+	font-size: 16px;
+}
+
+.navMenu {
+	display: flex;
+	align-items: center;
+	gap: 28px;
+}
+
+.navLink {
+	color: #CFD4D0;
+	text-decoration: none;
+	font-size: 15px;
+	font-weight: 500;
+	opacity: 0.85;
+	transition: opacity 0.2s, color 0.2s;
+}
+
+.navLink:hover {
+	opacity: 1;
+	color: #B7A97C;
+}
+
+/* Beli Tiket Button in Navbar */
+.navBtnTicket {
+	background-color: #4B5E35;
+	color: #CFD4D0;
+	padding: 9px 20px;
+	border-radius: 9999px;
+	border: 1px solid rgba(183, 169, 124, 0.3);
+	font-weight: 600;
+	opacity: 1;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.navBtnTicket:hover,
+.navBtnTicket.active {
+	background-color: #B7A97C;
+	color: #282B28;
+	border-color: #B7A97C;
+}
+
+/* ============================================================
+   TICKETING PAGE (Preserved Original Syne Pricing Typography)
+   ============================================================ */
+.ticketPage {
+	flex: 1;
+	width: 100%;
+	padding: 120px 80px 120px 80px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.ticketHeader {
+	text-align: center;
+	margin-bottom: 50px;
+}
+
+.ticketTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 58px;
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	color: #CFD4D0;
+	margin: 0 0 16px 0;
+	text-transform: uppercase;
+}
+
+.ticketSubtitle {
+	font-size: 17px;
+	color: rgba(207, 212, 208, 0.75);
+	margin: 0;
+}
+
+/* Ticket Cards Grid */
+.ticketGrid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 32px;
+	max-width: 880px;
+	margin: 0 auto;
+}
+
+.ticketCard {
+	background-color: transparent;
+	border: 1px solid rgba(183, 169, 124, 0.1);
+	border-radius: 24px;
+	padding: 38px 30px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
+	cursor: pointer;
+	transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+.ticketCard:hover,
+.ticketCard:focus-within {
+	background-color: rgba(33, 61, 58, 0.45);
+	border-color: rgba(183, 169, 124, 0.45);
+	transform: translateY(-4px);
+}
+
+.popularBadge, .vipBadge {
+	position: absolute;
+	top: -12px;
+	right: 24px;
+	background-color: #B7A97C;
+	color: #282B28;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	padding: 4px 14px;
+	border-radius: 9999px;
+}
+
+.tierTag,
+.ticketCardHeader h3 {
+	font-family: 'Syne', sans-serif;
+	font-size: 28px;
+	font-weight: 700;
+	color: #CFD4D0;
+	margin: 0 0 14px 0;
+	display: block;
+}
+
+.ticketPrice {
+	font-family: 'Syne', sans-serif;
+	font-size: 38px;
+	font-weight: 800;
+	color: #CFD4D0;
+	margin-bottom: 24px;
+}
+
+.ticketFeatures {
+	list-style: none;
+	padding: 0;
+	margin: 0 0 32px 0;
+}
+
+.ticketFeatures li {
+	font-size: 14px;
+	line-height: 1.5;
+	color: rgba(207, 212, 208, 0.8);
+	padding: 10px 0;
+	border-bottom: 1px solid rgba(207, 212, 208, 0.06);
+}
+
+.ticketFeatures li:last-child {
+	border-bottom: none;
+}
+
+.featureHighlight strong {
+	color: #B7A97C;
+}
+
+/* Card Button */
+.btnTicket {
+	background-color: rgba(40, 43, 40, 0.7);
+	color: #CFD4D0;
+	border: 1px solid rgba(183, 169, 124, 0.25);
+	padding: 13px 20px;
+	border-radius: 9999px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	width: 100%;
+	transition: all 0.2s ease;
+}
+
+.btnTicket.primary {
+	background-color: #4B5E35;
+	border-color: #B7A97C;
+}
+
+.ticketCard:hover .btnTicket {
+	background-color: #B7A97C;
+	color: #282B28;
+	border-color: #B7A97C;
+}
+
+/* ============================================================
+   HOVERING FORM MENU (MODAL POPUP - MATCHING REFERENCE IMAGE)
+   ============================================================ */
+dialog.ticketModal {
+	padding: 0;
+	border: none;
+	background: transparent;
+	max-width: 540px;
+	width: 92%;
+	margin: auto;
+}
+
+dialog.ticketModal::backdrop {
+	background: rgba(0, 0, 0, 0.8);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+.modalContent {
+	background-color: #171917;
+	border: 1px solid rgba(183, 169, 124, 0.25);
+	border-radius: 18px;
+	padding: 28px;
+	color: #CFD4D0;
+	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* Modal Header */
+.modalHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 22px;
+}
+
+.modalTitle {
+	font-size: 20px;
+	font-weight: 700;
+	color: #CFD4D0;
+	margin: 0 0 4px 0;
+	letter-spacing: -0.01em;
+}
+
+.modalSubtitle {
+	font-size: 13px;
+	color: rgba(207, 212, 208, 0.65);
+	margin: 0;
+	line-height: 1.4;
+}
+
+.modalCloseBtn {
+	background: none;
+	border: none;
+	color: rgba(207, 212, 208, 0.5);
+	cursor: pointer;
+	padding: 2px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: color 0.2s;
+}
+
+.modalCloseBtn:hover {
+	color: #CFD4D0;
+}
+
+.modalSection {
+	margin-bottom: 20px;
+}
+
+.sectionTitle {
+	font-size: 13px;
+	font-weight: 600;
+	color: #CFD4D0;
+	margin: 0 0 10px 0;
+}
+
+/* Choose a plan cards (like Reference) */
+.modalPlanGrid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+}
+
+.planBox {
+	background-color: #1F221F;
+	border: 1px solid rgba(183, 169, 124, 0.15);
+	border-radius: 10px;
+	padding: 12px 14px;
+	cursor: pointer;
+	transition: border-color 0.2s, background-color 0.2s;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.planBox:hover {
+	border-color: rgba(183, 169, 124, 0.4);
+}
+
+.planBox.active {
+	border: 1.5px solid #B7A97C;
+	background-color: #232723;
+}
+
+.planBoxHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.planBoxName {
+	font-size: 13px;
+	font-weight: 700;
+	color: #CFD4D0;
+}
+
+.planMiniBadge {
+	font-size: 9px;
+	font-weight: 700;
+	background-color: #B7A97C;
+	color: #282B28;
+	padding: 1px 6px;
+	border-radius: 4px;
+}
+
+.planBoxSub {
+	font-size: 11px;
+	color: rgba(207, 212, 208, 0.55);
+	line-height: 1.3;
+}
+
+.planBoxPrice {
+	font-size: 12px;
+	font-weight: 600;
+	color: #B7A97C;
+	margin-top: 4px;
+}
+
+/* Unified Order Details Card (like Reference) */
+.orderDetailsCard {
+	background-color: #1F221F;
+	border: 1px solid rgba(183, 169, 124, 0.18);
+	border-radius: 12px;
+	padding: 16px 18px;
+}
+
+.detailsRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.rowMeta {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.rowLabel {
+	font-size: 13px;
+	font-weight: 600;
+	color: #CFD4D0;
+}
+
+.rowHint {
+	font-size: 12px;
+	color: rgba(207, 212, 208, 0.5);
+}
+
+/* Stepper Counter Component (like Reference [-] 2 [+]) */
+.stepper {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	background-color: #282B28;
+	border: 1px solid rgba(183, 169, 124, 0.25);
+	border-radius: 8px;
+	padding: 4px 10px;
+}
+
+.btnStep {
+	background: none;
+	border: none;
+	color: rgba(207, 212, 208, 0.8);
+	font-size: 16px;
+	font-weight: 700;
+	cursor: pointer;
+	padding: 0 4px;
+	line-height: 1;
+	transition: color 0.2s;
+}
+
+.btnStep:hover {
+	color: #B7A97C;
+}
+
+.stepValue {
+	font-size: 13px;
+	font-weight: 700;
+	color: #CFD4D0;
+	min-width: 14px;
+	text-align: center;
+}
+
+.rowPriceBlock {
+	text-align: right;
+}
+
+.totalLabel {
+	font-size: 11px;
+	color: rgba(207, 212, 208, 0.5);
+	display: block;
+	margin-bottom: 2px;
+}
+
+.totalAmount {
+	font-size: 17px;
+	font-weight: 800;
+	color: #CFD4D0;
+	letter-spacing: -0.01em;
+}
+
+.cardDivider {
+	height: 1px;
+	background-color: rgba(183, 169, 124, 0.1);
+	margin: 14px 0;
+}
+
+/* Nested Customer Inputs */
+.detailsInputs {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.nestedInput {
+	width: 100%;
+	padding: 10px 14px;
+	background-color: #282B28;
+	border: 1px solid rgba(183, 169, 124, 0.2);
+	border-radius: 8px;
+	color: #CFD4D0;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 13px;
+	outline: none;
+	transition: border-color 0.2s;
+}
+
+.nestedInput:focus {
+	border-color: #B7A97C;
+}
+
+.inputRow {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+}
+
+.detailsFootnote {
+	font-size: 11px;
+	color: rgba(207, 212, 208, 0.45);
+	line-height: 1.4;
+}
+
+/* Modal Actions Footer (like Reference) */
+.modalFooter {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	margin-top: 20px;
+}
+
+.btnModalCancel {
+	background-color: #1F221F;
+	border: 1px solid rgba(183, 169, 124, 0.2);
+	color: #CFD4D0;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 10px 18px;
+	border-radius: 8px;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.btnModalCancel:hover {
+	background-color: #282B28;
+}
+
+.btnModalContinue {
+	flex: 1;
+	background-color: #B7A97C;
+	color: #282B28;
+	border: none;
+	border-radius: 8px;
+	padding: 11px 20px;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	text-align: center;
+}
+
+.btnModalContinue:hover {
+	background-color: #CFD4D0;
+}
+
+/* Success View */
+.modalSuccessView {
+	text-align: center;
+	padding: 20px 10px;
+}
+
+.successBadge {
+	width: 44px;
+	height: 44px;
+	background-color: #4B5E35;
+	color: #CFD4D0;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 20px;
+	font-weight: bold;
+	margin: 0 auto 14px auto;
+	border: 1px solid #B7A97C;
+}
+
+.successTitle {
+	font-size: 18px;
+	font-weight: 700;
+	color: #CFD4D0;
+	margin: 0 0 8px 0;
+}
+
+.successDesc {
+	font-size: 13px;
+	color: rgba(207, 212, 208, 0.7);
+	line-height: 1.5;
+	margin: 0 0 18px 0;
+}
+
+.btnModalDone {
+	background-color: #4B5E35;
+	color: #CFD4D0;
+	border: 1px solid rgba(183, 169, 124, 0.3);
+	padding: 9px 20px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+	.navBar {
+		padding: 20px 24px;
+	}
+
+	.navBar.scrolled {
+		padding: 16px 24px;
+	}
+
+	.ticketPage {
+		padding: 100px 20px 80px 20px;
+	}
+
+	.ticketGrid {
+		grid-template-columns: 1fr;
+		gap: 20px;
+	}
+
+	.modalPlanGrid {
+		grid-template-columns: 1fr;
+	}
+
+	.modalContent {
+		padding: 22px 18px;
+	}
+
+	.inputRow {
+		grid-template-columns: 1fr;
+		gap: 8px;
+	}
+}
+
+/* ============================================================
+   FESTIVAL FOOTER (Reference: Kosayu Invictus 2026)
+   ============================================================ */
+.siteFooter {
+	background-color: #1a1c1a;
+	background: linear-gradient(180deg, rgba(40, 43, 40, 0.5) 0%, #161816 100%);
+	border-top: 1px solid rgba(183, 169, 124, 0.18);
+	padding: 60px 80px 32px 80px;
+	color: #CFD4D0;
+	margin-top: auto;
+}
+
+.footerTopBrand {
+	text-align: center;
+	margin-bottom: 44px;
+}
+
+.footerLogo {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-family: 'Syne', sans-serif;
+	font-size: 20px;
+	font-weight: 700;
+	color: #CFD4D0;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.footerLogo:hover {
+	color: #B7A97C;
+}
+
+.footerLogoIcon {
+	color: #B7A97C;
+	font-size: 16px;
+}
+
+.footerSubBrand {
+	margin: 6px 0 0 0;
+	font-size: 13px;
+	font-weight: 500;
+	color: #B7A97C;
+	letter-spacing: 0.04em;
+	opacity: 0.85;
+}
+
+.footerColumns {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 40px;
+	max-width: 1100px;
+	margin: 0 auto 48px auto;
+	text-align: center;
+	align-items: start;
+}
+
+.footerColTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	color: #CFD4D0;
+	text-transform: uppercase;
+	margin: 0 0 14px 0;
+}
+
+.footerColText {
+	font-size: 14px;
+	line-height: 1.6;
+	color: rgba(207, 212, 208, 0.75);
+	margin: 0;
+}
+
+.footerSocialIcons {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 18px;
+}
+
+.socialIconLink {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: #CFD4D0;
+	transition: color 0.2s, transform 0.2s;
+}
+
+.socialIconLink:hover {
+	color: #B7A97C;
+	transform: translateY(-2px);
+}
+
+.footerBottomBar {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding-top: 24px;
+	border-top: 1px solid rgba(183, 169, 124, 0.12);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 12px;
+	letter-spacing: 0.06em;
+	color: rgba(207, 212, 208, 0.55);
+}
+
+.footerLegalLinks {
+	display: flex;
+	align-items: center;
+	gap: 24px;
+}
+
+.legalLink {
+	color: rgba(207, 212, 208, 0.55);
+	text-decoration: none;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	transition: color 0.2s;
+}
+
+.legalLink:hover {
+	color: #B7A97C;
+}
+
+@media (max-width: 860px) {
+	.siteFooter {
+		padding: 40px 24px 24px 24px;
+	}
+
+	.footerColumns {
+		grid-template-columns: 1fr;
+		gap: 32px;
+	}
+
+	.footerBottomBar {
+		flex-direction: column;
+		gap: 16px;
+		text-align: center;
+	}
+}

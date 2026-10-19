@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>404 - Koordinat Tidak Ditemukan | The Hidden Island</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="404/style.css">
+</head>
+<body>
+	<!-- Fixed Navbar: Sits transparent at the top, stays in place with a shadow and shade when scrolling -->
+	<header class="navBar" id="mainNavBar">
+		<a href="home/index.html" class="logo">
+			<span class="logoIcon">✦</span>
+			<span class="logoText">The Hidden Island</span>
+		</a>
+		<nav class="navMenu">
+			<a href="home/index.html#tentang" class="navLink">Tentang</a>
+			<a href="kontak/index.html" class="navLink">Kontak</a>
+			<a href="tiket/index.html" class="navLink navBtnTicket">Beli Tiket</a>
+		</nav>
+	</header>
+
+	<!-- Main 404 Error Section -->
+	<main class="errorContainer">
+		<!-- Big 404 Display with Static Compass Icon (No Animation) -->
+		<div class="giantNumberRow">
+			<span class="giantDigit">4</span>
+			<div class="compassCenter" title="Kompas Navigasi">
+				<!-- Clean Static Compass Icon (No Animation, Crisp Vector) -->
+				<svg class="compassIcon" width="76" height="76" viewBox="0 0 24 24" fill="none" stroke="#B7A97C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="12" cy="12" r="10"></circle>
+					<polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="#B7A97C" fill-opacity="0.3"></polygon>
+				</svg>
+			</div>
+			<span class="giantDigit">4</span>
+		</div>
+
+		<!-- Title & Narrative -->
+		<h1 class="errorHeadline">KABUT TERLALU TEBAL,<br>PULAU INI BELUM TERPETAKAN</h1>
+		<p class="errorDescription">
+			Sepertinya perahu Anda terbawa arus keluar dari rute utama <strong>The Hidden Island</strong>. Koordinat yang Anda tuju mungkin telah berpindah tempat, terhempas badai laut, atau belum terpetakan.
+		</p>
+
+		<!-- Action Button: Non-generic back button (No pillbox, sharp & architectural) -->
+		<div class="errorActions">
+			<a href="home/index.html" class="btnBack">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+					<line x1="19" y1="12" x2="5" y2="12"></line>
+					<polyline points="12 19 5 12 12 5"></polyline>
+				</svg>
+				<span>Kembali ke Beranda</span>
+			</a>
+		</div>
+
+		<!-- Vector Island Silhouette Artwork -->
+		<div class="islandVisualWrapper">
+			<svg class="islandMistSvg" viewBox="0 0 520 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<!-- Horizon & Stars -->
+				<circle cx="80" cy="30" r="1.5" fill="#CFD4D0" fill-opacity="0.4"/>
+				<circle cx="190" cy="20" r="1" fill="#B7A97C" fill-opacity="0.5"/>
+				<circle cx="340" cy="25" r="1.5" fill="#CFD4D0" fill-opacity="0.3"/>
+				<circle cx="430" cy="35" r="1.2" fill="#B7A97C" fill-opacity="0.4"/>
+
+				<!-- Distant Island Silhouette -->
+				<path d="M120 120 C180 85 240 70 310 90 C360 105 400 120 440 125 L100 125 Z" fill="#213D3A" fill-opacity="0.7"/>
+
+				<!-- Foreground Mystic Island -->
+				<path d="M160 125 C200 65 260 55 330 80 C370 95 400 120 420 125 L140 125 Z" fill="#4B5E35" fill-opacity="0.85"/>
+
+				<!-- Beacon Tower on Island Peak -->
+				<polygon points="257,56 263,56 265,72 255,72" fill="#B7A97C"/>
+				<!-- Beacon Light Ray -->
+				<polygon points="260,54 380,18 390,32" fill="#B7A97C" fill-opacity="0.25"/>
+				<circle cx="260" cy="54" r="3.5" fill="#B7A97C"/>
+
+				<!-- Twin Palm Fronds Silhouette -->
+				<path d="M210 85 Q220 72 232 75 Q218 80 214 95" stroke="#282B28" stroke-width="2.5" stroke-linecap="round"/>
+				<path d="M232 75 Q245 74 242 84" stroke="#282B28" stroke-width="2" stroke-linecap="round"/>
+				<path d="M228 76 Q234 66 226 64" stroke="#282B28" stroke-width="2" stroke-linecap="round"/>
+
+				<!-- Gentle Ocean Waves -->
+				<path d="M20 128 C80 122 140 134 200 128 C260 122 320 134 380 128 C440 122 480 130 510 128" stroke="#4B5E35" stroke-width="2" stroke-linecap="round"/>
+				<path d="M50 142 C120 136 190 148 260 142 C330 136 400 148 480 142" stroke="#213D3A" stroke-width="2" stroke-linecap="round" stroke-opacity="0.9"/>
+				<path d="M90 156 C160 152 230 160 300 156 C370 152 440 160 490 156" stroke="rgba(183, 169, 124, 0.4)" stroke-width="1.5" stroke-linecap="round"/>
+
+				<!-- Mist Vapor Overlay -->
+				<path d="M60 118 C140 108 220 125 300 115 C380 105 440 120 480 116" stroke="rgba(207, 212, 208, 0.2)" stroke-width="4" stroke-linecap="round"/>
+			</svg>
+		</div>
+	</main>
+
+	<!-- Minimal All Rights Reserved Footer (Only All Rights Reserved for 404) -->
+	<footer class="errorFooterSimple">
+		<p>© ARTFEST KOSAYU 2026. ALL RIGHTS RESERVED.</p>
+	</footer>
+
+	<script>
+		// Dynamic Navbar: Stays in place, adds shade and shadow when scrolling
+		const mainNavBar = document.getElementById('mainNavBar') || document.querySelector('.navBar');
+
+		function handleNavbarScroll() {
+			if (!mainNavBar) return;
+			if (window.scrollY > 20) {
+				mainNavBar.classList.add('scrolled');
+			} else {
+				mainNavBar.classList.remove('scrolled');
+			}
+		}
+
+		window.addEventListener('scroll', handleNavbarScroll, { passive: true });
+		handleNavbarScroll();
+	</script>
+</body>
+</html>

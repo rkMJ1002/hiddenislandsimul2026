@@ -1,0 +1,705 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	background-color: #282B28;
+	background: radial-gradient(circle at 75% 35%, #213D3A 0%, #282B28 65%);
+	color: #CFD4D0;
+	min-height: 100vh;
+}
+
+.navBar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 24px 80px;
+	background-color: transparent;
+	border-bottom: 1px solid transparent;
+	box-shadow: none;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
+}
+
+.navBar.scrolled {
+	background-color: rgba(33, 61, 58, 0.92);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-bottom: 1px solid rgba(183, 169, 124, 0.2);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+	padding: 18px 80px;
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	font-family: 'Syne', sans-serif;
+	font-size: 18px;
+	font-weight: 700;
+	color: #CFD4D0;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	text-decoration: none;
+}
+
+.logoIcon {
+	color: #B7A97C;
+	font-size: 16px;
+}
+
+.navMenu {
+	display: flex;
+	align-items: center;
+	gap: 28px;
+}
+
+.navLink {
+	color: #CFD4D0;
+	text-decoration: none;
+	font-size: 15px;
+	font-weight: 500;
+	opacity: 0.85;
+	transition: opacity 0.2s, color 0.2s;
+}
+
+.navLink:hover {
+	opacity: 1;
+	color: #B7A97C;
+}
+
+/* Beli Tiket Button in Navbar */
+.navBtnTicket {
+	background-color: #4B5E35;
+	color: #CFD4D0;
+	padding: 9px 20px;
+	border-radius: 9999px;
+	border: 1px solid rgba(183, 169, 124, 0.3);
+	font-weight: 600;
+	opacity: 1;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.navBtnTicket:hover,
+.navBtnTicket.active {
+	background-color: #B7A97C;
+	color: #282B28;
+	border-color: #B7A97C;
+}
+
+.heroSection {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	min-height: 100vh;
+	padding: 100px 80px 40px 80px;
+	gap: 40px;
+}
+
+/* Left-aligned Hero Content */
+.heroContent {
+	flex: 1.1;
+	max-width: 650px;
+	z-index: 2;
+}
+
+/* Big Hero Title */
+.heroTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 92px;
+	font-weight: 800;
+	line-height: 0.94;
+	letter-spacing: -0.04em;
+	color: #CFD4D0;
+	margin: 0 0 24px 0;
+	text-transform: uppercase;
+}
+
+/* Subtitle */
+.heroSubtitle {
+	font-size: 20px;
+	font-weight: 600;
+	letter-spacing: 0.03em;
+	color: #B7A97C;
+	margin: 0 0 40px 0;
+}
+
+/* Buttons */
+.heroActions {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.btnPrimary {
+	background-color: #CFD4D0;
+	color: #282B28;
+	padding: 14px 28px;
+	border-radius: 9999px;
+	text-decoration: none;
+	font-size: 15px;
+	font-weight: 600;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	transition: background-color 0.2s, transform 0.2s;
+}
+
+.btnPrimary:hover {
+	background-color: #B7A97C;
+	transform: translateY(-2px);
+}
+
+.btnArrow {
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.btnSecondary {
+	color: #CFD4D0;
+	text-decoration: none;
+	font-size: 15px;
+	font-weight: 500;
+	opacity: 0.75;
+	padding: 12px 18px;
+	transition: opacity 0.2s, color 0.2s;
+}
+
+.btnSecondary:hover {
+	opacity: 1;
+	color: #B7A97C;
+}
+
+/* Right-side Visual */
+.heroVisual {
+	flex: 1.2;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+}
+
+.heroVisual img {
+	max-width: 100%;
+	width: 620px;
+	height: auto;
+	object-fit: contain;
+	display: block;
+}
+
+/* Open Gate Countdown Section (Fully seamless into About) */
+.countdownSection {
+	padding: 60px 40px 50px 40px;
+	text-align: center;
+	background: linear-gradient(180deg, transparent 0%, rgba(33, 61, 58, 0.25) 100%);
+}
+
+.countdownTitle {
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.22em;
+	color: #B7A97C;
+	text-transform: uppercase;
+	margin: 0 0 36px 0;
+}
+
+.countdownWrapper {
+	display: inline-flex;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 28px;
+}
+
+.countdownUnit {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 90px;
+}
+
+.countdownNumber {
+	font-family: 'Syne', sans-serif;
+	font-size: 76px;
+	font-weight: 800;
+	line-height: 1;
+	color: #CFD4D0;
+	letter-spacing: -0.02em;
+}
+
+.countdownSeparator {
+	font-family: 'Syne', sans-serif;
+	font-size: 48px;
+	font-weight: 700;
+	color: #4B5E35;
+	opacity: 0.7;
+	line-height: 1;
+	margin-top: 10px;
+}
+
+.countdownLabel {
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.18em;
+	color: rgba(207, 212, 208, 0.7);
+	margin-top: 14px;
+	text-transform: uppercase;
+}
+
+/* ============================================================
+   ABOUT / TENTANG KOSAYU ARTFEST (Fully Seamless, Zero Line)
+   ============================================================ */
+.aboutSection {
+	padding: 40px 40px 100px 40px;
+	border-top: none;
+	background: linear-gradient(180deg, rgba(33, 61, 58, 0.25) 0%, rgba(33, 61, 58, 0.1) 60%, transparent 100%);
+}
+
+.aboutContainer {
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.sectionHeader {
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+.sectionTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 42px;
+	font-weight: 800;
+	color: #CFD4D0;
+	margin: 0;
+	letter-spacing: -0.02em;
+	text-transform: uppercase;
+}
+
+.aboutBody {
+	font-size: 16px;
+	line-height: 1.85;
+	color: rgba(207, 212, 208, 0.88);
+}
+
+.aboutBody p {
+	margin: 0 0 24px 0;
+	text-align: justify;
+	text-justify: inter-word;
+}
+
+.aboutBody p:last-child {
+	margin-bottom: 0;
+}
+
+/* ============================================================
+   LOCATION & INTERACTIVE REAL MAP SECTION (No Boxes for Points)
+   ============================================================ */
+.locationSection {
+	padding: 100px 40px 110px 40px;
+	border-top: 1px solid rgba(183, 169, 124, 0.15);
+	background: linear-gradient(180deg, rgba(33, 61, 58, 0.25) 0%, rgba(26, 29, 26, 0.65) 100%);
+}
+
+.locationContainer {
+	max-width: 1040px;
+	margin: 0 auto;
+}
+
+.locationMetaGrid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 36px;
+	margin-bottom: 36px;
+	padding: 0 4px;
+}
+
+.locationMetaItem {
+	background: none;
+	border: none;
+	border-radius: 0;
+	padding: 0;
+	box-shadow: none;
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+}
+
+.locationMetaItem:hover {
+	border-color: transparent;
+	background-color: transparent;
+}
+
+.metaIcon {
+	color: #B7A97C;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.metaContent {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.metaLabel {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	color: #B7A97C;
+	text-transform: uppercase;
+}
+
+.metaValue {
+	font-size: 14px;
+	font-weight: 600;
+	color: #CFD4D0;
+}
+
+.mapFrameWrapper {
+	border: 1px solid rgba(183, 169, 124, 0.3);
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+	height: 460px;
+	width: 100%;
+	margin-bottom: 24px;
+	background-color: #213D3A;
+}
+
+.interactiveMapFrame {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	display: block;
+}
+
+.mapActions {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	flex-wrap: wrap;
+}
+
+.btnMapPrimary {
+	background-color: #B7A97C;
+	color: #282B28;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 14px;
+	font-weight: 700;
+	padding: 11px 22px;
+	border-radius: 6px;
+	border: 1px solid #B7A97C;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	transition: background-color 0.2s, transform 0.15s;
+}
+
+.btnMapPrimary:hover {
+	background-color: #CFD4D0;
+	border-color: #CFD4D0;
+	transform: translateY(-2px);
+}
+
+.btnMapSecondary {
+	background-color: transparent;
+	color: #CFD4D0;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	padding: 11px 20px;
+	border-radius: 6px;
+	border: 1px solid rgba(183, 169, 124, 0.35);
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.btnMapSecondary:hover {
+	background-color: rgba(75, 94, 53, 0.3);
+	border-color: #B7A97C;
+	color: #B7A97C;
+	transform: translateY(-2px);
+}
+
+/* Copy Toast */
+.copyToast {
+	position: fixed;
+	bottom: 30px;
+	left: 50%;
+	transform: translateX(-50%) translateY(30px);
+	background-color: #213D3A;
+	color: #CFD4D0;
+	border: 1px solid #B7A97C;
+	padding: 10px 20px;
+	border-radius: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.25s ease, transform 0.25s ease;
+	z-index: 100000;
+}
+
+.copyToast.show {
+	opacity: 1;
+	transform: translateX(-50%) translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+	.navBar {
+		padding: 20px 24px;
+	}
+
+	.navBar.scrolled {
+		padding: 16px 24px;
+	}
+
+	.heroSection {
+		flex-direction: column;
+		text-align: left;
+		padding: 90px 24px 60px 24px;
+		gap: 40px;
+	}
+
+	.heroTitle {
+		font-size: 56px;
+	}
+
+	.heroSubtitle {
+		font-size: 17px;
+	}
+
+	.heroVisual img {
+		max-width: 100%;
+	}
+
+	.countdownSection {
+		padding: 50px 20px 70px 20px;
+	}
+
+	.countdownWrapper {
+		gap: 12px;
+	}
+
+	.countdownUnit {
+		min-width: 65px;
+	}
+
+	.countdownNumber {
+		font-size: 46px;
+	}
+
+	.countdownSeparator {
+		font-size: 32px;
+		margin-top: 6px;
+	}
+
+	.countdownLabel {
+		font-size: 11px;
+		letter-spacing: 0.12em;
+	}
+
+	.aboutSection {
+		padding: 70px 20px 60px 20px;
+	}
+
+	.sectionTitle {
+		font-size: 32px;
+	}
+
+	.aboutBody {
+		font-size: 15px;
+		line-height: 1.75;
+	}
+
+	.aboutBody p {
+		text-align: left;
+	}
+
+	.locationSection {
+		padding: 70px 20px 70px 20px;
+	}
+
+	.locationMetaGrid {
+		grid-template-columns: 1fr;
+		gap: 14px;
+	}
+
+	.mapFrameWrapper {
+		height: 350px;
+	}
+
+	.mapActions {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.btnMapPrimary,
+	.btnMapSecondary {
+		width: 100%;
+		justify-content: center;
+	}
+}
+
+.siteFooter {
+	background-color: #1a1c1a;
+	background: linear-gradient(180deg, rgba(40, 43, 40, 0.5) 0%, #161816 100%);
+	border-top: 1px solid rgba(183, 169, 124, 0.18);
+	padding: 60px 80px 32px 80px;
+	color: #CFD4D0;
+	margin-top: auto;
+}
+
+.footerTopBrand {
+	text-align: center;
+	margin-bottom: 44px;
+}
+
+.footerLogo {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-family: 'Syne', sans-serif;
+	font-size: 20px;
+	font-weight: 700;
+	color: #CFD4D0;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.footerLogo:hover {
+	color: #B7A97C;
+}
+
+.footerLogoIcon {
+	color: #B7A97C;
+	font-size: 16px;
+}
+
+.footerSubBrand {
+	margin: 6px 0 0 0;
+	font-size: 13px;
+	font-weight: 500;
+	color: #B7A97C;
+	letter-spacing: 0.04em;
+	opacity: 0.85;
+}
+
+.footerColumns {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 40px;
+	max-width: 1100px;
+	margin: 0 auto 48px auto;
+	text-align: center;
+	align-items: start;
+}
+
+.footerColTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	color: #CFD4D0;
+	text-transform: uppercase;
+	margin: 0 0 14px 0;
+}
+
+.footerColText {
+	font-size: 14px;
+	line-height: 1.6;
+	color: rgba(207, 212, 208, 0.75);
+	margin: 0;
+}
+
+.footerSocialIcons {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 18px;
+}
+
+.socialIconLink {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: #CFD4D0;
+	transition: color 0.2s, transform 0.2s;
+}
+
+.socialIconLink:hover {
+	color: #B7A97C;
+	transform: translateY(-2px);
+}
+
+.footerBottomBar {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding-top: 24px;
+	border-top: 1px solid rgba(183, 169, 124, 0.12);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 12px;
+	letter-spacing: 0.06em;
+	color: rgba(207, 212, 208, 0.55);
+}
+
+.footerLegalLinks {
+	display: flex;
+	align-items: center;
+	gap: 24px;
+}
+
+.legalLink {
+	color: rgba(207, 212, 208, 0.55);
+	text-decoration: none;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	transition: color 0.2s;
+}
+
+.legalLink:hover {
+	color: #B7A97C;
+}
+
+@media (max-width: 860px) {
+	.siteFooter {
+		padding: 40px 24px 24px 24px;
+	}
+
+	.footerColumns {
+		grid-template-columns: 1fr;
+		gap: 32px;
+	}
+
+	.footerBottomBar {
+		flex-direction: column;
+		gap: 16px;
+		text-align: center;
+	}
+}

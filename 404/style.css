@@ -1,0 +1,269 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	background-color: #282B28;
+	background: radial-gradient(circle at 50% 25%, #213D3A 0%, #282B28 70%);
+	color: #CFD4D0;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	overflow-x: hidden;
+}
+
+.navBar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 24px 80px;
+	background-color: transparent;
+	border-bottom: 1px solid transparent;
+	box-shadow: none;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
+}
+
+.navBar.scrolled {
+	background-color: rgba(33, 61, 58, 0.92);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-bottom: 1px solid rgba(183, 169, 124, 0.2);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+	padding: 18px 80px;
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	font-family: 'Syne', sans-serif;
+	font-size: 18px;
+	font-weight: 700;
+	color: #CFD4D0;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	text-decoration: none;
+}
+
+.logoIcon {
+	color: #B7A97C;
+	font-size: 16px;
+}
+
+.navMenu {
+	display: flex;
+	align-items: center;
+	gap: 28px;
+}
+
+.navLink {
+	color: #CFD4D0;
+	text-decoration: none;
+	font-size: 15px;
+	font-weight: 500;
+	opacity: 0.85;
+	transition: opacity 0.2s, color 0.2s;
+}
+
+.navLink:hover {
+	opacity: 1;
+	color: #B7A97C;
+}
+
+.navBtnTicket {
+	background-color: #4B5E35;
+	color: #CFD4D0;
+	padding: 9px 20px;
+	border-radius: 9999px;
+	border: 1px solid rgba(183, 169, 124, 0.3);
+	font-weight: 600;
+	opacity: 1;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.navBtnTicket:hover {
+	background-color: #B7A97C;
+	color: #282B28;
+	border-color: #B7A97C;
+}
+
+.errorContainer {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 130px 24px 60px 24px;
+	max-width: 860px;
+	margin: 0 auto;
+	text-align: center;
+	position: relative;
+}
+
+/* Big 404 Row with Static Compass Icon (No Animation) */
+.giantNumberRow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	margin-bottom: 20px;
+}
+
+.giantDigit {
+	font-family: 'Syne', sans-serif;
+	font-size: 130px;
+	font-weight: 800;
+	line-height: 0.85;
+	color: #CFD4D0;
+	letter-spacing: -0.05em;
+	user-select: none;
+}
+
+.compassCenter {
+	width: 90px;
+	height: 90px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.compassIcon {
+	display: block;
+	color: #B7A97C;
+}
+
+/* Titles & Description */
+.errorHeadline {
+	font-family: 'Syne', sans-serif;
+	font-size: 34px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	color: #CFD4D0;
+	margin: 0 0 16px 0;
+	line-height: 1.25;
+	max-width: 640px;
+}
+
+.errorDescription {
+	font-size: 15px;
+	line-height: 1.65;
+	color: rgba(207, 212, 208, 0.75);
+	max-width: 580px;
+	margin: 0 auto 34px auto;
+}
+.errorActions {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 46px;
+}
+
+.btnBack {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 13px 26px;
+	background-color: rgba(33, 61, 58, 0.45);
+	color: #CFD4D0;
+	border: 1px solid rgba(183, 169, 124, 0.35);
+	border-radius: 6px;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	text-decoration: none;
+	transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.btnBack:hover {
+	background-color: #B7A97C;
+	border-color: #B7A97C;
+	color: #282B28;
+	transform: translateY(-2px);
+}
+
+.btnBack svg {
+	transition: transform 0.2s ease;
+}
+
+.btnBack:hover svg {
+	transform: translateX(-3px);
+}
+
+/* Island Artwork Banner */
+.islandVisualWrapper {
+	width: 100%;
+	max-width: 480px;
+	margin: 0 auto;
+	position: relative;
+	opacity: 0.9;
+}
+
+.islandMistSvg {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+	.navBar {
+		padding: 20px 24px;
+	}
+
+	.navBar.scrolled {
+		padding: 16px 24px;
+	}
+
+	.errorContainer {
+		padding: 110px 20px 50px 20px;
+	}
+
+	.giantDigit {
+		font-size: 90px;
+	}
+
+	.compassCenter {
+		width: 65px;
+		height: 65px;
+	}
+
+	.compassCenter svg {
+		width: 56px;
+		height: 56px;
+	}
+
+	.errorHeadline {
+		font-size: 24px;
+	}
+
+	.errorDescription {
+		font-size: 14px;
+	}
+}
+
+.errorFooterSimple {
+	text-align: center;
+	padding: 24px 20px 32px 20px;
+	border-top: 1px solid rgba(183, 169, 124, 0.12);
+	margin-top: auto;
+}
+
+.errorFooterSimple p {
+	margin: 0;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	color: rgba(207, 212, 208, 0.5);
+	text-transform: uppercase;
+}

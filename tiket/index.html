@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Beli Tiket - The Hidden Island</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<!-- Fixed Navbar: Sits transparent at the top, stays in place with a shadow and shade when scrolling -->
+	<header class="navBar" id="mainNavBar">
+		<a href="../home/index.html" class="logo">
+			<span class="logoIcon">✦</span>
+			<span class="logoText">The Hidden Island</span>
+		</a>
+		<nav class="navMenu">
+			<a href="../home/index.html#tentang" class="navLink">Tentang</a>
+			<a href="../kontak/index.html" class="navLink">Kontak</a>
+			<a href="index.html" class="navLink navBtnTicket active">Beli Tiket</a>
+		</nav>
+	</header>
+
+	<!-- Main Ticket Content Section -->
+	<main class="ticketPage">
+		<div class="ticketHeader">
+			<h1 class="ticketTitle">PILIH TIKET ANDA</h1>
+			<p class="ticketSubtitle">Arahkan kursor atau pilih kategori tiket untuk membuka formulir pemesanan.</p>
+		</div>
+
+		<!-- Ticket Tiers Grid -->
+		<div class="ticketGrid">
+			<!-- Tier 1: Presale 1 -->
+			<div class="ticketCard" id="card-presale1" onclick="openTicketModal('Presale 1', 75000, 'Akses panggung festival & event kit')">
+				<div class="ticketCardHeader">
+					<h3 class="tierTag">Presale 1</h3>
+					<div class="ticketPrice">Rp 75.000</div>
+				</div>
+				<ul class="ticketFeatures">
+					<li>Akses seluruh panggung festival musik & teater</li>
+					<li>Official Event Wristband & Festival Map</li>
+					<li>Akses instalasi seni interaktif</li>
+					<li>Free welcome drink & exclusive sticker pack</li>
+				</ul>
+				<button type="button" class="btnTicket">Pilih Presale 1</button>
+			</div>
+
+			<!-- Tier 2: Presale 2 -->
+			<div class="ticketCard popular" id="card-presale2" onclick="openTicketModal('Presale 2', 90000, 'Akses panggung festival & event kit')">
+				<div class="popularBadge">POPULER</div>
+				<div class="ticketCardHeader">
+					<h3 class="tierTag">Presale 2</h3>
+					<div class="ticketPrice">Rp 90.000</div>
+				</div>
+				<ul class="ticketFeatures">
+					<li>Akses seluruh panggung festival musik & teater</li>
+					<li>Official Event Wristband & Festival Map</li>
+					<li>Akses instalasi seni interaktif</li>
+					<li>Free welcome drink & exclusive sticker pack</li>
+				</ul>
+				<button type="button" class="btnTicket primary">Pilih Presale 2</button>
+			</div>
+
+		</div>
+	</main>
+
+	<!-- Modal Dialog Popout Form (Matching Reference Image) -->
+	<dialog id="ticketModal" class="ticketModal">
+		<div class="modalContent">
+			<!-- Clean Header with bare SVG close icon -->
+			<div class="modalHeader">
+				<div>
+					<h2 class="modalTitle">Pemesanan Tiket</h2>
+					<p class="modalSubtitle">Pilih kategori, tentukan jumlah, dan lengkapi data pemesanan.</p>
+				</div>
+				<button type="button" class="modalCloseBtn" onclick="closeTicketModal()" aria-label="Tutup">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="18" y1="6" x2="6" y2="18"></line>
+						<line x1="6" y1="6" x2="18" y2="18"></line>
+					</svg>
+				</button>
+			</div>
+
+			<form id="orderForm" onsubmit="handleOrderSubmit(event)">
+				<!-- Section 1: Choose a plan -->
+				<div class="modalSection">
+					<h3 class="sectionTitle">Pilih kategori</h3>
+					<div class="modalPlanGrid">
+						<div class="planBox" id="plan-presale1" onclick="setModalTier('Presale 1', 75000, 'Akses panggung festival & event kit')">
+							<div class="planBoxHeader">
+								<span class="planBoxName">Presale 1</span>
+							</div>
+							<span class="planBoxSub">Akses panggung festival</span>
+							<span class="planBoxPrice">Rp 75.000 / tiket</span>
+						</div>
+
+						<div class="planBox" id="plan-presale2" onclick="setModalTier('Presale 2', 90000, 'Akses panggung festival & event kit')">
+							<div class="planBoxHeader">
+								<span class="planBoxName">Presale 2</span>
+								<span class="planMiniBadge">Popular</span>
+							</div>
+							<span class="planBoxSub">Akses panggung festival</span>
+							<span class="planBoxPrice">Rp 90.000 / tiket</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Section 2: Order details (Single unified card) -->
+				<div class="modalSection">
+					<h3 class="sectionTitle">Detail pemesanan</h3>
+					
+					<div class="orderDetailsCard">
+						<!-- Row 1: Quantity counter with integrated stepper -->
+						<div class="detailsRow">
+							<div class="rowMeta">
+								<span class="rowLabel">Jumlah Tiket</span>
+								<span class="rowHint">Berlaku untuk seluruh akses yang dipilih.</span>
+							</div>
+							<div class="stepper">
+								<button type="button" class="btnStep" onclick="changeQty(-1)">−</button>
+								<span class="stepValue" id="qtyDisplay">1</span>
+								<button type="button" class="btnStep" onclick="changeQty(1)">+</button>
+							</div>
+						</div>
+
+						<div class="cardDivider"></div>
+
+						<!-- Row 2: Selected Item breakdown & Total -->
+						<div class="detailsRow">
+							<div class="rowMeta">
+								<span class="rowLabel" id="summaryTierTitle">Presale 1</span>
+								<span class="rowHint" id="summaryTierSubtitle">Akses panggung festival & event kit</span>
+							</div>
+							<div class="rowPriceBlock">
+								<span class="totalLabel">Total</span>
+								<span class="totalAmount" id="summaryTotal">Rp 75.000</span>
+							</div>
+						</div>
+
+						<div class="cardDivider"></div>
+
+						<!-- Row 3: Customer Inputs nested inside card -->
+						<div class="detailsInputs">
+							<div class="inputField">
+								<input type="text" id="custName" class="nestedInput" placeholder="Nama Lengkap" required>
+							</div>
+							<div class="inputRow">
+								<input type="email" id="custEmail" class="nestedInput" placeholder="Alamat Email" required>
+								<input type="tel" id="custWa" class="nestedInput" placeholder="Nomor WhatsApp" required>
+							</div>
+						</div>
+
+						<div class="cardDivider"></div>
+
+						<!-- Row 4: Subtle disclaimer note -->
+						<div class="detailsFootnote">
+							E-ticket dan instruksi penukaran gelang akan dikirimkan otomatis setelah konfirmasi.
+						</div>
+					</div>
+				</div>
+
+				<!-- Modal Footer: Balanced Cancel and Continue button -->
+				<div class="modalFooter">
+					<button type="button" class="btnModalCancel" onclick="closeTicketModal()">Batal</button>
+					<button type="submit" class="btnModalContinue">
+						Lanjutkan • <span id="btnTotalPrice">Rp 75.000</span>
+					</button>
+				</div>
+			</form>
+
+			<!-- Order Success Confirmation View -->
+			<div id="modalSuccess" class="modalSuccessView" style="display: none;">
+				<div class="successBadge">✓</div>
+				<h3 class="successTitle">Pemesanan Berhasil Dicatat!</h3>
+				<p class="successDesc">Terima kasih. Detail simulasi tiket telah dikirimkan ke kontak WhatsApp dan Email Anda.</p>
+				<button type="button" class="btnModalDone" onclick="closeTicketModal()">Selesai</button>
+			</div>
+		</div>
+	</dialog>
+
+	<!-- Main Festival Footer (Reference: Kosayu Invictus 2026) -->
+	<footer class="siteFooter" id="kontak">
+		<!-- Top Center Event Brand / Logo -->
+		<div class="footerTopBrand">
+			<a href="../home/index.html" class="footerLogo">
+				<span class="footerLogoIcon">✦</span>
+				<span class="footerLogoText">The Hidden Island</span>
+			</a>
+			<p class="footerSubBrand">Simulasi Artfest Kolese Santo Yusup 2026</p>
+		</div>
+
+		<!-- 3-Column Info Row -->
+		<div class="footerColumns">
+			<!-- Col 1: Lokasi Penyelenggara -->
+			<div class="footerCol">
+				<h4 class="footerColTitle">LOKASI PENYELENGGARA</h4>
+				<p class="footerColText">
+					Bukit Doa Immanuel (BDI) Sukolilo<br>
+					Jl. Junggo Sukolelo, Pasuruan, Jawa Timur
+				</p>
+			</div>
+
+			<!-- Col 2: Kontak Panitia -->
+			<div class="footerCol">
+				<h4 class="footerColTitle">KONTAK PANITIA</h4>
+				<p class="footerColText">+62 8156584430 - Rakyan Natha Prastama</p>
+			</div>
+
+			<!-- Col 3: Media Sosial -->
+			<div class="footerCol">
+				<h4 class="footerColTitle">MEDIA SOSIAL</h4>
+				<div class="footerSocialIcons">
+					<!-- Instagram SVG Icon -->
+					<a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="socialIconLink" aria-label="Instagram">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+							<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+							<line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+						</svg>
+					</a>
+					<!-- YouTube SVG Icon -->
+					<a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="socialIconLink" aria-label="YouTube">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+							<polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor"></polygon>
+						</svg>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Bottom Copyright Bar -->
+		<div class="footerBottomBar">
+			<div class="footerCopyright">
+				© ARTFEST KOSAYU 2026. ALL RIGHTS RESERVED.
+			</div>
+			<div class="footerLegalLinks">
+				<a href="../legal/index.html#privasi" class="legalLink">KEBIJAKAN PRIVASI</a>
+				<a href="../legal/index.html#syarat" class="legalLink">SYARAT PENGGUNAAN</a>
+			</div>
+		</div>
+	</footer>
+
+	<script>
+		let currentTier = 'Presale 1';
+		let currentPrice = 75000;
+		let currentSubtitle = 'Akses panggung festival & event kit';
+		let currentQty = 1;
+
+		const modal = document.getElementById('ticketModal');
+
+		function openTicketModal(tierName, price, subtitle) {
+			setModalTier(tierName, price, subtitle);
+			currentQty = 1;
+			document.getElementById('qtyDisplay').textContent = currentQty;
+			updateModalCalculations();
+			
+			document.getElementById('orderForm').style.display = 'block';
+			document.getElementById('modalSuccess').style.display = 'none';
+			modal.showModal();
+		}
+
+		function closeTicketModal() {
+			modal.close();
+		}
+
+		// Close modal when clicking backdrop
+		modal.addEventListener('click', (e) => {
+			if (e.target === modal) {
+				closeTicketModal();
+			}
+		});
+
+		function setModalTier(tierName, price, subtitle) {
+			currentTier = tierName;
+			currentPrice = price;
+			if (subtitle) currentSubtitle = subtitle;
+
+			// Highlight active plan box inside modal
+			document.querySelectorAll('.planBox').forEach(card => card.classList.remove('active'));
+			if (tierName === 'Presale 1') document.getElementById('plan-presale1').classList.add('active');
+			if (tierName === 'Presale 2') document.getElementById('plan-presale2').classList.add('active');
+
+			updateModalCalculations();
+		}
+
+		function changeQty(delta) {
+			currentQty += delta;
+			if (currentQty < 1) currentQty = 1;
+			if (currentQty > 5) currentQty = 5;
+			document.getElementById('qtyDisplay').textContent = currentQty;
+			updateModalCalculations();
+		}
+
+		function updateModalCalculations() {
+			const total = currentPrice * currentQty;
+			const formattedTotal = 'Rp ' + total.toLocaleString('id-ID');
+
+			document.getElementById('summaryTierTitle').textContent = currentTier;
+			document.getElementById('summaryTierSubtitle').textContent = currentSubtitle + ' (' + currentQty + ' tiket)';
+			document.getElementById('summaryTotal').textContent = formattedTotal;
+			document.getElementById('btnTotalPrice').textContent = formattedTotal;
+		}
+
+		function handleOrderSubmit(e) {
+			e.preventDefault();
+			const custName = document.getElementById('custName').value;
+			const custEmail = document.getElementById('custEmail').value;
+			const custWa = document.getElementById('custWa').value;
+
+			const orderData = {
+				tier: currentTier,
+				price: currentPrice,
+				subtitle: currentSubtitle,
+				qty: currentQty,
+				total: currentPrice * currentQty,
+				name: custName,
+				email: custEmail,
+				wa: custWa
+			};
+
+			sessionStorage.setItem('hiddenIslandOrder', JSON.stringify(orderData));
+			window.location.href = '../checkout/index.html';
+		}
+
+		// Dynamic Navbar: Stays in place, adds shade and shadow when scrolling
+		const mainNavBar = document.getElementById('mainNavBar') || document.querySelector('.navBar');
+
+		function handleNavbarScroll() {
+			if (!mainNavBar) return;
+			if (window.scrollY > 20) {
+				mainNavBar.classList.add('scrolled');
+			} else {
+				mainNavBar.classList.remove('scrolled');
+			}
+		}
+
+		window.addEventListener('scroll', handleNavbarScroll, { passive: true });
+		handleNavbarScroll();
+	</script>
+	<script src="../shared/cookie-consent.js"></script>
+</body>
+</html>
