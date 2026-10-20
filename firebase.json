@@ -1,0 +1,30 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "firestore.rules",
+      "firestore.indexes.json",
+      "README.md",
+      "vercel.json",
+      "**/.*"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": true,
+    "redirects": [
+      {
+        "source": "/home",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/home/**",
+        "destination": "/",
+        "type": 301
+      }
+    ]
+  }
+}

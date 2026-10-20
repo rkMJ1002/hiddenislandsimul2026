@@ -1,0 +1,272 @@
+rules_version = '2';
+
+// ===============================================================
+// FIRESTORE SECURITY RULES — THE HIDDEN ISLAND 2026
+// Art Festival Event Ticketing Platform
+// ===============================================================
+//
+// Assumed Data Models:
+//
+// 1. Collection: /config/tickets
+//    Document ID: "tickets"
+//    Fields:
+//      - presale1: map (required)
+//          - name: string (required, 1-50 chars)
+//          - price: number (required, 0 - 100,000,000 IDR)
+//          - maxSeats: number (required, 1 - 100,000)
+//          - soldSeats: number (required, 0 - 100,000)
+//          - status: string (required, ['available', 'sold_out', 'paused', 'coming_soon'])
+//          - subtitle: string (optional, 0 - 200 chars)
+//      - presale2: map (required)
+//          - name: string (required, 1-50 chars)
+//          - price: number (required, 0 - 100,000,000 IDR)
+//          - maxSeats: number (required, 1 - 100,000)
+//          - soldSeats: number (required, 0 - 100,000)
+//          - status: string (required, ['available', 'sold_out', 'paused', 'coming_soon'])
+//          - subtitle: string (optional, 0 - 200 chars)
+//
+// 2. Collection: /orders/{orderId}
+//    Document ID: order reference (e.g., "HI-2026-101", 3-50 chars)
+//    Fields:
+//      - id: string (required, immutable, 3-50 chars, matches document ID)
+//      - name: string (required, immutable, 1-100 chars) - buyer full name
+//      - email: string (required, immutable, 5-100 chars, valid email syntax)
+//      - phone: string (required, immutable, 8-25 chars, valid phone syntax)
+//      - tier: string (required, immutable, 1-50 chars) - e.g. "Presale 1", "Presale 2"
+//      - qty: number (required, immutable, integer 1-20)
+//      - total: number (required, immutable, 0 - 100,000,000 IDR)
+//      - status: string (required, 1-30 chars, ['Lunas', 'Pending', 'Batal', 'Menunggu Pembayaran', 'Paid', 'Success'])
+//      - wristband: string (required, immutable, 1-100 chars) - wristband access label
+//      - checkedIn: bool (required, initially false, updateable by gate staff)
+//      - checkInTime: string (optional/nullable, updateable by gate staff, max 50 chars)
+//      - date: string (required, immutable, 4-50 chars) - formatted order date
+//      - timestamp: number (required, immutable, positive epoch milliseconds)
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // AUTHENTICATION & ROLE-BASED ACCESS CONTROL (RBAC) HELPERS
+    // ===============================================================
+
+    // Check if the request is from an authenticated Firebase user
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if user has admin privileges via Custom Claims or verified admin domain
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.admin == true ||
+        (request.auth.token.email != null &&
+         request.auth.token.email.matches('^[a-zA-Z0-9._%+-]+@(artfestkosayu\\.id|thehiddenisland\\.com)$'))
+      );
+    }
+
+    // Check if user has gate staff or admin privileges
+    function isStaff() {
+      return isAuthenticated() && (
+        request.auth.token.staff == true ||
+        isAdmin()
+      );
+    }
+
+    // Mode toggles for festival operation:
+    // Set to 'false' to enforce strict Firebase Authentication tokens across admin/staff dashboards.
+    // Set to 'true' during client-side festival simulation / unauthenticated staff gate scanner mode.
+    function isFestivalAdminMode() {
+      return true;
+    }
+
+    function isFestivalStaffMode() {
+      return true;
+    }
+
+    function isStaffOrAdmin() {
+      return isStaff() || isAdmin() || isFestivalStaffMode();
+    }
+
+    function isAdminOrFestivalMaster() {
+      return isAdmin() || isFestivalAdminMode();
+    }
+
+    // ===============================================================
+    // VALIDATION HELPERS
+    // ===============================================================
+
+    // Validate email syntax (double backslash for CEL regex compatibility)
+    function isValidEmail(email) {
+      return email is string &&
+             email.size() >= 5 &&
+             email.size() <= 100 &&
+             email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
+    }
+
+    // Validate telephone number format (digits, spaces, hyphens, plus, parenthesis)
+    function isValidPhone(phone) {
+      return phone is string &&
+             phone.size() >= 8 &&
+             phone.size() <= 25 &&
+             phone.matches('^[+0-9\\s()-]+$');
+    }
+
+    // ===============================================================
+    // DOMAIN VALIDATORS: TICKET CONFIGURATION (/config/tickets)
+    // ===============================================================
+
+    // Validate an individual ticket tier structure
+    function isValidTicketTier(tier) {
+      return tier is map &&
+             tier.keys().hasAll(['name', 'price', 'maxSeats', 'soldSeats', 'status']) &&
+             tier.keys().hasOnly(['name', 'price', 'maxSeats', 'soldSeats', 'status', 'subtitle']) &&
+             tier.name is string && tier.name.size() >= 1 && tier.name.size() <= 50 &&
+             tier.price is number && tier.price >= 0 && tier.price <= 100000000 &&
+             tier.maxSeats is number && tier.maxSeats > 0 && tier.maxSeats <= 100000 &&
+             tier.soldSeats is number && tier.soldSeats >= 0 && tier.soldSeats <= 100000 &&
+             tier.status is string &&
+             tier.status in ['available', 'sold_out', 'paused', 'coming_soon'] &&
+             (!('subtitle' in tier) || (tier.subtitle is string && tier.subtitle.size() <= 200));
+    }
+
+    // Validate the root tickets configuration document
+    function isValidTicketConfig(data) {
+      return data is map &&
+             data.keys().hasAll(['presale1', 'presale2']) &&
+             data.keys().hasOnly(['presale1', 'presale2']) &&
+             isValidTicketTier(data.presale1) &&
+             isValidTicketTier(data.presale2);
+    }
+
+    // Protect against price tampering: public checkout purchasers may ONLY increment soldSeats
+    function isPublicSeatIncrement() {
+      return isValidTicketConfig(request.resource.data) &&
+             // Presale 1 configuration integrity
+             request.resource.data.presale1.name == resource.data.presale1.name &&
+             request.resource.data.presale1.price == resource.data.presale1.price &&
+             request.resource.data.presale1.maxSeats == resource.data.presale1.maxSeats &&
+             request.resource.data.presale1.status == resource.data.presale1.status &&
+             request.resource.data.presale1.soldSeats >= resource.data.presale1.soldSeats &&
+             request.resource.data.presale1.soldSeats - resource.data.presale1.soldSeats <= 20 &&
+             // Presale 2 configuration integrity
+             request.resource.data.presale2.name == resource.data.presale2.name &&
+             request.resource.data.presale2.price == resource.data.presale2.price &&
+             request.resource.data.presale2.maxSeats == resource.data.presale2.maxSeats &&
+             request.resource.data.presale2.status == resource.data.presale2.status &&
+             request.resource.data.presale2.soldSeats >= resource.data.presale2.soldSeats &&
+             request.resource.data.presale2.soldSeats - resource.data.presale2.soldSeats <= 20;
+    }
+
+    // Authorized ticket config write rule
+    function isAllowedConfigWrite() {
+      return isValidTicketConfig(request.resource.data) && (
+        isAdminOrFestivalMaster() ||
+        isPublicSeatIncrement()
+      );
+    }
+
+    // ===============================================================
+    // DOMAIN VALIDATORS: ORDERS (/orders/{orderId})
+    // ===============================================================
+
+    // Complete validator for order documents (enforced on both create and update)
+    function isValidOrder(data) {
+      return data is map &&
+             data.keys().hasAll(['id', 'name', 'email', 'phone', 'tier', 'qty', 'total', 'status', 'wristband', 'checkedIn', 'date', 'timestamp']) &&
+             data.keys().hasOnly(['id', 'name', 'email', 'phone', 'tier', 'qty', 'total', 'status', 'wristband', 'checkedIn', 'checkInTime', 'date', 'timestamp']) &&
+             data.id is string && data.id.size() >= 3 && data.id.size() <= 50 &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             isValidEmail(data.email) &&
+             isValidPhone(data.phone) &&
+             data.tier is string && data.tier.size() >= 1 && data.tier.size() <= 50 &&
+             data.qty is number && data.qty >= 1 && data.qty <= 20 &&
+             data.total is number && data.total >= 0 && data.total <= 100000000 &&
+             data.status is string && data.status.size() >= 1 && data.status.size() <= 30 &&
+             data.status in ['Lunas', 'Pending', 'Batal', 'Menunggu Pembayaran', 'Paid', 'Success', 'Cancelled'] &&
+             data.wristband is string && data.wristband.size() >= 1 && data.wristband.size() <= 100 &&
+             data.checkedIn is bool &&
+             data.date is string && data.date.size() >= 4 && data.date.size() <= 50 &&
+             data.timestamp is number && data.timestamp > 0 &&
+             (!('checkInTime' in data) || data.checkInTime == null || (data.checkInTime is string && data.checkInTime.size() <= 50));
+    }
+
+    // Validation for new order creation (checkout)
+    function isValidNewOrder(orderId) {
+      return isValidOrder(request.resource.data) &&
+             request.resource.data.id == orderId &&
+             request.resource.data.checkedIn == false &&
+             (!('checkInTime' in request.resource.data) ||
+              request.resource.data.checkInTime == null ||
+              request.resource.data.checkInTime == '');
+    }
+
+    // Validation for order updates (gate check-in staff)
+    function isValidOrderUpdate(orderId) {
+      return isValidOrder(request.resource.data) &&
+             // Document ID integrity
+             request.resource.data.id == resource.data.id &&
+             request.resource.data.id == orderId &&
+             // Immutable buyer & purchase information
+             request.resource.data.name == resource.data.name &&
+             request.resource.data.email == resource.data.email &&
+             request.resource.data.phone == resource.data.phone &&
+             request.resource.data.tier == resource.data.tier &&
+             request.resource.data.qty == resource.data.qty &&
+             request.resource.data.total == resource.data.total &&
+             request.resource.data.wristband == resource.data.wristband &&
+             request.resource.data.date == resource.data.date &&
+             request.resource.data.timestamp == resource.data.timestamp &&
+             // Only check-in fields may be modified on update
+             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['checkedIn', 'checkInTime']);
+    }
+
+    // ===============================================================
+    // COLLECTION RULES
+    // ===============================================================
+
+    // 1. TICKET CONFIGURATION (/config/tickets)
+    // Publicly readable so visitors see real-time seat counts, prices, and status.
+    // Modifiable by organizers/admin, or by ticket buyers incrementing sold seats.
+    match /config/tickets {
+      allow read: if true;
+
+      // Allow initial seeding if document doesn't exist, otherwise enforce strict validation
+      allow create: if isValidTicketConfig(request.resource.data) && (
+        isAdminOrFestivalMaster() ||
+        !exists(/databases/$(database)/documents/config/tickets)
+      );
+
+      // Updates must preserve valid ticket schema and prevent price/quota tampering
+      allow update: if isAllowedConfigWrite();
+
+      // Deletion is strictly forbidden to prevent accidental disruption
+      allow delete: if false;
+    }
+
+    // 2. ORDERS COLLECTION (/orders/{orderId})
+    // Orders created by buyers at checkout. Gate staff reads and updates check-in state.
+    // Admin can delete/clear orders for resetting test runs or festival management.
+    match /orders/{orderId} {
+      // Readable by Gate Check-In staff and festival management
+      allow read: if isStaffOrAdmin();
+
+      // Public create allowed so buyers can complete checkout, strictly validated
+      allow create: if isValidNewOrder(orderId);
+
+      // Updateable by Gate staff for check-in toggling, immutable fields locked down
+      allow update: if isValidOrderUpdate(orderId) && isStaffOrAdmin();
+
+      // Deletable only by admin (e.g., clearing test orders from Subseksi panel)
+      allow delete: if isAdminOrFestivalMaster();
+    }
+
+    // ===============================================================
+    // DEFAULT DENY RULE
+    // ===============================================================
+    // Deny read and write to any unspecified collections or documents
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

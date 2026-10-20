@@ -82,6 +82,10 @@
 				<span class="adminBrandName">ARTFEST KOSAYU 2026 — DASBOR SUBSEKSI</span>
 			</div>
 			<div class="adminUserActions">
+				<button type="button" class="btnCloudSync" id="btnCloudSyncStatus" onclick="openFirebaseConfigModal()" title="Status Sinkronisasi Cloud Database">
+					<span class="cloudDot disconnected" id="cloudStatusDot"></span>
+					<span id="cloudStatusText">Cloud Database</span>
+				</button>
 				<a href="../index.html" target="_blank" rel="noopener noreferrer" class="btnViewLiveSite">
 					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 						<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -448,9 +452,70 @@
 		</div>
 	</dialog>
 
+	<!-- Firebase Cloud Configuration Modal -->
+	<dialog id="firebaseConfigModal" class="adminDialogModal">
+		<div class="adminDialogCard" style="max-width: 600px;">
+			<div class="dialogHeader">
+				<div style="display:flex; align-items:center; gap:10px;">
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e6c35c" stroke-width="2">
+						<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+					</svg>
+					<h3 class="dialogTitle" style="margin:0;">Pengaturan Cloud Database (Firebase)</h3>
+				</div>
+				<button type="button" class="btnCloseDialog" onclick="closeFirebaseConfigModal()">✕</button>
+			</div>
+
+			<div class="dialogBody" style="padding: 16px 0;">
+				<div id="cloudStatusBox" class="cloudStatusAlert disconnected" style="margin-bottom: 16px;">
+					<strong>⚠️ Mode Saat Ini: Penyimpanan Lokal (LocalStorage)</strong><br>
+					Perubahan tiket hanya berlaku di browser ini. Hubungkan Firebase agar perubahan tersinkronisasi langsung ke Opera, Chrome, dan HP.
+				</div>
+
+				<p style="font-size: 13px; color: rgba(207,212,208,0.85); line-height: 1.6; margin-bottom: 16px;">
+					Dengan menghubungkan <strong>Firebase Firestore (100% Gratis)</strong>, status tiket (Tersedia / Sold Out), harga, kuota, dan data pesanan akan tersinkronisasi <strong>secara langsung (real-time)</strong> di seluruh browser dan perangkat.
+				</p>
+
+				<form id="firebaseConfigForm" onsubmit="handleSaveFirebaseConfig(event)">
+					<div class="formGroup" style="margin-bottom: 12px;">
+						<label class="formLabel" for="fbApiKey">Firebase API Key</label>
+						<input type="text" id="fbApiKey" class="formInput" placeholder="AIzaSy..." required>
+					</div>
+					<div class="formGroup" style="margin-bottom: 12px;">
+						<label class="formLabel" for="fbProjectId">Project ID</label>
+						<input type="text" id="fbProjectId" class="formInput" placeholder="hidden-island-2026" required>
+					</div>
+					<div class="formGroup" style="margin-bottom: 12px;">
+						<label class="formLabel" for="fbAuthDomain">Auth Domain (opsional)</label>
+						<input type="text" id="fbAuthDomain" class="formInput" placeholder="hidden-island-2026.firebaseapp.com">
+					</div>
+					<div class="formGroup" style="margin-bottom: 12px;">
+						<label class="formLabel" for="fbAppId">App ID (opsional)</label>
+						<input type="text" id="fbAppId" class="formInput" placeholder="1:123456789:web:abcdef">
+					</div>
+
+					<div style="background: rgba(33,61,58,0.4); border: 1px dashed rgba(183,169,124,0.3); border-radius: 8px; padding: 12px; margin-bottom: 18px;">
+						<div style="font-size: 12px; font-weight: 600; color: #B7A97C; margin-bottom: 6px;">Atau Tempel Langsung Objek firebaseConfig JSON dari Firebase Console:</div>
+						<textarea id="fbRawJson" class="formInput" rows="3" placeholder='{ "apiKey": "...", "projectId": "..." }' style="font-family: monospace; font-size: 11px;" oninput="handleRawJsonInput()"></textarea>
+					</div>
+
+					<div class="dialogActions" style="display:flex; justify-content:space-between; align-items:center; margin-top: 15px;">
+						<button type="button" class="btnSecondaryAction" onclick="handleClearFirebaseConfig()" style="color:#ff7b7b;">Putus Sambungan (Reset)</button>
+						<div style="display:flex; gap:10px;">
+							<button type="button" class="btnSecondaryAction" onclick="closeFirebaseConfigModal()">Batal</button>
+							<button type="submit" class="btnLoginSubmit" style="margin-top:0; padding:10px 18px;">Simpan & Hubungkan</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</dialog>
+
 	<!-- Toast Element -->
 	<div class="adminToast" id="adminToast">Pemberitahuan</div>
 
+	<script src="../shared/firebase-config.js"></script>
+	<script src="../shared/cloud-store.js"></script>
 	<script src="script.js"></script>
+	<script src="../shared/cookie-consent.js"></script>
 </body>
 </html>
