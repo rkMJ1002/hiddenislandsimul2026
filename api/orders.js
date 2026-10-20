@@ -122,8 +122,8 @@ module.exports = async (req, res) => {
 				console.warn("Failed persisting orders to blob:", putErr);
 			}
 
-			// Sync ticket sold seats automatically
-			syncTicketsBlobFromOrders(currentOrders).catch(() => {});
+			// Sync ticket sold seats automatically before responding
+			await syncTicketsBlobFromOrders(currentOrders);
 
 			return res.status(200).json({ success: true, count: currentOrders.length, orders: currentOrders });
 		}
@@ -154,8 +154,8 @@ module.exports = async (req, res) => {
 				console.warn("Failed persisting orders to blob:", putErr);
 			}
 
-			// Sync ticket sold seats automatically
-			syncTicketsBlobFromOrders(listToSave).catch(() => {});
+			// Sync ticket sold seats automatically before responding
+			await syncTicketsBlobFromOrders(listToSave);
 
 			return res.status(200).json({ success: true, count: listToSave.length });
 		}
@@ -175,8 +175,8 @@ module.exports = async (req, res) => {
 				console.warn("Failed resetting orders in blob:", delErr);
 			}
 
-			// Reset tickets sold seats to 0
-			syncTicketsBlobFromOrders([]).catch(() => {});
+			// Reset tickets sold seats to 0 before responding
+			await syncTicketsBlobFromOrders([]);
 
 			return res.status(200).json({ success: true, orders: [] });
 		}
