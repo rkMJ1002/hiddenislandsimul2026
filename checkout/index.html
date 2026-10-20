@@ -1,448 +1,456 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Checkout - The Hidden Island</title>
-	<link rel="icon" type="image/svg+xml" href="../favicon.svg">
-	<link rel="alternate icon" type="image/png" href="../favicon.png">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css">
-</head>
-<body>
-	<div class="checkoutContainer">
-		<!-- LEFT COLUMN: Order Summary -->
-		<aside class="summaryColumn">
-			<div class="summaryContent">
-				<a href="../tiket/index.html" class="backBrandLink" aria-label="Kembali ke Tiket">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-						<line x1="19" y1="12" x2="5" y2="12"></line>
-						<polyline points="12 19 5 12 12 5"></polyline>
-					</svg>
-					<img src="../logo.png" alt="THE HIDDEN ISLAND" class="checkoutLogoImg">
-				</a>
-
-				<div class="productHeader">
-					<span class="productSubtitle" id="productSub">Pemesanan Tiket Pentas Seni</span>
-					<h1 class="productTitle" id="productTitle">Tiket The Hidden Island — Presale 1</h1>
-					<div class="bigPriceRow">
-						<span class="bigPrice" id="bigPriceDisplay">IDR 75,000.00</span>
-						<span class="perTicketLabel">total</span>
-					</div>
-				</div>
-
-				<!-- Currency Switcher Pill with SVG Flags (No Emojis) -->
-				<div class="currencyPillWrapper">
-					<button type="button" class="currencyTab active" id="btnCurrIdr" onclick="setCurrency('IDR')">
-						<svg class="flagSvg" width="16" height="11" viewBox="0 0 16 11">
-							<rect width="16" height="5.5" fill="#E70011"/>
-							<rect y="5.5" width="16" height="5.5" fill="#FFFFFF"/>
-							<rect width="16" height="11" fill="none" stroke="#DCDFE4" stroke-width="0.5"/>
-						</svg>
-						IDR
-					</button>
-					<button type="button" class="currencyTab" id="btnCurrUsd" onclick="setCurrency('USD')">
-						<svg class="flagSvg" width="16" height="11" viewBox="0 0 16 11">
-							<rect width="16" height="11" fill="#B22234"/>
-							<path d="M0 1.6h16M0 3.3h16M0 5.0h16M0 6.7h16M0 8.4h16M0 10.1h16" stroke="#FFFFFF" stroke-width="0.8"/>
-							<rect width="7.5" height="5.8" fill="#3C3B6E"/>
-						</svg>
-						USD
-					</button>
-				</div>
-				<p class="currencyNote">1 USD = 16.200 IDR. Charges will vary based on exchange rates.</p>
-
-				<!-- Line Item Breakdown -->
-				<div class="breakdownTable">
-					<div class="breakdownRow">
-						<div class="itemNameGroup">
-							<span class="itemName" id="itemNameDisplay">Presale 1</span>
-							<span class="itemSub" id="itemSubDisplay">1 Tiket • Akses Festival</span>
-						</div>
-						<span class="itemPrice" id="itemPriceDisplay">IDR 75,000.00</span>
-					</div>
-
-					<div class="breakdownDivider"></div>
-
-					<div class="breakdownRow subtotalRow">
-						<span>Subtotal</span>
-						<span id="subtotalDisplay">IDR 75,000.00</span>
-					</div>
-
-					<!-- Promo Code Section -->
-					<div class="promoSection">
-						<button type="button" class="btnPromo" onclick="togglePromoField()" id="btnPromoToggle">Add promotion code</button>
-						<div class="promoInputGroup" id="promoInputGroup" style="display: none;">
-							<input type="text" id="promoCodeInput" placeholder="Enter coupon code" class="promoInput">
-							<button type="button" class="btnApplyPromo" onclick="applyPromo()">Apply</button>
-						</div>
-						<p id="promoStatus" class="promoStatusText"></p>
-					</div>
-
-					<div class="breakdownDivider"></div>
-
-					<div class="breakdownRow totalDueRow">
-						<span class="totalDueLabel">Total due today</span>
-						<span class="totalDuePrice" id="totalDueDisplay">IDR 75,000.00</span>
-					</div>
-				</div>
-			</div>
-		</aside>
-
-		<!-- RIGHT COLUMN: Payment Methods & Checkout Form -->
-		<main class="formColumn">
-			<div class="formContent">
-				<!-- Express Checkout Options: Pear Pay & Dpay -->
-				<div class="expressPayRow">
-					<!-- Pear Pay (with bitten pear logo) -->
-					<button type="button" class="btnPearPay" onclick="handleExpressPay('Pear Pay')">
-						<svg class="pearIcon" width="18" height="22" viewBox="0 0 100 120" fill="currentColor">
-							<mask id="pearBiteMask">
-								<rect width="100" height="120" fill="white"/>
-								<!-- Bitten cutout on one side -->
-								<circle cx="82" cy="65" r="17" fill="black"/>
-							</mask>
-							<!-- Pear Stem -->
-							<path d="M50 6 C48 16 58 20 54 28 C52 23 46 20 47 8 Z" fill="currentColor"/>
-							<!-- Pear Body -->
-							<path d="M50 26 C36 26 30 38 28 54 C20 68 14 84 18 99 C23 113 38 119 50 119 C62 119 77 113 82 99 C86 84 80 68 72 54 C70 38 64 26 50 26 Z" mask="url(#pearBiteMask)"/>
-						</svg>
-						<span class="payLabel">Pay</span>
-					</button>
-
-					<!-- DPay (Google Pay parody) -->
-					<button type="button" class="btnDPay" onclick="handleExpressPay('DPay')">
-						<svg class="dpayLogoSvg" width="22" height="22" viewBox="0 0 40 40">
-							<path d="M8 8 H22 C30 8 35 13 35 20 C35 27 30 32 22 32 H8 Z" fill="#4285F4"/>
-							<path d="M8 8 H20 C24 8 26 10 26 13 L8 13 Z" fill="#EA4335"/>
-							<path d="M8 27 H20 C24 27 26 29 26 32 L8 32 Z" fill="#34A853"/>
-							<circle cx="31" cy="20" r="3.5" fill="#FBBC05"/>
-							<path d="M15 15 H21 C24 15 27 17 27 20 C27 23 24 25 21 25 H15 Z" fill="#ffffff"/>
-						</svg>
-						<span class="dpayText">Pay</span>
-					</button>
-				</div>
-
-				<div class="orDivider">
-					<span>OR</span>
-				</div>
-
-				<!-- Contact Section -->
-				<div class="checkoutSection">
-					<label class="sectionHeading">Contact</label>
-					<div class="inputFieldWrapper">
-						<label for="contactEmail" class="floatingLabel">Email</label>
-						<input type="email" id="contactEmail" class="stripeInput" placeholder="nama@email.com" required>
-					</div>
-
-					<!-- Phone verification popup card with SVG Flag (No Emojis) -->
-					<div class="phoneVerifyCard">
-						<div class="phoneCardHeader">
-							<div>
-								<h4 class="phoneCardTitle">Enter your phone number</h4>
-								<p class="phoneCardDesc">Before we can send your ticket voucher, we need to verify your phone number.</p>
-							</div>
-							<button type="button" class="phoneCardClose" onclick="dismissPhoneCard()">&times;</button>
-						</div>
-						<div class="phoneInputRow">
-							<div class="countryBadge">
-								<svg class="flagSvg" width="16" height="11" viewBox="0 0 16 11">
-									<rect width="16" height="5.5" fill="#E70011"/>
-									<rect y="5.5" width="16" height="5.5" fill="#FFFFFF"/>
-									<rect width="16" height="11" fill="none" stroke="#DCDFE4" stroke-width="0.5"/>
-								</svg>
-								<span class="countryArrow">▾</span>
-							</div>
-							<input type="tel" id="contactPhone" class="phoneInnerInput" placeholder="0812-3456-7890">
-						</div>
-						<button type="button" class="btnVerifyPhone" onclick="verifyPhone()" id="btnVerify">Verify</button>
-					</div>
-				</div>
-
-				<!-- Payment Method Section -->
-				<div class="checkoutSection">
-					<label class="sectionHeading">Payment method</label>
-
-					<!-- Payment Method Tabs   -->
-					<div class="paymentTabsGrid">
-						<!-- Card -->
-						<button type="button" class="payTab active" onclick="switchPaymentMethod('card', this)">
-							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<rect x="2" y="5" width="20" height="14" rx="2"/>
-								<line x1="2" y1="10" x2="22" y2="10"/>
-							</svg>
-							<span class="tabTitle">Card</span>
-						</button>
-
-						<!-- QRIS -->
-						<button type="button" class="payTab" onclick="switchPaymentMethod('qris', this)">
-							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<rect x="3" y="3" width="7" height="7"/>
-								<rect x="14" y="3" width="7" height="7"/>
-								<rect x="14" y="14" width="7" height="7"/>
-								<rect x="3" y="14" width="7" height="7"/>
-							</svg>
-							<span class="tabTitle">QRIS</span>
-						</button>
-
-						<!-- Virtual Account -->
-						<button type="button" class="payTab" onclick="switchPaymentMethod('va', this)">
-							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<polygon points="12 2 2 7 22 7 12 2"/>
-								<line x1="5" y1="10" x2="5" y2="18"/>
-								<line x1="12" y1="10" x2="12" y2="18"/>
-								<line x1="19" y1="10" x2="19" y2="18"/>
-								<line x1="2" y1="21" x2="22" y2="21"/>
-							</svg>
-							<span class="tabTitle">VA Bank</span>
-						</button>
-
-						<!-- Stop Pay (GoPay parody) -->
-						<button type="button" class="payTab" onclick="switchPaymentMethod('stoppay', this)">
-							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="#00AA13">
-								<circle cx="12" cy="12" r="10"/>
-								<rect x="6" y="10" width="12" height="4" rx="1.5" fill="#FFFFFF"/>
-							</svg>
-							<span class="tabTitle">Stop Pay</span>
-						</button>
-
-						<!-- Defisit (DANA parody) -->
-						<button type="button" class="payTab" onclick="switchPaymentMethod('defisit', this)">
-							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="#118EEA">
-								<rect x="3" y="4" width="18" height="16" rx="3"/>
-								<path d="M7 9 L11 13 L13 11 L17 15" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-							</svg>
-							<span class="tabTitle">Defisit</span>
-						</button>
-
-						<!-- OVO -->
-						<button type="button" class="payTab" onclick="switchPaymentMethod('opo', this)">
-							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="#4C3494">
-								<circle cx="12" cy="12" r="10"/>
-								<circle cx="12" cy="12" r="5" fill="#FFFFFF"/>
-								<circle cx="12" cy="12" r="2.5" fill="#4C3494"/>
-							</svg>
-							<span class="tabTitle">Opo</span>
-						</button>
-					</div>
-
-					<!-- Method View 1: Card (Bisa & Servantcard, JCB removed) -->
-					<div id="method-card" class="methodView active">
-						<div class="cardBoxContainer">
-							<div class="cardHeaderRow">
-								<span class="cardSublabel">Card information</span>
-								<div class="cardBrandIcons">
-									<!-- Bisa (Visa Parody) -->
-									<span class="brandBadge bisa">BISA</span>
-									<!-- Servantcard (Mastercard Parody) -->
-									<span class="brandBadge servantcard">
-										<span class="scCircles">
-											<span class="scDot red"></span>
-											<span class="scDot yellow"></span>
-										</span>
-										<span class="scLabel">servantcard</span>
-									</span>
-								</div>
-							</div>
-							<div class="inputRowGroup">
-								<input type="text" class="cardRowInput" placeholder="1234 5678 9012 3456" maxlength="19">
-								<div class="dualInputRow">
-									<input type="text" class="cardRowInput half" placeholder="MM / YY" maxlength="5">
-									<input type="text" class="cardRowInput half" placeholder="CVC" maxlength="4">
-								</div>
-							</div>
-
-							<div class="cardFieldGroup">
-								<label class="cardFieldLabel">Name on card</label>
-								<input type="text" id="cardHolderName" class="stripeInput" placeholder="First and last name">
-							</div>
-
-							<div class="cardFieldGroup">
-								<label class="cardFieldLabel">Billing information</label>
-								<div class="selectWrapper">
-									<select class="stripeSelect">
-										<option value="ID">Indonesia</option>
-										<option value="SG">Singapore</option>
-										<option value="MY">Malaysia</option>
-										<option value="US">United States</option>
-									</select>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- QRIS -->
-					<div id="method-qris" class="methodView">
-						<div class="qrisContainer">
-							<div class="qrisHeader">
-								<div class="qrisLogo">QRIS <span>GPN</span></div>
-								<span class="qrisTimer">Berlaku: <strong id="qrisCountdown">14:59</strong></span>
-							</div>
-							<div class="qrisQrWrapper">
-								<svg viewBox="0 0 160 160" width="160" height="160">
-									<rect width="160" height="160" fill="#ffffff"/>
-									<!-- Corners -->
-									<rect x="15" y="15" width="40" height="40" fill="#000000"/>
-									<rect x="23" y="23" width="24" height="24" fill="#ffffff"/>
-									<rect x="27" y="27" width="16" height="16" fill="#000000"/>
-
-									<rect x="105" y="15" width="40" height="40" fill="#000000"/>
-									<rect x="113" y="23" width="24" height="24" fill="#ffffff"/>
-									<rect x="117" y="27" width="16" height="16" fill="#000000"/>
-
-									<rect x="15" y="105" width="40" height="40" fill="#000000"/>
-									<rect x="23" y="113" width="24" height="24" fill="#ffffff"/>
-									<rect x="27" y="117" width="16" height="16" fill="#000000"/>
-									<!-- Patterns -->
-									<rect x="65" y="20" width="10" height="10" fill="#000000"/>
-									<rect x="85" y="25" width="10" height="20" fill="#000000"/>
-									<rect x="65" y="45" width="25" height="10" fill="#000000"/>
-									<rect x="20" y="65" width="10" height="25" fill="#000000"/>
-									<rect x="40" y="75" width="20" height="10" fill="#000000"/>
-									<rect x="70" y="70" width="20" height="20" fill="#000000"/>
-									<rect x="105" y="65" width="15" height="20" fill="#000000"/>
-									<rect x="130" y="70" width="15" height="10" fill="#000000"/>
-									<rect x="65" y="105" width="15" height="15" fill="#000000"/>
-									<rect x="90" y="105" width="25" height="10" fill="#000000"/>
-									<rect x="125" y="105" width="20" height="35" fill="#000000"/>
-									<rect x="70" y="130" width="40" height="15" fill="#000000"/>
-								</svg>
-							</div>
-							<p class="qrisHint">Pindai kode QRIS menggunakan Stop Pay, Defisit, Opo, BCE Mobile, atau mobile banking apa saja.</p>
-						</div>
-					</div>
-
-					<!-- Virtual Account (BCE, Sendiri, BNA, BRIS) -->
-					<div id="method-va" class="methodView">
-						<div class="vaContainer">
-							<label class="cardFieldLabel">Pilih Bank</label>
-							<div class="bankOptionsGrid">
-								<button type="button" class="bankOption active" onclick="selectBank('BCE', '8277081234567890', this)">BCE</button>
-								<button type="button" class="bankOption" onclick="selectBank('Sendiri', '8950808123456789', this)">Sendiri</button>
-								<button type="button" class="bankOption" onclick="selectBank('BNA', '8810081234567890', this)">BNA</button>
-								<button type="button" class="bankOption" onclick="selectBank('BRIS', '1280081234567890', this)">BRIS</button>
-							</div>
-
-							<div class="vaNumberBox">
-								<div class="vaNumberHeader">
-									<span id="bankNameDisplay">BCE Virtual Account</span>
-									<span class="autoCheck">Otomatis Terverifikasi</span>
-								</div>
-								<div class="vaCodeRow">
-									<strong id="vaNumberDisplay" class="vaNumber">8277 0812 3456 7890</strong>
-									<button type="button" class="btnCopy" onclick="copyVA()">Salin</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Stop Pay -->
-					<div id="method-stoppay" class="methodView">
-						<div class="walletBox">
-							<div class="walletCustomLogo stopPay">
-								<svg width="22" height="22" viewBox="0 0 24 24" fill="#00AA13">
-									<circle cx="12" cy="12" r="10"/>
-									<rect x="6" y="10" width="12" height="4" rx="1.5" fill="#FFFFFF"/>
-								</svg>
-								<span>STOP PAY</span>
-							</div>
-							<p class="walletHint">Notifikasi tagihan akan dikirimkan langsung ke aplikasi Stop Pay Anda.</p>
-						</div>
-					</div>
-
-					<!-- Method View 5: Defisit (DANA parody) -->
-					<div id="method-defisit" class="methodView">
-						<div class="walletBox">
-							<div class="walletCustomLogo defisit">
-								<svg width="22" height="22" viewBox="0 0 24 24" fill="#118EEA">
-									<rect x="3" y="4" width="18" height="16" rx="3"/>
-									<path d="M7 9 L11 13 L13 11 L17 15" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-								</svg>
-								<span>DEFISIT</span>
-							</div>
-							<p class="walletHint">Saldo Anda akan didefisitkan secara aman melalui aplikasi Defisit.</p>
-						</div>
-					</div>
-
-					<!-- Opo -->
-					<div id="method-opo" class="methodView">
-						<div class="walletBox">
-							<div class="walletCustomLogo opo">
-								<svg width="22" height="22" viewBox="0 0 24 24" fill="#4C3494">
-									<circle cx="12" cy="12" r="10"/>
-									<circle cx="12" cy="12" r="5" fill="#FFFFFF"/>
-									<circle cx="12" cy="12" r="2.5" fill="#4C3494"/>
-								</svg>
-								<span>OPO</span>
-							</div>
-							<p class="walletHint">Opo iyo? Buka aplikasi Opo di ponsel Anda dan setujui konfirmasi pembayaran.</p>
-						</div>
-					</div>
-				</div>
-
-				<!-- Terms & Conditions Agreement Checkbox -->
-				<div class="checkboxRow">
-					<input type="checkbox" id="checkTerms" class="stripeCheckbox">
-					<label for="checkTerms" class="checkboxLabel">
-						Saya menyetujui syarat dan ketentuan pemesanan tiket Pentas Seni The Hidden Island 2026.
-					</label>
-				</div>
-				<p id="termsErrorMsg" class="termsError" style="display: none;">Harap centang persetujuan syarat dan ketentuan terlebih dahulu.</p>
-
-				<!-- Main Action Button -->
-				<button type="button" class="btnStripePay" id="btnMainPay" onclick="executePayment()">
-					Bayar Sekarang • <span id="btnPayAmount">IDR 75,000.00</span>
-				</button>
-
-				<p class="legalDisclaimer">
-					Dengan mengeklik Bayar Sekarang, Anda menyetujui pemrosesan tiket The Hidden Island melalui sistem pembayaran resmi.
-				</p>
-
-				<!-- Powered by Rakhyan -->
-				<footer class="stripeFooter">
-					<div class="poweredByRakhyan">
-						<span>Powered by</span>
-						<strong class="rakhyanLogo">Rakhyan</strong>
-					</div>
-					<div class="footerLinks">
-						<a href="../legal/index.html#syarat" target="_blank">Terms</a>
-						<a href="../legal/index.html#privasi" target="_blank">Privacy</a>
-					</div>
-				</footer>
-			</div>
-		</main>
-	</div>
-
-	<!-- Payment Success Overlay Modal -->
-	<dialog id="successModal" class="successDialog">
-		<div class="successCard">
-			<div class="checkCircle">✓</div>
-			<h2 class="successTitle">Pembayaran Berhasil!</h2>
-			<p class="successSubtitle">Terima kasih atas pemesanan tiket Anda untuk <strong>The Hidden Island 2026</strong>.</p>
-			
-			<div class="receiptSummary">
-				<div class="receiptRow">
-					<span>Nomor Referensi:</span>
-					<strong>RKH-2026-9812</strong>
-				</div>
-				<div class="receiptRow">
-					<span>Metode Pembayaran:</span>
-					<strong id="receiptMethod">Card</strong>
-				</div>
-				<div class="receiptRow">
-					<span>Total Dibayar:</span>
-					<strong id="receiptTotal">IDR 75,000.00</strong>
-				</div>
-			</div>
-
-			<p class="receiptNote">E-Ticket dan QR Code registrasi telah dikirimkan ke WhatsApp & Email Anda.</p>
-			<a href="../index.html" class="btnReturnHome">Kembali ke Beranda</a>
-		</div>
-	</dialog>
-
-	<script src="script.js"></script>
-	<script src="../shared/cookie-consent.js"></script>
-</body>
-</html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Checkout - The Hidden Island</title>
+	<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+	<link rel="alternate icon" type="image/png" href="../favicon.png">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div class="checkoutContainer">
+		<!-- LEFT COLUMN: Order Summary -->
+		<aside class="summaryColumn">
+			<div class="summaryContent">
+				<a href="../tiket/index.html" class="backBrandLink" aria-label="Kembali ke Tiket">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="19" y1="12" x2="5" y2="12"></line>
+						<polyline points="12 19 5 12 12 5"></polyline>
+					</svg>
+					<img src="../logo.png" alt="THE HIDDEN ISLAND" class="checkoutLogoImg">
+				</a>
+
+				<div class="productHeader">
+					<span class="productSubtitle" id="productSub">Pemesanan Tiket Pentas Seni</span>
+					<h1 class="productTitle" id="productTitle">Tiket The Hidden Island — Presale 1</h1>
+					<div class="bigPriceRow">
+						<span class="bigPrice" id="bigPriceDisplay">IDR 75,000.00</span>
+						<span class="perTicketLabel">total</span>
+					</div>
+				</div>
+
+				<!-- Currency Switcher Pill with SVG Flags (No Emojis) -->
+				<div class="currencyPillWrapper">
+					<button type="button" class="currencyTab active" id="btnCurrIdr" onclick="setCurrency('IDR')">
+						<svg class="flagSvg" width="16" height="11" viewBox="0 0 16 11">
+							<rect width="16" height="5.5" fill="#E70011"/>
+							<rect y="5.5" width="16" height="5.5" fill="#FFFFFF"/>
+							<rect width="16" height="11" fill="none" stroke="#DCDFE4" stroke-width="0.5"/>
+						</svg>
+						IDR
+					</button>
+					<button type="button" class="currencyTab" id="btnCurrUsd" onclick="setCurrency('USD')">
+						<svg class="flagSvg" width="16" height="11" viewBox="0 0 16 11">
+							<rect width="16" height="11" fill="#B22234"/>
+							<path d="M0 1.6h16M0 3.3h16M0 5.0h16M0 6.7h16M0 8.4h16M0 10.1h16" stroke="#FFFFFF" stroke-width="0.8"/>
+							<rect width="7.5" height="5.8" fill="#3C3B6E"/>
+						</svg>
+						USD
+					</button>
+				</div>
+				<p class="currencyNote">1 USD = 16.200 IDR. Charges will vary based on exchange rates.</p>
+
+				<!-- Line Item Breakdown -->
+				<div class="breakdownTable">
+					<div class="breakdownRow">
+						<div class="itemNameGroup">
+							<span class="itemName" id="itemNameDisplay">Presale 1</span>
+							<span class="itemSub" id="itemSubDisplay">1 Tiket • Akses Festival</span>
+						</div>
+						<span class="itemPrice" id="itemPriceDisplay">IDR 75,000.00</span>
+					</div>
+
+					<div class="breakdownDivider"></div>
+
+					<div class="breakdownRow subtotalRow">
+						<span>Subtotal</span>
+						<span id="subtotalDisplay">IDR 75,000.00</span>
+					</div>
+
+					<!-- Promo Code Section -->
+					<div class="promoSection">
+						<button type="button" class="btnPromo" onclick="togglePromoField()" id="btnPromoToggle">Add promotion code</button>
+						<div class="promoInputGroup" id="promoInputGroup" style="display: none;">
+							<input type="text" id="promoCodeInput" placeholder="Enter coupon code" class="promoInput">
+							<button type="button" class="btnApplyPromo" onclick="applyPromo()">Apply</button>
+						</div>
+						<p id="promoStatus" class="promoStatusText"></p>
+					</div>
+
+					<div class="breakdownDivider"></div>
+
+					<div class="breakdownRow totalDueRow">
+						<span class="totalDueLabel">Total due today</span>
+						<span class="totalDuePrice" id="totalDueDisplay">IDR 75,000.00</span>
+					</div>
+				</div>
+			</div>
+		</aside>
+
+		<!-- RIGHT COLUMN: Payment Methods & Checkout Form -->
+		<main class="formColumn">
+			<div class="formContent">
+				<!-- Express Checkout Options: Pear Pay & Dpay -->
+				<div class="expressPayRow">
+					<!-- Pear Pay (with bitten pear logo) -->
+					<button type="button" class="btnPearPay" onclick="handleExpressPay('Pear Pay')">
+						<svg class="pearIcon" width="18" height="22" viewBox="0 0 100 120" fill="currentColor">
+							<mask id="pearBiteMask">
+								<rect width="100" height="120" fill="white"/>
+								<!-- Bitten cutout on one side -->
+								<circle cx="82" cy="65" r="17" fill="black"/>
+							</mask>
+							<!-- Pear Stem -->
+							<path d="M50 6 C48 16 58 20 54 28 C52 23 46 20 47 8 Z" fill="currentColor"/>
+							<!-- Pear Body -->
+							<path d="M50 26 C36 26 30 38 28 54 C20 68 14 84 18 99 C23 113 38 119 50 119 C62 119 77 113 82 99 C86 84 80 68 72 54 C70 38 64 26 50 26 Z" mask="url(#pearBiteMask)"/>
+						</svg>
+						<span class="payLabel">Pay</span>
+					</button>
+
+					<!-- DPay (Google Pay parody) -->
+					<button type="button" class="btnDPay" onclick="handleExpressPay('DPay')">
+						<svg class="dpayLogoSvg" width="22" height="22" viewBox="0 0 40 40">
+							<path d="M8 8 H22 C30 8 35 13 35 20 C35 27 30 32 22 32 H8 Z" fill="#4285F4"/>
+							<path d="M8 8 H20 C24 8 26 10 26 13 L8 13 Z" fill="#EA4335"/>
+							<path d="M8 27 H20 C24 27 26 29 26 32 L8 32 Z" fill="#34A853"/>
+							<circle cx="31" cy="20" r="3.5" fill="#FBBC05"/>
+							<path d="M15 15 H21 C24 15 27 17 27 20 C27 23 24 25 21 25 H15 Z" fill="#ffffff"/>
+						</svg>
+						<span class="dpayText">Pay</span>
+					</button>
+				</div>
+
+				<div class="orDivider">
+					<span>OR</span>
+				</div>
+
+				<!-- Contact Section -->
+				<div class="checkoutSection">
+					<label class="sectionHeading">Contact</label>
+					<div class="inputFieldWrapper">
+						<label for="contactEmail" class="floatingLabel">Email</label>
+						<input type="email" id="contactEmail" class="stripeInput" placeholder="nama@email.com" required>
+					</div>
+
+					<!-- Phone verification popup card with SVG Flag (No Emojis) -->
+					<div class="phoneVerifyCard">
+						<div class="phoneCardHeader">
+							<div>
+								<h4 class="phoneCardTitle">Enter your phone number</h4>
+								<p class="phoneCardDesc">Before we can send your ticket voucher, we need to verify your phone number.</p>
+							</div>
+							<button type="button" class="phoneCardClose" onclick="dismissPhoneCard()">&times;</button>
+						</div>
+						<div class="phoneInputRow">
+							<div class="countryBadge">
+								<svg class="flagSvg" width="16" height="11" viewBox="0 0 16 11">
+									<rect width="16" height="5.5" fill="#E70011"/>
+									<rect y="5.5" width="16" height="5.5" fill="#FFFFFF"/>
+									<rect width="16" height="11" fill="none" stroke="#DCDFE4" stroke-width="0.5"/>
+								</svg>
+								<span class="countryArrow">▾</span>
+							</div>
+							<input type="tel" id="contactPhone" class="phoneInnerInput" placeholder="0812-3456-7890">
+						</div>
+						<button type="button" class="btnVerifyPhone" onclick="verifyPhone()" id="btnVerify">Verify</button>
+					</div>
+				</div>
+
+				<!-- Payment Method Section -->
+				<div class="checkoutSection">
+					<label class="sectionHeading">Payment method</label>
+
+					<!-- Payment Method Tabs   -->
+					<div class="paymentTabsGrid">
+						<!-- Card -->
+						<button type="button" class="payTab active" onclick="switchPaymentMethod('card', this)">
+							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="2" y="5" width="20" height="14" rx="2"/>
+								<line x1="2" y1="10" x2="22" y2="10"/>
+							</svg>
+							<span class="tabTitle">Card</span>
+						</button>
+
+						<!-- QRIS -->
+						<button type="button" class="payTab" onclick="switchPaymentMethod('qris', this)">
+							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="3" y="3" width="7" height="7"/>
+								<rect x="14" y="3" width="7" height="7"/>
+								<rect x="14" y="14" width="7" height="7"/>
+								<rect x="3" y="14" width="7" height="7"/>
+							</svg>
+							<span class="tabTitle">QRIS</span>
+						</button>
+
+						<!-- Virtual Account -->
+						<button type="button" class="payTab" onclick="switchPaymentMethod('va', this)">
+							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<polygon points="12 2 2 7 22 7 12 2"/>
+								<line x1="5" y1="10" x2="5" y2="18"/>
+								<line x1="12" y1="10" x2="12" y2="18"/>
+								<line x1="19" y1="10" x2="19" y2="18"/>
+								<line x1="2" y1="21" x2="22" y2="21"/>
+							</svg>
+							<span class="tabTitle">VA Bank</span>
+						</button>
+
+						<!-- Stop Pay (GoPay parody) -->
+						<button type="button" class="payTab" onclick="switchPaymentMethod('stoppay', this)">
+							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="#00AA13">
+								<circle cx="12" cy="12" r="10"/>
+								<rect x="6" y="10" width="12" height="4" rx="1.5" fill="#FFFFFF"/>
+							</svg>
+							<span class="tabTitle">Stop Pay</span>
+						</button>
+
+						<!-- Defisit (DANA parody) -->
+						<button type="button" class="payTab" onclick="switchPaymentMethod('defisit', this)">
+							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="#118EEA">
+								<rect x="3" y="4" width="18" height="16" rx="3"/>
+								<path d="M7 9 L11 13 L13 11 L17 15" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+							<span class="tabTitle">Defisit</span>
+						</button>
+
+						<!-- OVO -->
+						<button type="button" class="payTab" onclick="switchPaymentMethod('opo', this)">
+							<svg class="tabSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="#4C3494">
+								<circle cx="12" cy="12" r="10"/>
+								<circle cx="12" cy="12" r="5" fill="#FFFFFF"/>
+								<circle cx="12" cy="12" r="2.5" fill="#4C3494"/>
+							</svg>
+							<span class="tabTitle">Opo</span>
+						</button>
+					</div>
+
+					<!-- Method View 1: Card (Bisa & Servantcard, JCB removed) -->
+					<div id="method-card" class="methodView active">
+						<div class="cardBoxContainer">
+							<div class="cardHeaderRow">
+								<span class="cardSublabel">Card information</span>
+								<div class="cardBrandIcons">
+									<!-- Bisa (Visa Parody) -->
+									<span class="brandBadge bisa">BISA</span>
+									<!-- Servantcard (Mastercard Parody) -->
+									<span class="brandBadge servantcard">
+										<span class="scCircles">
+											<span class="scDot red"></span>
+											<span class="scDot yellow"></span>
+										</span>
+										<span class="scLabel">servantcard</span>
+									</span>
+								</div>
+							</div>
+							<div class="inputRowGroup">
+								<input type="text" class="cardRowInput" placeholder="1234 5678 9012 3456" maxlength="19">
+								<div class="dualInputRow">
+									<input type="text" class="cardRowInput half" placeholder="MM / YY" maxlength="5">
+									<input type="text" class="cardRowInput half" placeholder="CVC" maxlength="4">
+								</div>
+							</div>
+
+							<div class="cardFieldGroup">
+								<label class="cardFieldLabel">Name on card</label>
+								<input type="text" id="cardHolderName" class="stripeInput" placeholder="First and last name">
+							</div>
+
+							<div class="cardFieldGroup">
+								<label class="cardFieldLabel">Billing information</label>
+								<div class="selectWrapper">
+									<select class="stripeSelect">
+										<option value="ID">Indonesia</option>
+										<option value="SG">Singapore</option>
+										<option value="MY">Malaysia</option>
+										<option value="US">United States</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- QRIS -->
+					<div id="method-qris" class="methodView">
+						<div class="qrisContainer">
+							<div class="qrisHeader">
+								<div class="qrisLogo">QRIS <span>GPN</span></div>
+								<span class="qrisTimer">Berlaku: <strong id="qrisCountdown">14:59</strong></span>
+							</div>
+							<div class="qrisQrWrapper">
+								<svg viewBox="0 0 160 160" width="160" height="160">
+									<rect width="160" height="160" fill="#ffffff"/>
+									<!-- Corners -->
+									<rect x="15" y="15" width="40" height="40" fill="#000000"/>
+									<rect x="23" y="23" width="24" height="24" fill="#ffffff"/>
+									<rect x="27" y="27" width="16" height="16" fill="#000000"/>
+
+									<rect x="105" y="15" width="40" height="40" fill="#000000"/>
+									<rect x="113" y="23" width="24" height="24" fill="#ffffff"/>
+									<rect x="117" y="27" width="16" height="16" fill="#000000"/>
+
+									<rect x="15" y="105" width="40" height="40" fill="#000000"/>
+									<rect x="23" y="113" width="24" height="24" fill="#ffffff"/>
+									<rect x="27" y="117" width="16" height="16" fill="#000000"/>
+									<!-- Patterns -->
+									<rect x="65" y="20" width="10" height="10" fill="#000000"/>
+									<rect x="85" y="25" width="10" height="20" fill="#000000"/>
+									<rect x="65" y="45" width="25" height="10" fill="#000000"/>
+									<rect x="20" y="65" width="10" height="25" fill="#000000"/>
+									<rect x="40" y="75" width="20" height="10" fill="#000000"/>
+									<rect x="70" y="70" width="20" height="20" fill="#000000"/>
+									<rect x="105" y="65" width="15" height="20" fill="#000000"/>
+									<rect x="130" y="70" width="15" height="10" fill="#000000"/>
+									<rect x="65" y="105" width="15" height="15" fill="#000000"/>
+									<rect x="90" y="105" width="25" height="10" fill="#000000"/>
+									<rect x="125" y="105" width="20" height="35" fill="#000000"/>
+									<rect x="70" y="130" width="40" height="15" fill="#000000"/>
+								</svg>
+							</div>
+							<p class="qrisHint">Pindai kode QRIS menggunakan Stop Pay, Defisit, Opo, BCE Mobile, atau mobile banking apa saja.</p>
+						</div>
+					</div>
+
+					<!-- Virtual Account (BCE, Sendiri, BNA, BRIS) -->
+					<div id="method-va" class="methodView">
+						<div class="vaContainer">
+							<label class="cardFieldLabel">Pilih Bank</label>
+							<div class="bankOptionsGrid">
+								<button type="button" class="bankOption active" onclick="selectBank('BCE', '8277081234567890', this)">BCE</button>
+								<button type="button" class="bankOption" onclick="selectBank('Sendiri', '8950808123456789', this)">Sendiri</button>
+								<button type="button" class="bankOption" onclick="selectBank('BNA', '8810081234567890', this)">BNA</button>
+								<button type="button" class="bankOption" onclick="selectBank('BRIS', '1280081234567890', this)">BRIS</button>
+							</div>
+
+							<div class="vaNumberBox">
+								<div class="vaNumberHeader">
+									<span id="bankNameDisplay">BCE Virtual Account</span>
+									<span class="autoCheck">Otomatis Terverifikasi</span>
+								</div>
+								<div class="vaCodeRow">
+									<strong id="vaNumberDisplay" class="vaNumber">8277 0812 3456 7890</strong>
+									<button type="button" class="btnCopy" onclick="copyVA()">Salin</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Stop Pay -->
+					<div id="method-stoppay" class="methodView">
+						<div class="walletBox">
+							<div class="walletCustomLogo stopPay">
+								<svg width="22" height="22" viewBox="0 0 24 24" fill="#00AA13">
+									<circle cx="12" cy="12" r="10"/>
+									<rect x="6" y="10" width="12" height="4" rx="1.5" fill="#FFFFFF"/>
+								</svg>
+								<span>STOP PAY</span>
+							</div>
+							<p class="walletHint">Notifikasi tagihan akan dikirimkan langsung ke aplikasi Stop Pay Anda.</p>
+						</div>
+					</div>
+
+					<!-- Method View 5: Defisit (DANA parody) -->
+					<div id="method-defisit" class="methodView">
+						<div class="walletBox">
+							<div class="walletCustomLogo defisit">
+								<svg width="22" height="22" viewBox="0 0 24 24" fill="#118EEA">
+									<rect x="3" y="4" width="18" height="16" rx="3"/>
+									<path d="M7 9 L11 13 L13 11 L17 15" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+								<span>DEFISIT</span>
+							</div>
+							<p class="walletHint">Saldo Anda akan didefisitkan secara aman melalui aplikasi Defisit.</p>
+						</div>
+					</div>
+
+					<!-- Opo -->
+					<div id="method-opo" class="methodView">
+						<div class="walletBox">
+							<div class="walletCustomLogo opo">
+								<svg width="22" height="22" viewBox="0 0 24 24" fill="#4C3494">
+									<circle cx="12" cy="12" r="10"/>
+									<circle cx="12" cy="12" r="5" fill="#FFFFFF"/>
+									<circle cx="12" cy="12" r="2.5" fill="#4C3494"/>
+								</svg>
+								<span>OPO</span>
+							</div>
+							<p class="walletHint">Opo iyo? Buka aplikasi Opo di ponsel Anda dan setujui konfirmasi pembayaran.</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Terms & Conditions Agreement Checkbox -->
+				<div class="checkboxRow">
+					<input type="checkbox" id="checkTerms" class="stripeCheckbox">
+					<label for="checkTerms" class="checkboxLabel">
+						Saya menyetujui syarat dan ketentuan pemesanan tiket Pentas Seni The Hidden Island 2026.
+					</label>
+				</div>
+				<p id="termsErrorMsg" class="termsError" style="display: none;">Harap centang persetujuan syarat dan ketentuan terlebih dahulu.</p>
+
+				<!-- Main Action Button -->
+				<button type="button" class="btnStripePay" id="btnMainPay" onclick="executePayment()">
+					Bayar Sekarang • <span id="btnPayAmount">IDR 75,000.00</span>
+				</button>
+
+				<p class="legalDisclaimer">
+					Dengan mengeklik Bayar Sekarang, Anda menyetujui pemrosesan tiket The Hidden Island melalui sistem pembayaran resmi.
+				</p>
+
+				<!-- Powered by Rakhyan -->
+				<footer class="stripeFooter">
+					<div class="poweredByRakhyan">
+						<span>Powered by</span>
+						<strong class="rakhyanLogo">Rakhyan</strong>
+					</div>
+					<div class="footerLinks">
+						<a href="../legal/index.html#syarat" target="_blank">Terms</a>
+						<a href="../legal/index.html#privasi" target="_blank">Privacy</a>
+					</div>
+				</footer>
+			</div>
+		</main>
+	</div>
+
+	<!-- Payment Success Overlay Modal -->
+	<dialog id="successModal" class="successDialog">
+		<div class="successCard">
+			<div class="checkCircle">✓</div>
+			<h2 class="successTitle">Pembayaran Berhasil!</h2>
+			<p class="successSubtitle">Terima kasih atas pemesanan tiket Anda untuk <strong>The Hidden Island 2026</strong>.</p>
+			
+			<div class="receiptSummary">
+				<div class="receiptRow">
+					<span>Nomor Referensi (ID Tiket):</span>
+					<strong id="receiptRef" style="font-family: monospace; letter-spacing: 0.5px; color: #213d3a;">-</strong>
+				</div>
+				<div class="receiptRow">
+					<span>Kategori Tiket:</span>
+					<strong id="receiptTier">-</strong>
+				</div>
+				<div class="receiptRow">
+					<span>Gelang Akses:</span>
+					<strong id="receiptWristband">-</strong>
+				</div>
+				<div class="receiptRow">
+					<span>Metode Pembayaran:</span>
+					<strong id="receiptMethod">Card</strong>
+				</div>
+				<div class="receiptRow">
+					<span>Total Dibayar:</span>
+					<strong id="receiptTotal">IDR 75,000.00</strong>
+				</div>
+			</div>
+
+			<p class="receiptNote">E-Ticket dan QR Code registrasi telah dikirimkan ke WhatsApp & Email Anda.</p>
+			<a href="../index.html" class="btnReturnHome">Kembali ke Beranda</a>
+		</div>
+	</dialog>
+
+	<script src="script.js"></script>
+	<script src="../shared/cookie-consent.js"></script>
+</body>
+</html>
