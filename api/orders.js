@@ -2,8 +2,48 @@
 // Endpoint: /api/orders
 
 const BLOB_URL = "https://superjsonblob.com/api/jsonBlob/f274c402-a959-4132-9117-0c89444e7793";
+const TICKETS_BLOB_URL = "https://superjsonblob.com/api/jsonBlob/4cd7691d-01c3-4048-bba5-be29c55338d9";
 
 let memoryOrders = [];
+
+async function syncTicketsBlobFromOrders(ordersList) {
+	try {
+		const p1Sold = (ordersList || [])
+			.filter(o => o.tier && o.tier.toLowerCase().includes("presale 1"))
+			.reduce((s, o) => s + (Number(o.qty) || 1), 0);
+		const p2Sold = (ordersList || [])
+			.filter(o => o.tier && o.tier.toLowerCase().includes("presale 2"))
+			.reduce((s, o) => s + (Number(o.qty) || 1), 0);
+
+		const tRes = await fetch(TICKETS_BLOB_URL, { headers: { "Accept": "application/json" } });
+		if (tRes.ok) {
+			const ticketData = await tRes.json();
+			if (ticketData && ticketData.presale1 && ticketData.presale2) {
+				ticketData.presale1.soldSeats = p1Sold;
+				ticketData.presale2.soldSeats = p2Sold;
+
+				// If maxSeats is reached and status was available, auto mark sold_out
+				if (p1Sold >= (ticketData.presale1.maxSeats || 500) && ticketData.presale1.status === "available") {
+					ticketData.presale1.status = "sold_out";
+				}
+				if (p2Sold >= (ticketData.presale2.maxSeats || 750) && ticketData.presale2.status === "available") {
+					ticketData.presale2.status = "sold_out";
+				}
+
+				await fetch(TICKETS_BLOB_URL, {
+					method: "PUT",
+					headers: {
+						"Content-Type": "application/json",
+						"Accept": "application/json"
+					},
+					body: JSON.stringify(ticketData)
+				});
+			}
+		}
+	} catch (e) {
+		console.warn("Failed updating tickets blob from orders:", e);
+	}
+}
 
 module.exports = async (req, res) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");
@@ -82,6 +122,9 @@ module.exports = async (req, res) => {
 				console.warn("Failed persisting orders to blob:", putErr);
 			}
 
+			// Sync ticket sold seats automatically
+			syncTicketsBlobFromOrders(currentOrders).catch(() => {});
+
 			return res.status(200).json({ success: true, count: currentOrders.length, orders: currentOrders });
 		}
 
@@ -111,6 +154,9 @@ module.exports = async (req, res) => {
 				console.warn("Failed persisting orders to blob:", putErr);
 			}
 
+			// Sync ticket sold seats automatically
+			syncTicketsBlobFromOrders(listToSave).catch(() => {});
+
 			return res.status(200).json({ success: true, count: listToSave.length });
 		}
 
@@ -128,6 +174,10 @@ module.exports = async (req, res) => {
 			} catch (delErr) {
 				console.warn("Failed resetting orders in blob:", delErr);
 			}
+
+			// Reset tickets sold seats to 0
+			syncTicketsBlobFromOrders([]).catch(() => {});
+
 			return res.status(200).json({ success: true, orders: [] });
 		}
 

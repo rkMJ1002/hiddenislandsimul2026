@@ -265,6 +265,10 @@ function switchAdminTab(tabName) {
 
 	if (activeBtn) activeBtn.classList.add("active");
 	if (activePanel) activePanel.classList.add("active");
+
+	if (tabName === "tickets") {
+		loadTicketControlConfig();
+	}
 }
 
 // Gate Check - In Verification Handler
@@ -597,36 +601,37 @@ const DEFAULT_TICKET_CONFIG = {
 };
 
 function getStoredTicketConfig() {
-	const raw = localStorage.getItem("artfest_ticket_config");
-	let cfg;
-	if (!raw) {
-		cfg = JSON.parse(JSON.stringify(DEFAULT_TICKET_CONFIG));
-	} else {
-		try {
-			const parsed = JSON.parse(raw);
-			cfg = {
-				presale1: { ...DEFAULT_TICKET_CONFIG.presale1, ...parsed.presale1 },
-				presale2: { ...DEFAULT_TICKET_CONFIG.presale2, ...parsed.presale2 }
-			};
-		} catch (e) {
-			cfg = JSON.parse(JSON.stringify(DEFAULT_TICKET_CONFIG));
+	let cfg = null;
+	if (window.ArtfestCloud && typeof window.ArtfestCloud.getTicketConfig === "function") {
+		cfg = window.ArtfestCloud.getTicketConfig();
+	}
+	if (!cfg) {
+		const raw = localStorage.getItem("artfest_ticket_config");
+		if (raw) {
+			try {
+				const parsed = JSON.parse(raw);
+				cfg = {
+					presale1: { ...DEFAULT_TICKET_CONFIG.presale1, ...parsed.presale1 },
+					presale2: { ...DEFAULT_TICKET_CONFIG.presale2, ...parsed.presale2 }
+				};
+			} catch (e) {}
 		}
 	}
+	if (!cfg) {
+		cfg = JSON.parse(JSON.stringify(DEFAULT_TICKET_CONFIG));
+	}
 
-	// Calculate actual sold seats from ordersData if not explicitly set higher
-	const p1OrdersSold = ordersData
+	// Always sync sold seats from active ordersData
+	const p1OrdersSold = (ordersData || [])
 		.filter(o => o.tier && o.tier.toLowerCase().includes("presale 1"))
 		.reduce((sum, o) => sum + (Number(o.qty) || 1), 0);
-	const p2OrdersSold = ordersData
+	const p2OrdersSold = (ordersData || [])
 		.filter(o => o.tier && o.tier.toLowerCase().includes("presale 2"))
 		.reduce((sum, o) => sum + (Number(o.qty) || 1), 0);
 
-	if ((cfg.presale1.soldSeats || 0) < p1OrdersSold) {
-		cfg.presale1.soldSeats = p1OrdersSold;
-	}
-	if ((cfg.presale2.soldSeats || 0) < p2OrdersSold) {
-		cfg.presale2.soldSeats = p2OrdersSold;
-	}
+	cfg.presale1.soldSeats = Math.max(cfg.presale1.soldSeats || 0, p1OrdersSold);
+	cfg.presale2.soldSeats = Math.max(cfg.presale2.soldSeats || 0, p2OrdersSold);
+
 	return cfg;
 }
 
@@ -642,12 +647,15 @@ function loadTicketControlConfig() {
 		const soldInput = document.getElementById(`soldInput-${tier}`);
 		const statusSelect = document.getElementById(`statusSelect-${tier}`);
 
+		const soldCount = data.soldSeats || 0;
+		const maxSeats = data.maxSeats || 1;
+
 		if (priceInput) priceInput.value = data.price;
-		if (seatsInput) seatsInput.value = data.maxSeats;
-		if (soldInput) soldInput.value = data.soldSeats || 0;
+		if (seatsInput) seatsInput.value = maxSeats;
+		if (soldInput) soldInput.value = soldCount;
 		if (statusSelect) statusSelect.value = data.status;
 
-		updateTierVisuals(tier, data.soldSeats || 0, data.maxSeats, data.status);
+		updateTierVisuals(tier, soldCount, maxSeats, data.status);
 	});
 }
 
@@ -793,6 +801,7 @@ function initCloudSyncInDashboard() {
 		renderOrdersTable(document.getElementById("orderSearchInput")?.value?.trim() || "");
 		updateMetricCards();
 		renderQuickOrderChips();
+		loadTicketControlConfig();
 	});
 }
 

@@ -59,13 +59,18 @@
 			this.ticketConfig = this.loadLocalTicketConfig();
 			this.ordersData = this.loadLocalOrders();
 
+			// Ensure sold seats reflects actual local orders immediately
+			this.syncSoldSeatsFromOrders();
+
 			// Listen to local storage events for same-browser cross-tab instant sync
 			window.addEventListener("storage", (e) => {
 				if (e.key === "artfest_ticket_config") {
 					this.ticketConfig = this.loadLocalTicketConfig();
+					this.syncSoldSeatsFromOrders();
 					this.notifyTicketListeners();
 				} else if (e.key === "hiddenIslandAllOrders") {
 					this.ordersData = this.loadLocalOrders();
+					this.syncSoldSeatsFromOrders();
 					this.notifyOrdersListeners();
 				} else if (e.key === "artfest_firebase_config") {
 					this.reconnect();
@@ -81,6 +86,45 @@
 			};
 			document.addEventListener("visibilitychange", refreshOnFocus);
 			window.addEventListener("focus", refreshOnFocus);
+		}
+
+		// Calculate actual sold seats directly from orders array and update ticketConfig
+		syncSoldSeatsFromOrders() {
+			let p1 = 0;
+			let p2 = 0;
+			if (Array.isArray(this.ordersData)) {
+				for (const o of this.ordersData) {
+					const qty = Number(o.qty) || 1;
+					const t = (o.tier || "").toLowerCase();
+					if (t.includes("presale 1") || t === "presale1") p1 += qty;
+					else if (t.includes("presale 2") || t === "presale2") p2 += qty;
+				}
+			}
+
+			if (!this.ticketConfig) {
+				this.ticketConfig = JSON.parse(JSON.stringify(DEFAULT_TICKET_CONFIG));
+			}
+			if (!this.ticketConfig.presale1) this.ticketConfig.presale1 = { ...DEFAULT_TICKET_CONFIG.presale1 };
+			if (!this.ticketConfig.presale2) this.ticketConfig.presale2 = { ...DEFAULT_TICKET_CONFIG.presale2 };
+
+			let changed = false;
+			const newSold1 = Math.max(this.ticketConfig.presale1.soldSeats || 0, p1);
+			const newSold2 = Math.max(this.ticketConfig.presale2.soldSeats || 0, p2);
+
+			if (this.ticketConfig.presale1.soldSeats !== newSold1) {
+				this.ticketConfig.presale1.soldSeats = newSold1;
+				changed = true;
+			}
+			if (this.ticketConfig.presale2.soldSeats !== newSold2) {
+				this.ticketConfig.presale2.soldSeats = newSold2;
+				changed = true;
+			}
+
+			if (changed) {
+				localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));
+				this.notifyTicketListeners();
+			}
+			return changed;
 		}
 
 		// Load from LocalStorage (Instant cache)
@@ -199,7 +243,7 @@
 					this.fetchCloudConfig();
 					this.fetchCloudOrders();
 				}
-			}, 3500);
+			}, 3000);
 		}
 
 		// ==================== GLOBAL CLOUD APIS ====================
@@ -235,10 +279,27 @@
 			}
 
 			if (remote && remote.presale1) {
+				// Re-verify against current known orders
+				const p1Orders = this.ordersData
+					.filter(o => o.tier && o.tier.toLowerCase().includes("presale 1"))
+					.reduce((s, o) => s + (Number(o.qty) || 1), 0);
+				const p2Orders = this.ordersData
+					.filter(o => o.tier && o.tier.toLowerCase().includes("presale 2"))
+					.reduce((s, o) => s + (Number(o.qty) || 1), 0);
+
 				const nextConfig = {
-					presale1: { ...DEFAULT_TICKET_CONFIG.presale1, ...remote.presale1 },
-					presale2: { ...DEFAULT_TICKET_CONFIG.presale2, ...remote.presale2 }
+					presale1: {
+						...DEFAULT_TICKET_CONFIG.presale1,
+						...remote.presale1,
+						soldSeats: Math.max(Number(remote.presale1.soldSeats) || 0, p1Orders)
+					},
+					presale2: {
+						...DEFAULT_TICKET_CONFIG.presale2,
+						...remote.presale2,
+						soldSeats: Math.max(Number(remote.presale2.soldSeats) || 0, p2Orders)
+					}
 				};
+
 				const changed = JSON.stringify(this.ticketConfig) !== JSON.stringify(nextConfig);
 				if (changed) {
 					this.ticketConfig = nextConfig;
@@ -284,7 +345,10 @@
 				if (changed) {
 					this.ordersData = remoteOrders;
 					localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(this.ordersData));
+					this.syncSoldSeatsFromOrders();
 					this.notifyOrdersListeners();
+				} else {
+					this.syncSoldSeatsFromOrders();
 				}
 			}
 		}
@@ -346,6 +410,7 @@
 						presale1: { ...DEFAULT_TICKET_CONFIG.presale1, ...(data.presale1 || {}) },
 						presale2: { ...DEFAULT_TICKET_CONFIG.presale2, ...(data.presale2 || {}) }
 					};
+					this.syncSoldSeatsFromOrders();
 					localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));
 					this.notifyTicketListeners();
 				} else {
@@ -378,28 +443,31 @@
 				orders.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 				this.ordersData = orders;
 				localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(this.ordersData));
+				this.syncSoldSeatsFromOrders();
 				this.notifyOrdersListeners();
 			}, (err) => console.warn("Firestore orders snapshot error:", err));
 		}
 
 		// ==================== PUBLIC TICKET CONFIG APIS ====================
 		getTicketConfig() {
+			this.syncSoldSeatsFromOrders();
 			return this.ticketConfig;
 		}
 
 		async saveTicketConfig(config) {
 			this.ticketConfig = config;
-			localStorage.setItem("artfest_ticket_config", JSON.stringify(config));
+			this.syncSoldSeatsFromOrders();
+			localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));
 			this.notifyTicketListeners();
 
 			// 1. Push to Cloud
-			this.pushCloudConfig(config);
+			this.pushCloudConfig(this.ticketConfig);
 
 			// 2. Push to Firestore if configured
 			if (this.isFirebaseReady && this.db && this.fsModules) {
 				try {
 					const { doc, setDoc } = this.fsModules;
-					await setDoc(doc(this.db, "config", "tickets"), config, { merge: true });
+					await setDoc(doc(this.db, "config", "tickets"), this.ticketConfig, { merge: true });
 				} catch (err) {
 					console.error("Gagal update Firestore:", err);
 				}
@@ -409,6 +477,7 @@
 
 		onTicketConfig(cb) {
 			this.ticketListeners.add(cb);
+			this.syncSoldSeatsFromOrders();
 			cb(this.ticketConfig);
 			return () => this.ticketListeners.delete(cb);
 		}
@@ -442,11 +511,8 @@
 				this.ordersData.unshift(orderRecord);
 			}
 
-			// Automatically increment soldSeats in config
-			const tierKey = orderRecord.tier ? orderRecord.tier.toLowerCase().replace(/\s+/g, "") : "";
-			if (this.ticketConfig[tierKey]) {
-				this.ticketConfig[tierKey].soldSeats = (this.ticketConfig[tierKey].soldSeats || 0) + (Number(orderRecord.qty) || 1);
-			}
+			// Automatically sync soldSeats in config directly from orders
+			this.syncSoldSeatsFromOrders();
 
 			localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(this.ordersData));
 			localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));
@@ -501,7 +567,7 @@
 			this.ordersData = [];
 			localStorage.removeItem("hiddenIslandAllOrders");
 
-			// Reset sold seats
+			// Reset sold seats to 0
 			this.ticketConfig.presale1.soldSeats = 0;
 			this.ticketConfig.presale2.soldSeats = 0;
 			localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));

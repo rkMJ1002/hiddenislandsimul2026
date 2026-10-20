@@ -56,7 +56,7 @@
 				</div>
 				<div class="quotaIndicator" id="quotaIndicator-presale1">
 					<span class="quotaDot" id="quotaDot-presale1"></span>
-					<span id="quotaText-presale1">Sisa <strong>318</strong> dari 500 kursi</span>
+					<span id="quotaText-presale1">Sisa <strong>500</strong> dari 500 kursi</span>
 				</div>
 				<ul class="ticketFeatures">
 					<li>Akses seluruh panggung festival musik & teater</li>
@@ -78,7 +78,7 @@
 				</div>
 				<div class="quotaIndicator" id="quotaIndicator-presale2">
 					<span class="quotaDot" id="quotaDot-presale2"></span>
-					<span id="quotaText-presale2">Sisa <strong>536</strong> dari 750 kursi</span>
+					<span id="quotaText-presale2">Sisa <strong>750</strong> dari 750 kursi</span>
 				</div>
 				<ul class="ticketFeatures">
 					<li>Akses seluruh panggung festival musik & teater</li>
@@ -268,8 +268,8 @@
 		</div>
 	</footer>
 
-	<script src="../shared/firebase-config.js?v=2026.3"></script>
-	<script src="../shared/cloud-store.js?v=2026.3"></script>
+	<script src="../shared/firebase-config.js?v=2026.4"></script>
+	<script src="../shared/cloud-store.js?v=2026.4"></script>
 	<script>
 		const DEFAULT_TICKET_CONFIG = {
 			presale1: {
@@ -299,45 +299,49 @@
 		const modal = document.getElementById('ticketModal');
 
 		function loadPublicTicketConfig() {
-			if (window.ArtfestCloud && typeof window.ArtfestCloud.onTicketConfig === "function") {
-				window.ArtfestCloud.onTicketConfig((cfg) => {
-					if (cfg) {
-						ticketConfig = cfg;
-						applyPublicTierData('presale1', ticketConfig.presale1);
-						applyPublicTierData('presale2', ticketConfig.presale2);
-					}
-				});
-				return;
-			}
+			const updateView = () => {
+				let cfg = null;
+				if (window.ArtfestCloud && typeof window.ArtfestCloud.getTicketConfig === "function") {
+					cfg = window.ArtfestCloud.getTicketConfig();
+				}
+				if (!cfg) {
+					try {
+						const saved = localStorage.getItem('artfest_ticket_config');
+						if (saved) cfg = JSON.parse(saved);
+					} catch (e) {}
+				}
+				if (!cfg) {
+					cfg = JSON.parse(JSON.stringify(DEFAULT_TICKET_CONFIG));
+				}
 
-			const saved = localStorage.getItem('artfest_ticket_config');
-			if (saved) {
+				// Always sync with active orders
 				try {
-					const parsed = JSON.parse(saved);
-					ticketConfig = {
-						presale1: { ...DEFAULT_TICKET_CONFIG.presale1, ...parsed.presale1 },
-						presale2: { ...DEFAULT_TICKET_CONFIG.presale2, ...parsed.presale2 }
-					};
-				} catch (e) {
-					ticketConfig = JSON.parse(JSON.stringify(DEFAULT_TICKET_CONFIG));
+					const orders = (window.ArtfestCloud && typeof window.ArtfestCloud.getOrders === "function")
+						? window.ArtfestCloud.getOrders()
+						: JSON.parse(localStorage.getItem('hiddenIslandAllOrders') || '[]');
+					if (Array.isArray(orders)) {
+						const p1Count = orders.filter(o => o.tier && o.tier.toLowerCase().includes('presale 1')).reduce((s, o) => s + (Number(o.qty) || 1), 0);
+						const p2Count = orders.filter(o => o.tier && o.tier.toLowerCase().includes('presale 2')).reduce((s, o) => s + (Number(o.qty) || 1), 0);
+						if (cfg.presale1) cfg.presale1.soldSeats = Math.max(Number(cfg.presale1.soldSeats) || 0, p1Count);
+						if (cfg.presale2) cfg.presale2.soldSeats = Math.max(Number(cfg.presale2.soldSeats) || 0, p2Count);
+					}
+				} catch (e) {}
+
+				ticketConfig = cfg;
+				applyPublicTierData('presale1', ticketConfig.presale1);
+				applyPublicTierData('presale2', ticketConfig.presale2);
+			};
+
+			if (window.ArtfestCloud) {
+				if (typeof window.ArtfestCloud.onTicketConfig === "function") {
+					window.ArtfestCloud.onTicketConfig(() => updateView());
 				}
-			} else {
-				ticketConfig = JSON.parse(JSON.stringify(DEFAULT_TICKET_CONFIG));
+				if (typeof window.ArtfestCloud.onOrders === "function") {
+					window.ArtfestCloud.onOrders(() => updateView());
+				}
 			}
 
-			// Ensure soldSeats reflects actual orders in localStorage if not higher
-			try {
-				const orders = JSON.parse(localStorage.getItem('hiddenIslandAllOrders') || '[]');
-				if (Array.isArray(orders)) {
-					const p1Count = orders.filter(o => o.tier && o.tier.toLowerCase().includes('presale 1')).reduce((s, o) => s + (Number(o.qty) || 1), 0);
-					const p2Count = orders.filter(o => o.tier && o.tier.toLowerCase().includes('presale 2')).reduce((s, o) => s + (Number(o.qty) || 1), 0);
-					if ((ticketConfig.presale1.soldSeats || 0) < p1Count) ticketConfig.presale1.soldSeats = p1Count;
-					if ((ticketConfig.presale2.soldSeats || 0) < p2Count) ticketConfig.presale2.soldSeats = p2Count;
-				}
-			} catch (e) {}
-
-			applyPublicTierData('presale1', ticketConfig.presale1);
-			applyPublicTierData('presale2', ticketConfig.presale2);
+			updateView();
 		}
 
 		function applyPublicTierData(tierKey, data) {
@@ -580,6 +584,6 @@
 			}
 		});
 	</script>
-	<script src="../shared/cookie-consent.js?v=2026.3"></script>
+	<script src="../shared/cookie-consent.js?v=2026.4"></script>
 </body>
 </html>
