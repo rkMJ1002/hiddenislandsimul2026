@@ -7,8 +7,18 @@
 // 3. LocalStorage instant offline cache & fallback
 
 (function (window) {
-	const CLOUD_CONFIG_ENDPOINT = "https://api.restful-api.dev/objects/ff808181a09d98f701a158a435992a12";
-	const CLOUD_ORDERS_ENDPOINT = "https://api.restful-api.dev/objects/ff808181a09d98f701a158c0649e2aa0";
+	const BLOB_CONFIG_ENDPOINT = "https://superjsonblob.com/api/jsonBlob/4cd7691d-01c3-4048-bba5-be29c55338d9";
+	const BLOB_ORDERS_ENDPOINT = "https://superjsonblob.com/api/jsonBlob/f274c402-a959-4132-9117-0c89444e7793";
+
+	function getApiBase() {
+		if (typeof window !== "undefined" && window.location && window.location.origin) {
+			const o = window.location.origin.toLowerCase();
+			if (o.includes("thehiddenisland.site") || o.includes("localhost") || o.includes("127.0.0.1") || o.includes(".vercel.app")) {
+				return "";
+			}
+		}
+		return "https://thehiddenisland.site";
+	}
 
 	const DEFAULT_TICKET_CONFIG = {
 		presale1: {
@@ -49,7 +59,7 @@
 			this.ticketConfig = this.loadLocalTicketConfig();
 			this.ordersData = this.loadLocalOrders();
 
-			// Listen to local storage events for same-browser cross-tab sync
+			// Listen to local storage events for same-browser cross-tab instant sync
 			window.addEventListener("storage", (e) => {
 				if (e.key === "artfest_ticket_config") {
 					this.ticketConfig = this.loadLocalTicketConfig();
@@ -63,12 +73,14 @@
 			});
 
 			// Re-fetch cloud state immediately when user switches tabs or returns to browser
-			document.addEventListener("visibilitychange", () => {
-				if (document.visibilityState === "visible") {
+			const refreshOnFocus = () => {
+				if (!document.hidden) {
 					this.fetchCloudConfig();
 					this.fetchCloudOrders();
 				}
-			});
+			};
+			document.addEventListener("visibilitychange", refreshOnFocus);
+			window.addEventListener("focus", refreshOnFocus);
 		}
 
 		// Load from LocalStorage (Instant cache)
@@ -142,12 +154,11 @@
 					}
 				}
 
-				// Case B: Built-in Global Cloud Relay (Works Out-Of-The-Box)
+				// Case B: Built-in Global Cloud Sync (Works Out-Of-The-Box)
 				this.isFirebaseReady = false;
 				this.isCloudRelayActive = true;
 
 				await Promise.all([this.fetchCloudConfig(), this.fetchCloudOrders()]);
-
 				this.startRelayPolling();
 
 				this.notifyStatusListeners({
@@ -183,83 +194,143 @@
 		startRelayPolling() {
 			if (this.pollingInterval) clearInterval(this.pollingInterval);
 			this.pollingInterval = setInterval(() => {
+				if (document.hidden) return; // paused when tab is inactive
 				if (!this.isFirebaseReady && this.isCloudRelayActive) {
 					this.fetchCloudConfig();
 					this.fetchCloudOrders();
 				}
-			}, 3000);
+			}, 3500);
 		}
 
-		// ==================== GLOBAL CLOUD RELAY APIS ====================
+		// ==================== GLOBAL CLOUD APIS ====================
 		async fetchCloudConfig() {
+			let remote = null;
+
+			// Method 1: Same-origin / Vercel API
 			try {
-				const res = await fetch(CLOUD_CONFIG_ENDPOINT);
-				if (!res.ok) return;
-				const json = await res.json();
-				if (json && json.data && json.data.presale1) {
-					const remote = json.data;
-					const changed = JSON.stringify(this.ticketConfig) !== JSON.stringify(remote);
-					if (changed) {
-						this.ticketConfig = {
-							presale1: { ...DEFAULT_TICKET_CONFIG.presale1, ...remote.presale1 },
-							presale2: { ...DEFAULT_TICKET_CONFIG.presale2, ...remote.presale2 }
-						};
-						localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));
-						this.notifyTicketListeners();
-					}
+				const apiBase = getApiBase();
+				const res = await fetch(`${apiBase}/api/tickets?_t=${Date.now()}`, {
+					headers: { Accept: "application/json" },
+					cache: "no-store"
+				});
+				if (res.ok) {
+					const json = await res.json();
+					if (json && json.presale1) remote = json;
+					else if (json && json.data && json.data.presale1) remote = json.data;
 				}
-			} catch (e) {
-				// Offline or relay hiccup, keep local cache
+			} catch (e) {}
+
+			// Method 2: Direct Blob Storage Fallback
+			if (!remote) {
+				try {
+					const res = await fetch(`${BLOB_CONFIG_ENDPOINT}?_t=${Date.now()}`, {
+						headers: { Accept: "application/json" },
+						cache: "no-store"
+					});
+					if (res.ok) {
+						const json = await res.json();
+						if (json && json.presale1) remote = json;
+					}
+				} catch (e) {}
+			}
+
+			if (remote && remote.presale1) {
+				const nextConfig = {
+					presale1: { ...DEFAULT_TICKET_CONFIG.presale1, ...remote.presale1 },
+					presale2: { ...DEFAULT_TICKET_CONFIG.presale2, ...remote.presale2 }
+				};
+				const changed = JSON.stringify(this.ticketConfig) !== JSON.stringify(nextConfig);
+				if (changed) {
+					this.ticketConfig = nextConfig;
+					localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));
+					this.notifyTicketListeners();
+				}
 			}
 		}
 
 		async fetchCloudOrders() {
+			let remoteOrders = null;
+
+			// Method 1: Same-origin / Vercel API
 			try {
-				const res = await fetch(CLOUD_ORDERS_ENDPOINT);
-				if (!res.ok) return;
-				const json = await res.json();
-				if (json && json.data && Array.isArray(json.data.orders)) {
-					const remoteOrders = json.data.orders;
-					const changed = JSON.stringify(this.ordersData) !== JSON.stringify(remoteOrders);
-					if (changed) {
-						this.ordersData = remoteOrders;
-						localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(this.ordersData));
-						this.notifyOrdersListeners();
-					}
+				const apiBase = getApiBase();
+				const res = await fetch(`${apiBase}/api/orders?_t=${Date.now()}`, {
+					headers: { Accept: "application/json" },
+					cache: "no-store"
+				});
+				if (res.ok) {
+					const json = await res.json();
+					if (Array.isArray(json)) remoteOrders = json;
+					else if (json && Array.isArray(json.orders)) remoteOrders = json.orders;
 				}
-			} catch (e) {
-				// Offline or relay hiccup, keep local cache
+			} catch (e) {}
+
+			// Method 2: Direct Blob Storage Fallback
+			if (!remoteOrders) {
+				try {
+					const res = await fetch(`${BLOB_ORDERS_ENDPOINT}?_t=${Date.now()}`, {
+						headers: { Accept: "application/json" },
+						cache: "no-store"
+					});
+					if (res.ok) {
+						const json = await res.json();
+						if (Array.isArray(json)) remoteOrders = json;
+					}
+				} catch (e) {}
+			}
+
+			if (remoteOrders && Array.isArray(remoteOrders)) {
+				const changed = JSON.stringify(this.ordersData) !== JSON.stringify(remoteOrders);
+				if (changed) {
+					this.ordersData = remoteOrders;
+					localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(this.ordersData));
+					this.notifyOrdersListeners();
+				}
 			}
 		}
 
 		async pushCloudConfig(config) {
+			const apiBase = getApiBase();
+
+			// 1. Vercel API
 			try {
-				await fetch(CLOUD_CONFIG_ENDPOINT, {
-					method: "PUT",
+				fetch(`${apiBase}/api/tickets`, {
+					method: "POST",
 					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						name: "artfest_ticket_config",
-						data: config
-					})
-				});
-			} catch (e) {
-				console.warn("Gagal push config ke cloud relay", e);
-			}
+					body: JSON.stringify(config)
+				}).catch(() => {});
+			} catch (e) {}
+
+			// 2. Direct Blob fallback
+			try {
+				fetch(BLOB_CONFIG_ENDPOINT, {
+					method: "PUT",
+					headers: { "Content-Type": "application/json", "Accept": "application/json" },
+					body: JSON.stringify(config)
+				}).catch(() => {});
+			} catch (e) {}
 		}
 
 		async pushCloudOrders(orders) {
+			const apiBase = getApiBase();
+
+			// 1. Vercel API
 			try {
-				await fetch(CLOUD_ORDERS_ENDPOINT, {
+				fetch(`${apiBase}/api/orders`, {
 					method: "PUT",
 					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						name: "hidden_island_all_orders",
-						data: { orders: orders }
-					})
-				});
-			} catch (e) {
-				console.warn("Gagal push orders ke cloud relay", e);
-			}
+					body: JSON.stringify(orders)
+				}).catch(() => {});
+			} catch (e) {}
+
+			// 2. Direct Blob fallback
+			try {
+				fetch(BLOB_ORDERS_ENDPOINT, {
+					method: "PUT",
+					headers: { "Content-Type": "application/json", "Accept": "application/json" },
+					body: JSON.stringify(orders)
+				}).catch(() => {});
+			} catch (e) {}
 		}
 
 		// ==================== FIREBASE FIRESTORE LISTENERS ====================
@@ -321,7 +392,7 @@
 			localStorage.setItem("artfest_ticket_config", JSON.stringify(config));
 			this.notifyTicketListeners();
 
-			// 1. Push to Cloud Relay
+			// 1. Push to Cloud
 			this.pushCloudConfig(config);
 
 			// 2. Push to Firestore if configured
@@ -382,7 +453,7 @@
 			this.notifyOrdersListeners();
 			this.notifyTicketListeners();
 
-			// 1. Push to Cloud Relay
+			// 1. Push to Cloud
 			this.pushCloudOrders(this.ordersData);
 			this.pushCloudConfig(this.ticketConfig);
 
@@ -408,7 +479,7 @@
 				this.notifyOrdersListeners();
 			}
 
-			// 1. Push to Cloud Relay
+			// 1. Push to Cloud
 			this.pushCloudOrders(this.ordersData);
 
 			// 2. Push to Firestore if configured
@@ -438,7 +509,12 @@
 			this.notifyOrdersListeners();
 			this.notifyTicketListeners();
 
-			// 1. Push to Cloud Relay
+			// 1. Push to Cloud
+			try {
+				const apiBase = getApiBase();
+				fetch(`${apiBase}/api/orders`, { method: "DELETE" }).catch(() => {});
+			} catch (e) {}
+
 			this.pushCloudOrders([]);
 			this.pushCloudConfig(this.ticketConfig);
 

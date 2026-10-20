@@ -651,6 +651,7 @@ function loadTicketControlConfig() {
 	});
 }
 
+let autoSaveTimer = null;
 function handleTicketFieldChange(tier) {
 	const seatsInput = document.getElementById(`seatsInput-${tier}`);
 	const soldInput = document.getElementById(`soldInput-${tier}`);
@@ -661,6 +662,12 @@ function handleTicketFieldChange(tier) {
 	const status = statusSelect.value;
 
 	updateTierVisuals(tier, sold, max, status);
+
+	// Debounced auto-save to cloud on any field change
+	clearTimeout(autoSaveTimer);
+	autoSaveTimer = setTimeout(() => {
+		saveTicketControlConfig(true);
+	}, 350);
 }
 
 function updateTierVisuals(tier, sold, max, status) {
@@ -692,7 +699,7 @@ function updateTierVisuals(tier, sold, max, status) {
 	}
 }
 
-function saveTicketControlConfig() {
+function saveTicketControlConfig(isAutoSave = false) {
 	const p1Price = parseInt(document.getElementById("priceInput-presale1").value, 10) || 0;
 	const p1Max = parseInt(document.getElementById("seatsInput-presale1").value, 10) || 1;
 	const p1Sold = parseInt(document.getElementById("soldInput-presale1").value, 10) || 0;
@@ -731,13 +738,14 @@ function saveTicketControlConfig() {
 
 	const indicator = document.getElementById("saveStatusIndicator");
 	if (indicator) {
+		indicator.textContent = isAutoSave ? "✓ Tersinkron ke Cloud" : "✓ Tersimpan di Cloud";
 		indicator.style.display = "inline";
-		setTimeout(() => {
-			indicator.style.display = "none";
-		}, 4000);
+		clearTimeout(indicator._timer);
+		indicator._timer = setTimeout(() => { indicator.style.display = "none"; }, 3000);
 	}
-
-	showToast("✓ Pengaturan harga, kuota kursi, dan status ketersediaan tiket berhasil disimpan!");
+	if (!isAutoSave) {
+		showToast("✓ Pengaturan tiket berhasil disimpan & tersinkronisasi ke seluruh browser!");
+	}
 }
 
 function resetTicketControlConfig() {
