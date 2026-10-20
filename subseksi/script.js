@@ -797,17 +797,25 @@ function updateCloudSyncBadge(status) {
 
 	if (status && status.connected) {
 		dot.className = "cloudDot connected";
-		text.textContent = `Cloud: ${status.projectId || "Terhubung"}`;
-		if (box) {
-			box.className = "cloudStatusAlert connected";
-			box.innerHTML = `<strong>🟢 Cloud Firestore Terhubung (${status.projectId})</strong><br>Sinkronisasi real-time aktif. Semua perubahan tiket dan pesanan langsung tersinkronisasi ke Opera, Chrome, dan ponsel.`;
+		if (status.mode === "firebase") {
+			text.textContent = `Cloud: ${status.projectId || "Firebase"}`;
+			if (box) {
+				box.className = "cloudStatusAlert connected";
+				box.innerHTML = `<strong>🟢 Firebase Firestore Terhubung (${status.projectId})</strong><br>Sinkronisasi real-time aktif. Semua perubahan tiket dan pesanan langsung tersinkronisasi ke Opera, Chrome, dan ponsel.`;
+			}
+		} else {
+			text.textContent = "Cloud: Aktif (Global Sync)";
+			if (box) {
+				box.className = "cloudStatusAlert connected";
+				box.innerHTML = `<strong>🟢 Global Cloud Database Aktif</strong><br>Sinkronisasi otomatis aktif di seluruh browser (Opera, Chrome, Safari, dan HP). Anda juga dapat menghubungkan Firebase kustom jika diinginkan.`;
+			}
 		}
 	} else if (status && status.connecting) {
 		dot.className = "cloudDot";
 		text.textContent = "Menghubungkan...";
 		if (box) {
 			box.className = "cloudStatusAlert";
-			box.innerHTML = `<strong>Menghubungkan ke Cloud Firestore...</strong>`;
+			box.innerHTML = `<strong>Menghubungkan ke Cloud Database...</strong>`;
 		}
 	} else {
 		dot.className = "cloudDot disconnected";

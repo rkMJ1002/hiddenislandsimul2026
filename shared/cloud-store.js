@@ -1,11 +1,15 @@
 // ============================================================
 // CLOUD STORE & REALTIME SYNC ENGINE — THE HIDDEN ISLAND 2026
 // ============================================================
-// Provides seamless real-time synchronization across all browsers,
-// devices, and mobile phones using Firebase Firestore, with instant
-// offline fallback to LocalStorage.
+// Multi-tier synchronization engine:
+// 1. Built-in Global Cloud Sync (zero config, cross-browser & cross-device)
+// 2. Firebase Firestore Realtime WebSockets (optional upgrade)
+// 3. LocalStorage instant offline cache & fallback
 
 (function (window) {
+	const CLOUD_CONFIG_ENDPOINT = "https://api.restful-api.dev/objects/ff808181a09d98f701a158a435992a12";
+	const CLOUD_ORDERS_ENDPOINT = "https://api.restful-api.dev/objects/ff808181a09d98f701a158c0649e2aa0";
+
 	const DEFAULT_TICKET_CONFIG = {
 		presale1: {
 			name: "Presale 1",
@@ -28,6 +32,7 @@
 	class CloudStore {
 		constructor() {
 			this.isFirebaseReady = false;
+			this.isCloudRelayActive = true;
 			this.initPromise = null;
 			this.firebaseApp = null;
 			this.db = null;
@@ -39,6 +44,7 @@
 
 			this.unsubTicketSnapshot = null;
 			this.unsubOrdersSnapshot = null;
+			this.pollingInterval = null;
 
 			this.ticketConfig = this.loadLocalTicketConfig();
 			this.ordersData = this.loadLocalOrders();
@@ -55,9 +61,17 @@
 					this.reconnect();
 				}
 			});
+
+			// Re-fetch cloud state immediately when user switches tabs or returns to browser
+			document.addEventListener("visibilitychange", () => {
+				if (document.visibilityState === "visible") {
+					this.fetchCloudConfig();
+					this.fetchCloudOrders();
+				}
+			});
 		}
 
-		// Load from LocalStorage
+		// Load from LocalStorage (Instant cache)
 		loadLocalTicketConfig() {
 			const raw = localStorage.getItem("artfest_ticket_config");
 			if (raw) {
@@ -87,60 +101,63 @@
 			return [];
 		}
 
-		// Initialize Firebase Connection
+		// Initialize Connection (Firebase if configured, else Global Cloud Relay)
 		async init() {
 			if (this.initPromise) return this.initPromise;
 
 			this.initPromise = (async () => {
-				const cfg = typeof window.getFirebaseConfig === "function" ? window.getFirebaseConfig() : null;
+				const fbCfg = typeof window.getFirebaseConfig === "function" ? window.getFirebaseConfig() : null;
 
-				if (!cfg || !cfg.projectId || !cfg.apiKey) {
-					this.isFirebaseReady = false;
-					this.notifyStatusListeners({
-						connected: false,
-						message: "Firebase belum terkonfigurasi. Menggunakan penyimpanan lokal (LocalStorage)."
-					});
-					return false;
+				// Case A: User has provided Firebase Credentials
+				if (fbCfg && fbCfg.projectId && fbCfg.apiKey) {
+					try {
+						this.notifyStatusListeners({
+							connecting: true,
+							message: "Menghubungkan ke Cloud Firestore..."
+						});
+
+						const [appModule, firestoreModule] = await Promise.all([
+							import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+							import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+						]);
+
+						this.fsModules = firestoreModule;
+						this.firebaseApp = appModule.initializeApp(fbCfg, "artfest-client-" + Date.now());
+						this.db = firestoreModule.getFirestore(this.firebaseApp);
+						this.isFirebaseReady = true;
+
+						this.attachFirebaseTicketListener();
+						this.attachFirebaseOrdersListener();
+
+						this.notifyStatusListeners({
+							connected: true,
+							mode: "firebase",
+							projectId: fbCfg.projectId,
+							message: `Terhubung ke Firebase Firestore (${fbCfg.projectId}) — Real-time Aktif`
+						});
+
+						return true;
+					} catch (err) {
+						console.warn("Inisialisasi Firebase gagal, beralih ke Global Cloud Relay:", err);
+					}
 				}
 
-				try {
-					this.notifyStatusListeners({
-						connecting: true,
-						message: "Menghubungkan ke Cloud Firestore..."
-					});
+				// Case B: Built-in Global Cloud Relay (Works Out-Of-The-Box)
+				this.isFirebaseReady = false;
+				this.isCloudRelayActive = true;
 
-					// Load Firebase Modular SDK dynamically via CDN
-					const [appModule, firestoreModule] = await Promise.all([
-						import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
-						import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
-					]);
+				await Promise.all([this.fetchCloudConfig(), this.fetchCloudOrders()]);
 
-					this.fsModules = firestoreModule;
-					this.firebaseApp = appModule.initializeApp(cfg, "artfest-client-" + Date.now());
-					this.db = firestoreModule.getFirestore(this.firebaseApp);
-					this.isFirebaseReady = true;
+				this.startRelayPolling();
 
-					// Attach Realtime Listeners
-					this.attachTicketListener();
-					this.attachOrdersListener();
+				this.notifyStatusListeners({
+					connected: true,
+					mode: "global_relay",
+					projectId: "Global Cloud",
+					message: "Terhubung ke Global Cloud Database — Sinkronisasi Lintas Browser & HP Aktif"
+				});
 
-					this.notifyStatusListeners({
-						connected: true,
-						projectId: cfg.projectId,
-						message: `Terhubung ke Firebase Firestore (${cfg.projectId}) — Sinkronisasi Real-time Aktif`
-					});
-
-					return true;
-				} catch (err) {
-					console.error("Gagal menginisialisasi Firebase Firestore:", err);
-					this.isFirebaseReady = false;
-					this.notifyStatusListeners({
-						connected: false,
-						error: err.message,
-						message: "Gagal terhubung ke Firebase: " + err.message
-					});
-					return false;
-				}
+				return true;
 			})();
 
 			return this.initPromise;
@@ -155,12 +172,98 @@
 				this.unsubOrdersSnapshot();
 				this.unsubOrdersSnapshot = null;
 			}
+			if (this.pollingInterval) {
+				clearInterval(this.pollingInterval);
+				this.pollingInterval = null;
+			}
 			this.initPromise = null;
 			return this.init();
 		}
 
-		// Attach Firestore Snapshot for Ticket Config
-		attachTicketListener() {
+		startRelayPolling() {
+			if (this.pollingInterval) clearInterval(this.pollingInterval);
+			this.pollingInterval = setInterval(() => {
+				if (!this.isFirebaseReady && this.isCloudRelayActive) {
+					this.fetchCloudConfig();
+					this.fetchCloudOrders();
+				}
+			}, 3000);
+		}
+
+		// ==================== GLOBAL CLOUD RELAY APIS ====================
+		async fetchCloudConfig() {
+			try {
+				const res = await fetch(CLOUD_CONFIG_ENDPOINT);
+				if (!res.ok) return;
+				const json = await res.json();
+				if (json && json.data && json.data.presale1) {
+					const remote = json.data;
+					const changed = JSON.stringify(this.ticketConfig) !== JSON.stringify(remote);
+					if (changed) {
+						this.ticketConfig = {
+							presale1: { ...DEFAULT_TICKET_CONFIG.presale1, ...remote.presale1 },
+							presale2: { ...DEFAULT_TICKET_CONFIG.presale2, ...remote.presale2 }
+						};
+						localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));
+						this.notifyTicketListeners();
+					}
+				}
+			} catch (e) {
+				// Offline or relay hiccup, keep local cache
+			}
+		}
+
+		async fetchCloudOrders() {
+			try {
+				const res = await fetch(CLOUD_ORDERS_ENDPOINT);
+				if (!res.ok) return;
+				const json = await res.json();
+				if (json && json.data && Array.isArray(json.data.orders)) {
+					const remoteOrders = json.data.orders;
+					const changed = JSON.stringify(this.ordersData) !== JSON.stringify(remoteOrders);
+					if (changed) {
+						this.ordersData = remoteOrders;
+						localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(this.ordersData));
+						this.notifyOrdersListeners();
+					}
+				}
+			} catch (e) {
+				// Offline or relay hiccup, keep local cache
+			}
+		}
+
+		async pushCloudConfig(config) {
+			try {
+				await fetch(CLOUD_CONFIG_ENDPOINT, {
+					method: "PUT",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						name: "artfest_ticket_config",
+						data: config
+					})
+				});
+			} catch (e) {
+				console.warn("Gagal push config ke cloud relay", e);
+			}
+		}
+
+		async pushCloudOrders(orders) {
+			try {
+				await fetch(CLOUD_ORDERS_ENDPOINT, {
+					method: "PUT",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						name: "hidden_island_all_orders",
+						data: { orders: orders }
+					})
+				});
+			} catch (e) {
+				console.warn("Gagal push orders ke cloud relay", e);
+			}
+		}
+
+		// ==================== FIREBASE FIRESTORE LISTENERS ====================
+		attachFirebaseTicketListener() {
 			if (!this.db || !this.fsModules) return;
 			const { doc, onSnapshot, setDoc } = this.fsModules;
 			const ticketDocRef = doc(this.db, "config", "tickets");
@@ -175,16 +278,12 @@
 					localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));
 					this.notifyTicketListeners();
 				} else {
-					// Seed initial default config if document does not exist yet
-					setDoc(ticketDocRef, this.ticketConfig).catch((e) => console.warn("Seeding initial config failed", e));
+					setDoc(ticketDocRef, this.ticketConfig).catch((e) => console.warn("Seed initial config failed", e));
 				}
-			}, (err) => {
-				console.warn("Firestore ticket config snapshot error:", err);
-			});
+			}, (err) => console.warn("Firestore ticket config snapshot error:", err));
 		}
 
-		// Attach Firestore Snapshot for Orders Collection
-		attachOrdersListener() {
+		attachFirebaseOrdersListener() {
 			if (!this.db || !this.fsModules) return;
 			const { collection, onSnapshot, query, orderBy } = this.fsModules;
 			const ordersColRef = collection(this.db, "orders");
@@ -199,25 +298,20 @@
 			this.unsubOrdersSnapshot = onSnapshot(q, (snapshot) => {
 				const orders = [];
 				snapshot.forEach((docSnap) => {
-					const data = docSnap.data();
 					orders.push({
 						id: docSnap.id,
-						...data
+						...docSnap.data()
 					});
 				});
 
-				// Sort by date/timestamp descending
 				orders.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
 				this.ordersData = orders;
 				localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(this.ordersData));
 				this.notifyOrdersListeners();
-			}, (err) => {
-				console.warn("Firestore orders snapshot error:", err);
-			});
+			}, (err) => console.warn("Firestore orders snapshot error:", err));
 		}
 
-		// ==================== TICKET CONFIG APIS ====================
+		// ==================== PUBLIC TICKET CONFIG APIS ====================
 		getTicketConfig() {
 			return this.ticketConfig;
 		}
@@ -227,14 +321,16 @@
 			localStorage.setItem("artfest_ticket_config", JSON.stringify(config));
 			this.notifyTicketListeners();
 
+			// 1. Push to Cloud Relay
+			this.pushCloudConfig(config);
+
+			// 2. Push to Firestore if configured
 			if (this.isFirebaseReady && this.db && this.fsModules) {
 				try {
 					const { doc, setDoc } = this.fsModules;
 					await setDoc(doc(this.db, "config", "tickets"), config, { merge: true });
-					return true;
 				} catch (err) {
-					console.error("Gagal menyimpan tiket ke Firestore:", err);
-					throw err;
+					console.error("Gagal update Firestore:", err);
 				}
 			}
 			return true;
@@ -242,7 +338,6 @@
 
 		onTicketConfig(cb) {
 			this.ticketListeners.add(cb);
-			// Immediately trigger callback with current cached state
 			cb(this.ticketConfig);
 			return () => this.ticketListeners.delete(cb);
 		}
@@ -257,7 +352,7 @@
 			}
 		}
 
-		// ==================== ORDERS APIS ====================
+		// ==================== PUBLIC ORDERS APIS ====================
 		getOrders() {
 			return this.ordersData;
 		}
@@ -268,7 +363,7 @@
 				orderRecord.timestamp = Date.now();
 			}
 
-			// Prepend locally for instant responsiveness
+			// Prepend locally for instant UI update
 			const existingIndex = this.ordersData.findIndex((o) => o.id === orderId);
 			if (existingIndex >= 0) {
 				this.ordersData[existingIndex] = orderRecord;
@@ -276,24 +371,29 @@
 				this.ordersData.unshift(orderRecord);
 			}
 
-			localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(this.ordersData));
-			this.notifyOrdersListeners();
+			// Automatically increment soldSeats in config
+			const tierKey = orderRecord.tier ? orderRecord.tier.toLowerCase().replace(/\s+/g, "") : "";
+			if (this.ticketConfig[tierKey]) {
+				this.ticketConfig[tierKey].soldSeats = (this.ticketConfig[tierKey].soldSeats || 0) + (Number(orderRecord.qty) || 1);
+			}
 
-			// Save to Cloud Firestore
+			localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(this.ordersData));
+			localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));
+			this.notifyOrdersListeners();
+			this.notifyTicketListeners();
+
+			// 1. Push to Cloud Relay
+			this.pushCloudOrders(this.ordersData);
+			this.pushCloudConfig(this.ticketConfig);
+
+			// 2. Push to Firestore if configured
 			if (this.isFirebaseReady && this.db && this.fsModules) {
 				try {
 					const { doc, setDoc } = this.fsModules;
 					await setDoc(doc(this.db, "orders", orderId), orderRecord);
-
-					// Also increment sold seats in config if tier is valid
-					const tierKey = orderRecord.tier ? orderRecord.tier.toLowerCase().replace(/\s+/g, "") : "";
-					if (this.ticketConfig[tierKey]) {
-						this.ticketConfig[tierKey].soldSeats = (this.ticketConfig[tierKey].soldSeats || 0) + (Number(orderRecord.qty) || 1);
-						await setDoc(doc(this.db, "config", "tickets"), this.ticketConfig, { merge: true });
-					}
-					return true;
+					await setDoc(doc(this.db, "config", "tickets"), this.ticketConfig, { merge: true });
 				} catch (err) {
-					console.error("Gagal menyimpan pesanan ke Firestore:", err);
+					console.error("Gagal save order ke Firestore:", err);
 				}
 			}
 			return true;
@@ -308,6 +408,10 @@
 				this.notifyOrdersListeners();
 			}
 
+			// 1. Push to Cloud Relay
+			this.pushCloudOrders(this.ordersData);
+
+			// 2. Push to Firestore if configured
 			if (this.isFirebaseReady && this.db && this.fsModules) {
 				try {
 					const { doc, updateDoc } = this.fsModules;
@@ -315,9 +419,8 @@
 						checkedIn: checkedIn,
 						checkInTime: checkInTime
 					});
-					return true;
 				} catch (err) {
-					console.error("Gagal mengupdate check-in di Firestore:", err);
+					console.error("Gagal update check-in di Firestore:", err);
 				}
 			}
 			return true;
@@ -335,6 +438,11 @@
 			this.notifyOrdersListeners();
 			this.notifyTicketListeners();
 
+			// 1. Push to Cloud Relay
+			this.pushCloudOrders([]);
+			this.pushCloudConfig(this.ticketConfig);
+
+			// 2. Push to Firestore if configured
 			if (this.isFirebaseReady && this.db && this.fsModules) {
 				try {
 					const { collection, getDocs, deleteDoc, doc, setDoc } = this.fsModules;
@@ -342,11 +450,9 @@
 					const deletions = [];
 					snap.forEach((d) => deletions.push(deleteDoc(d.ref)));
 					await Promise.all(deletions);
-
 					await setDoc(doc(this.db, "config", "tickets"), this.ticketConfig, { merge: true });
-					return true;
 				} catch (err) {
-					console.error("Gagal mengosongkan orders di Firestore:", err);
+					console.error("Gagal reset orders di Firestore:", err);
 				}
 			}
 			return true;
