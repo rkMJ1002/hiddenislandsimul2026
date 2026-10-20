@@ -355,46 +355,60 @@
 
 		async pushCloudConfig(config) {
 			const apiBase = getApiBase();
+			const promises = [];
 
 			// 1. Vercel API
 			try {
-				fetch(`${apiBase}/api/tickets`, {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(config)
-				}).catch(() => {});
+				promises.push(
+					fetch(`${apiBase}/api/tickets`, {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify(config)
+					}).catch((err) => console.warn("pushCloudConfig API error:", err))
+				);
 			} catch (e) {}
 
 			// 2. Direct Blob fallback
 			try {
-				fetch(BLOB_CONFIG_ENDPOINT, {
-					method: "PUT",
-					headers: { "Content-Type": "application/json", "Accept": "application/json" },
-					body: JSON.stringify(config)
-				}).catch(() => {});
+				promises.push(
+					fetch(BLOB_CONFIG_ENDPOINT, {
+						method: "PUT",
+						headers: { "Content-Type": "application/json", "Accept": "application/json" },
+						body: JSON.stringify(config)
+					}).catch((err) => console.warn("pushCloudConfig Blob error:", err))
+				);
 			} catch (e) {}
+
+			await Promise.all(promises);
 		}
 
 		async pushCloudOrders(orders) {
 			const apiBase = getApiBase();
+			const promises = [];
 
 			// 1. Vercel API
 			try {
-				fetch(`${apiBase}/api/orders`, {
-					method: "PUT",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(orders)
-				}).catch(() => {});
+				promises.push(
+					fetch(`${apiBase}/api/orders`, {
+						method: "PUT",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify(orders)
+					}).catch((err) => console.warn("pushCloudOrders API error:", err))
+				);
 			} catch (e) {}
 
 			// 2. Direct Blob fallback
 			try {
-				fetch(BLOB_ORDERS_ENDPOINT, {
-					method: "PUT",
-					headers: { "Content-Type": "application/json", "Accept": "application/json" },
-					body: JSON.stringify(orders)
-				}).catch(() => {});
+				promises.push(
+					fetch(BLOB_ORDERS_ENDPOINT, {
+						method: "PUT",
+						headers: { "Content-Type": "application/json", "Accept": "application/json" },
+						body: JSON.stringify(orders)
+					}).catch((err) => console.warn("pushCloudOrders Blob error:", err))
+				);
 			} catch (e) {}
+
+			await Promise.all(promises);
 		}
 
 		// ==================== FIREBASE FIRESTORE LISTENERS ====================
@@ -565,9 +579,12 @@
 
 		async clearAllOrders() {
 			this.ordersData = [];
-			localStorage.removeItem("hiddenIslandAllOrders");
+			localStorage.setItem("hiddenIslandAllOrders", JSON.stringify([]));
 
 			// Reset sold seats to 0
+			if (!this.ticketConfig) this.ticketConfig = JSON.parse(JSON.stringify(DEFAULT_TICKET_CONFIG));
+			if (!this.ticketConfig.presale1) this.ticketConfig.presale1 = { ...DEFAULT_TICKET_CONFIG.presale1 };
+			if (!this.ticketConfig.presale2) this.ticketConfig.presale2 = { ...DEFAULT_TICKET_CONFIG.presale2 };
 			this.ticketConfig.presale1.soldSeats = 0;
 			this.ticketConfig.presale2.soldSeats = 0;
 			localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));
@@ -575,14 +592,16 @@
 			this.notifyOrdersListeners();
 			this.notifyTicketListeners();
 
-			// 1. Push to Cloud
+			// 1. Push to Cloud synchronously
+			const apiBase = getApiBase();
 			try {
-				const apiBase = getApiBase();
-				fetch(`${apiBase}/api/orders`, { method: "DELETE" }).catch(() => {});
+				await fetch(`${apiBase}/api/orders`, { method: "DELETE" });
 			} catch (e) {}
 
-			this.pushCloudOrders([]);
-			this.pushCloudConfig(this.ticketConfig);
+			await Promise.all([
+				this.pushCloudOrders([]),
+				this.pushCloudConfig(this.ticketConfig)
+			]);
 
 			// 2. Push to Firestore if configured
 			if (this.isFirebaseReady && this.db && this.fsModules) {

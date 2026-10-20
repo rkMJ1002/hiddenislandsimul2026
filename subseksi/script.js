@@ -479,26 +479,34 @@ function handleManualOrderSubmit(event) {
 	showToast(`✓ Pesanan baru berhasil ditambahkan: ${randomId} (${name})`);
 }
 
-// Clear All Orders Data (Reset)
-function clearAllOrdersData() {
+// Clear All Orders Data (Reset Permanently in Cloud & Local)
+async function clearAllOrdersData() {
 	if (ordersData.length === 0) {
 		showToast("Data pesanan tiket sudah kosong.");
 		return;
 	}
 
-	if (confirm("Apakah Anda yakin ingin mengosongkan semua data pesanan tiket? Tindakan ini tidak dapat dibatalkan.")) {
+	if (confirm("Apakah Anda yakin ingin mengosongkan semua data pesanan tiket secara global? Data akan dihapus dari cloud dan semua perangkat.")) {
+		showToast("Sedang mengosongkan data di cloud...");
+
+		if (window.ArtfestCloud && typeof window.ArtfestCloud.clearAllOrders === "function") {
+			await window.ArtfestCloud.clearAllOrders();
+		} else {
+			ordersData = [];
+			localStorage.setItem("hiddenIslandAllOrders", JSON.stringify([]));
+			const cfg = getStoredTicketConfig();
+			cfg.presale1.soldSeats = 0;
+			cfg.presale2.soldSeats = 0;
+			localStorage.setItem("artfest_ticket_config", JSON.stringify(cfg));
+		}
+
 		ordersData = [];
-		localStorage.removeItem("hiddenIslandAllOrders");
-		// Also reset soldSeats in ticket config so quotas return to full availability
-		const cfg = getStoredTicketConfig();
-		cfg.presale1.soldSeats = 0;
-		cfg.presale2.soldSeats = 0;
-		localStorage.setItem("artfest_ticket_config", JSON.stringify(cfg));
-		loadTicketControlConfig();
 		renderOrdersTable();
 		updateMetricCards();
 		renderQuickOrderChips();
-		showToast("Data pesanan tiket dan kuota terjual telah berhasil dikosongkan.");
+		loadTicketControlConfig();
+
+		showToast("✓ Seluruh data pesanan & kuota tiket berhasil dikosongkan secara permanen.");
 	}
 }
 
@@ -756,12 +764,32 @@ function saveTicketControlConfig(isAutoSave = false) {
 	}
 }
 
-function resetTicketControlConfig() {
-	if (!confirm("Kembalikan harga dan kuota tiket ke pengaturan default awal?")) return;
-	localStorage.removeItem("artfest_ticket_config");
+async function resetTicketControlConfig() {
+	if (!confirm("Kembalikan harga, kuota, dan status tiket ke pengaturan default awal di cloud dan seluruh browser?")) return;
+	showToast("Sedang me-reset pengaturan tiket...");
+
+	const defaultCfg = JSON.parse(JSON.stringify(DEFAULT_TICKET_CONFIG));
+
+	// Keep soldSeats accurate according to remaining orders
+	const p1OrdersSold = (ordersData || [])
+		.filter(o => o.tier && o.tier.toLowerCase().includes("presale 1"))
+		.reduce((sum, o) => sum + (Number(o.qty) || 1), 0);
+	const p2OrdersSold = (ordersData || [])
+		.filter(o => o.tier && o.tier.toLowerCase().includes("presale 2"))
+		.reduce((sum, o) => sum + (Number(o.qty) || 1), 0);
+
+	defaultCfg.presale1.soldSeats = p1OrdersSold;
+	defaultCfg.presale2.soldSeats = p2OrdersSold;
+
+	localStorage.setItem("artfest_ticket_config", JSON.stringify(defaultCfg));
+
+	if (window.ArtfestCloud && typeof window.ArtfestCloud.saveTicketConfig === "function") {
+		await window.ArtfestCloud.saveTicketConfig(defaultCfg);
+	}
+
 	loadTicketControlConfig();
 	updateMetricCards();
-	showToast("Pengaturan tiket telah di-reset ke nilai default.");
+	showToast("✓ Pengaturan tiket telah di-reset ke nilai default awal di seluruh browser.");
 }
 
 // Cross-tab real-time sync: when an order is submitted at checkout or config updated in another tab
