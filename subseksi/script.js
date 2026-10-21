@@ -217,12 +217,16 @@ function toggleOrderCheckIn(orderId) {
 	order.checkedIn = !order.checkedIn;
 	if (order.checkedIn) {
 		order.checkInTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " WIB";
+		order.checkInTimestamp = Date.now();
+		order.checkedInGate = "Subseksi Admin Portal";
 	} else {
 		delete order.checkInTime;
+		delete order.checkInTimestamp;
+		delete order.checkedInGate;
 	}
 
 	if (window.ArtfestCloud && typeof window.ArtfestCloud.updateOrderCheckIn === "function") {
-		window.ArtfestCloud.updateOrderCheckIn(order.id, order.checkedIn, order.checkInTime || "");
+		window.ArtfestCloud.updateOrderCheckIn(order.id, order.checkedIn, order.checkInTime || "", order.checkedInGate || "", order.checkInTimestamp || null);
 	} else {
 		saveOrdersToStorage();
 	}
@@ -434,8 +438,10 @@ function processTicketScan(overrideId) {
 		// Case B: First-time valid check-in
 		found.checkedIn = true;
 		found.checkInTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " WIB";
+		found.checkInTimestamp = Date.now();
+		found.checkedInGate = "Subseksi Quick Scan";
 		if (window.ArtfestCloud && typeof window.ArtfestCloud.updateOrderCheckIn === "function") {
-			window.ArtfestCloud.updateOrderCheckIn(found.id, true, found.checkInTime);
+			window.ArtfestCloud.updateOrderCheckIn(found.id, true, found.checkInTime, found.checkedInGate, found.checkInTimestamp);
 		} else {
 			saveOrdersToStorage();
 		}

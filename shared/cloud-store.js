@@ -243,7 +243,7 @@
 					this.fetchCloudConfig();
 					this.fetchCloudOrders();
 				}
-			}, 3000);
+			}, 2000);
 		}
 
 		// ==================== GLOBAL CLOUD APIS ====================
@@ -550,11 +550,13 @@
 			return true;
 		}
 
-		async updateOrderCheckIn(orderId, checkedIn, checkInTime) {
+		async updateOrderCheckIn(orderId, checkedIn, checkInTime, gate = "", checkInTimestamp = null) {
 			const found = this.ordersData.find((o) => o.id === orderId);
 			if (found) {
 				found.checkedIn = checkedIn;
 				found.checkInTime = checkInTime;
+				if (gate) found.checkedInGate = gate;
+				found.checkInTimestamp = checkInTimestamp !== null ? checkInTimestamp : (checkedIn ? Date.now() : null);
 				localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(this.ordersData));
 				this.notifyOrdersListeners();
 			}
@@ -566,10 +568,13 @@
 			if (this.isFirebaseReady && this.db && this.fsModules) {
 				try {
 					const { doc, updateDoc } = this.fsModules;
-					await updateDoc(doc(this.db, "orders", orderId), {
+					const payload = {
 						checkedIn: checkedIn,
 						checkInTime: checkInTime
-					});
+					};
+					if (gate) payload.checkedInGate = gate;
+					if (found && found.checkInTimestamp !== undefined) payload.checkInTimestamp = found.checkInTimestamp;
+					await updateDoc(doc(this.db, "orders", orderId), payload);
 				} catch (err) {
 					console.error("Gagal update check-in di Firestore:", err);
 				}
@@ -662,6 +667,10 @@
 			this.ordersListeners.add(cb);
 			cb(this.ordersData);
 			return () => this.ordersListeners.delete(cb);
+		}
+
+		onOrdersChange(cb) {
+			return this.onOrders(cb);
 		}
 
 		notifyOrdersListeners() {

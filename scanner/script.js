@@ -176,16 +176,37 @@ function initCloudStoreSync() {
 			ordersData = cloudOrders;
 			updateAttendanceMetrics();
 			renderRegisteredQuickChips();
+			renderLogTable();
 		}
 
-		// Listen to incoming real-time updates from other gates / checkout
-		window.ArtfestCloud.onOrdersChange((newOrders) => {
+		// Handler for incoming real-time updates from other gates / checkout / mobile devices
+		const handleOrdersUpdate = (newOrders) => {
 			if (Array.isArray(newOrders)) {
 				ordersData = newOrders;
 				updateAttendanceMetrics();
 				renderRegisteredQuickChips();
+				const currentFilter = document.getElementById("logSearchInput") ? document.getElementById("logSearchInput").value.trim() : "";
+				renderLogTable(currentFilter);
 			}
-		});
+		};
+
+		if (typeof window.ArtfestCloud.onOrders === "function") {
+			window.ArtfestCloud.onOrders(handleOrdersUpdate);
+		} else if (typeof window.ArtfestCloud.onOrdersChange === "function") {
+			window.ArtfestCloud.onOrdersChange(handleOrdersUpdate);
+		}
+
+		if (typeof window.ArtfestCloud.onStatus === "function") {
+			window.ArtfestCloud.onStatus((status) => {
+				if (syncStatusEl) {
+					if (status && status.connected) {
+						syncStatusEl.textContent = status.mode === "firebase" ? "Firebase Realtime" : "Cloud Terhubung";
+					} else if (status && status.connecting) {
+						syncStatusEl.textContent = "Menghubungkan...";
+					}
+				}
+			});
+		}
 	}
 }
 
@@ -971,13 +992,15 @@ function processBarcodeValidation(rawCode, sourceMethod = "Scan") {
 	}
 
 	// ==================== STATE A: VALID FIRST CHECK-IN ====================
+	const scanTimestamp = Date.now();
 	found.checkedIn = true;
 	found.checkInTime = timeNowStr;
+	found.checkInTimestamp = scanTimestamp;
 	found.checkedInGate = activeGate;
 
 	// Update Cloud & Storage
 	if (window.ArtfestCloud && typeof window.ArtfestCloud.updateOrderCheckIn === "function") {
-		window.ArtfestCloud.updateOrderCheckIn(found.id, true, found.checkInTime);
+		window.ArtfestCloud.updateOrderCheckIn(found.id, true, found.checkInTime, activeGate, scanTimestamp);
 	} else {
 		saveOrdersToStorage();
 	}
@@ -989,6 +1012,7 @@ function processBarcodeValidation(rawCode, sourceMethod = "Scan") {
 
 	recordLogEntry({
 		time: timeNowStr,
+		timestamp: scanTimestamp,
 		gate: activeGate,
 		id: found.id,
 		name: found.name || "Anonim",
@@ -1136,19 +1160,27 @@ function undoCurrentCheckIn() {
 		found.checkedIn = false;
 		delete found.checkInTime;
 		delete found.checkedInGate;
+		delete found.checkInTimestamp;
 
 		if (window.ArtfestCloud && typeof window.ArtfestCloud.updateOrderCheckIn === "function") {
-			window.ArtfestCloud.updateOrderCheckIn(found.id, false, "");
+			window.ArtfestCloud.updateOrderCheckIn(found.id, false, "", "", null);
 		} else {
 			saveOrdersToStorage();
 		}
 
+		// Also remove valid check-in entry from scanLog
+		scanLog = scanLog.filter((item) => !(item.id === found.id && item.statusClass === "valid"));
+		saveScanLog();
+
 		updateAttendanceMetrics();
 		renderRegisteredQuickChips();
+		renderLogTable(document.getElementById("logSearchInput") ? document.getElementById("logSearchInput").value.trim() : "");
 		showToast(`Status check-in ${found.id} telah dibatalkan.`);
 
 		hideAllStates();
-		document.getElementById("stateStandby").style.display = "flex";
+		const standby = document.getElementById("stateStandby");
+		if (standby) standby.style.display = "flex";
+		currentActiveOrderId = null;
 	}
 }
 
@@ -1160,11 +1192,78 @@ function resetCurrentTicketStatus() {
 // ============================================================
 // 10. ACTIVITY LOG FEED & CSV EXPORT
 // ============================================================
+// Unified Scan Log synthesizes local device events with all checked-in orders across the cloud
+function getUnifiedScanLog() {
+	const result = [];
+	const validIdsHandled = new Set();
+
+	// 1. Process local scanLog entries
+	if (Array.isArray(scanLog)) {
+		for (const entry of scanLog) {
+			if (!entry || !entry.id) continue;
+			if (entry.statusClass === "valid") {
+				const order = ordersData.find((o) => o && o.id === entry.id);
+				// If order was deleted from system or check-in was cancelled, do not display
+				if (!order || !order.checkedIn) continue;
+				validIdsHandled.add(entry.id);
+				result.push({
+					...entry,
+					time: entry.time || order.checkInTime || "-",
+					timestamp: entry.timestamp || order.checkInTimestamp || order.timestamp || 0,
+					gate: entry.gate || order.checkedInGate || activeGate,
+					wristband: entry.wristband || order.wristband || "Wristband Festival Standar"
+				});
+			} else if (entry.statusClass === "duplicate") {
+				// Duplicate scan attempts on this device
+				const order = ordersData.find((o) => o && o.id === entry.id);
+				if (!order) continue; // If order was deleted, omit
+				result.push(entry);
+			} else {
+				// Invalid barcode attempts (not in database)
+				result.push(entry);
+			}
+		}
+	}
+
+	// 2. Synthesize entries for any order in ordersData with checkedIn === true that isn't yet in result
+	if (Array.isArray(ordersData)) {
+		for (const order of ordersData) {
+			if (!order || !order.id || !order.checkedIn) continue;
+			if (!validIdsHandled.has(order.id)) {
+				validIdsHandled.add(order.id);
+				result.push({
+					time: order.checkInTime || order.date || "Tercatat",
+					timestamp: order.checkInTimestamp || order.timestamp || 0,
+					gate: order.checkedInGate || "Gate Scanner (Mobile)",
+					id: order.id,
+					name: order.name || "Anonim",
+					tier: order.tier || "-",
+					status: "Check-in Berhasil",
+					statusClass: "valid",
+					wristband: order.wristband || "Wristband Festival Standar",
+					method: "Scanner Cloud Sync"
+				});
+			}
+		}
+	}
+
+	// 3. Sort chronologically descending (newest scans at the top)
+	result.sort((a, b) => {
+		const tA = Number(a.timestamp) || 0;
+		const tB = Number(b.timestamp) || 0;
+		if (tA && tB && tA !== tB) return tB - tA;
+		return 0;
+	});
+
+	return result;
+}
+
 function recordLogEntry(entry) {
+	if (!entry.timestamp) entry.timestamp = Date.now();
 	scanLog.unshift(entry);
 	if (scanLog.length > 200) scanLog.pop(); // Keep last 200 scans
 	saveScanLog();
-	renderLogTable();
+	renderLogTable(document.getElementById("logSearchInput") ? document.getElementById("logSearchInput").value.trim() : "");
 }
 
 function renderLogTable(filterQuery = "") {
@@ -1172,14 +1271,17 @@ function renderLogTable(filterQuery = "") {
 	const countBadge = document.getElementById("logCountBadge");
 	if (!tbody) return;
 
-	const filtered = scanLog.filter((item) => {
+	const unified = getUnifiedScanLog();
+
+	const filtered = unified.filter((item) => {
 		if (!filterQuery) return true;
 		const q = filterQuery.toLowerCase();
 		return (
 			(item.name && item.name.toLowerCase().includes(q)) ||
 			(item.id && item.id.toLowerCase().includes(q)) ||
 			(item.tier && item.tier.toLowerCase().includes(q)) ||
-			(item.gate && item.gate.toLowerCase().includes(q))
+			(item.gate && item.gate.toLowerCase().includes(q)) ||
+			(item.status && item.status.toLowerCase().includes(q))
 		);
 	});
 
@@ -1233,7 +1335,8 @@ function filterLogTable() {
 
 // Export Log to CSV
 function exportScanLogCSV() {
-	if (!scanLog || scanLog.length === 0) {
+	const unified = getUnifiedScanLog();
+	if (!unified || unified.length === 0) {
 		showToast("Belum ada data riwayat pemindaian untuk diekspor.");
 		return;
 	}
@@ -1245,7 +1348,7 @@ function exportScanLogCSV() {
 	};
 
 	const headers = ["WAKTU", "KODE TIKET", "NAMA PENGUNJUNG", "KATEGORI", "STATUS", "WRISTBAND", "METODE SCAN"];
-	const rows = scanLog.map((l) => [
+	const rows = unified.map((l) => [
 		l.time || "",
 		l.id || "",
 		l.name || "",
