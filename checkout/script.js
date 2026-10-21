@@ -493,7 +493,7 @@ function executePayment() {
 	if (receiptTier) receiptTier.textContent = `${tierName} (1 Tiket)`;
 
 	const receiptWristband = document.getElementById('receiptWristband');
-	if (receiptWristband) receiptWristband.textContent = wristbandStr;
+	if (receiptWristband) receiptWristband.textContent = "WRISTBAND";
 
 	const receiptBarcodeCode = document.getElementById('receiptBarcodeCode');
 	if (receiptBarcodeCode) receiptBarcodeCode.textContent = randomId;
@@ -512,12 +512,9 @@ function executePayment() {
 				format: "CODE128",
 				lineColor: "#111827",
 				width: 2.2,
-				height: 60,
-				displayValue: true,
-				font: "monospace",
-				fontSize: 15,
-				textMargin: 6,
-				background: "#ffffff"
+				height: 52,
+				displayValue: false, // Prevents duplicate code text inside barcode canvas
+				background: "transparent"
 			});
 		} catch (err) {
 			console.error("Barcode generation error:", err);
@@ -619,35 +616,23 @@ async function downloadTicketPdf() {
 		}
 
 		// 3. Perforation Row with Left & Right Cutout Notches
-		doc.setDrawColor(200, 190, 185);
+		doc.setDrawColor(190, 180, 175);
 		if (typeof doc.setLineDashPattern === 'function') {
 			doc.setLineDashPattern([1, 1.5], 0);
 		} else if (typeof doc.setLineDash === 'function') {
 			doc.setLineDash([1, 1.5], 0);
 		}
-		doc.line(cardX + 6, perfY, cardX + cardW - 6, perfY);
+		doc.line(cardX + 4.5, perfY, cardX + cardW - 4.5, perfY);
 		if (typeof doc.setLineDashPattern === 'function') {
 			doc.setLineDashPattern([], 0);
 		} else if (typeof doc.setLineDash === 'function') {
 			doc.setLineDash([], 0);
 		}
 
-		// Left Notch
+		// Cutout notches (bites into card with canvas background color)
 		doc.setFillColor(243, 240, 233);
-		doc.circle(cardX, perfY, 4, 'F');
-		doc.setDrawColor(200, 190, 185);
-		doc.circle(cardX, perfY, 4, 'S');
-
-		// Right Notch
-		doc.setFillColor(243, 240, 233);
-		doc.circle(cardX + cardW, perfY, 4, 'F');
-		doc.setDrawColor(200, 190, 185);
-		doc.circle(cardX + cardW, perfY, 4, 'S');
-
-		// Clean inner halves of notches
-		doc.setFillColor(250, 248, 245);
-		doc.rect(cardX + 0.1, perfY - 3.9, 4, 7.8, 'F');
-		doc.rect(cardX + cardW - 4.1, perfY - 3.9, 4, 7.8, 'F');
+		doc.circle(cardX, perfY, 4.5, 'F');
+		doc.circle(cardX + cardW, perfY, 4.5, 'F');
 
 		// 4. Ticket Stub Body (Matching Reference)
 		// Title & Tour
@@ -713,9 +698,9 @@ async function downloadTicketPdf() {
 		doc.setFont('helvetica', 'bold');
 		doc.setTextColor(17, 24, 22);
 		doc.text('08:30', stubLeft, curY);
-		doc.text(currentOrderSummary.tier || 'Presale', cardX + 28, curY);
+		doc.text(currentOrderSummary.tier || 'Presale 1', cardX + 28, curY);
 		doc.text('GA', cardX + 65, curY);
-		doc.text(currentOrderSummary.wristband || 'WRISTBAND', cardX + 83, curY);
+		doc.text('WRISTBAND', cardX + 83, curY);
 
 		// Separator line before barcode
 		curY += 6;
@@ -726,20 +711,20 @@ async function downloadTicketPdf() {
 		const barcodeCanvas = document.getElementById('receiptBarcodeCanvas');
 		if (barcodeCanvas) {
 			const barcodeDataUrl = barcodeCanvas.toDataURL('image/png');
-			doc.addImage(barcodeDataUrl, 'PNG', 39, curY + 3, 70, 18);
+			doc.addImage(barcodeDataUrl, 'PNG', 42, curY + 2, 64, 16);
 		}
 
-		// Barcode Number in Monospace
-		doc.setFontSize(8);
+		// Barcode Number in Monospace (printed ONCE below barcode bars)
+		doc.setFontSize(8.5);
 		doc.setFont('courier', 'bold');
 		doc.setTextColor(17, 24, 22);
-		doc.text(currentOrderSummary.id, 74, curY + 25.5, { align: 'center' });
+		doc.text(currentOrderSummary.id, 74, curY + 22.5, { align: 'center' });
 
 		// Hint
-		doc.setFontSize(6);
+		doc.setFontSize(6.2);
 		doc.setFont('helvetica', 'normal');
 		doc.setTextColor(140, 150, 146);
-		doc.text('Tunjukkan barcode ini kepada petugas di Gate Check-In', 74, curY + 29.5, { align: 'center' });
+		doc.text('Tunjukkan barcode ini kepada petugas di Gate Check-In', 74, curY + 27, { align: 'center' });
 
 		// Outer Card Border
 		doc.setDrawColor(215, 210, 200);
