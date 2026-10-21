@@ -974,199 +974,173 @@ body {
 }
 
 /* ============================================================ */
-/* SUCCESS OVERLAY — BOARDING PASS / FESTIVAL PASS MODAL        */
+/* CONCERT TICKET PASS STYLES (MATCHING USER REFERENCE)         */
 /* ============================================================ */
 dialog.successDialog {
 	border: none;
 	background: transparent;
 	padding: 0;
 	margin: auto;
-	max-width: 410px;
+	max-width: 380px;
 	width: 92%;
 	outline: none;
 }
 
 dialog.successDialog::backdrop {
-	background: rgba(10, 15, 14, 0.78);
-	backdrop-filter: blur(4px);
+	background: rgba(10, 15, 14, 0.82);
+	backdrop-filter: blur(5px);
 }
 
-.ticketBoardingPass {
-	background: #15201E;
-	border: 1px solid #2B3D38;
-	border-radius: 20px;
+.concertTicketPass {
+	background: #FAF8F5;
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 24px;
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
 	position: relative;
 }
 
-.tPassHeader {
-	background: #15201E;
-	padding: 22px 22px 18px 22px;
-	color: #ffffff;
-	text-align: center;
-}
-
-.tPassType {
-	font-family: 'Plus Jakarta Sans', sans-serif;
-	font-size: 10.5px;
-	font-weight: 700;
-	letter-spacing: 1.8px;
-	color: #B7A97C;
-	text-transform: uppercase;
-	margin-bottom: 14px;
-}
-
-.tPassRoute {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 12px;
-}
-
-.tRouteCol {
-	text-align: left;
-	flex: 1;
-}
-
-.tRouteCol.tRouteRight {
-	text-align: right;
-}
-
-.tRouteCity {
-	display: block;
-	font-size: 10px;
-	font-weight: 600;
-	color: rgba(207, 212, 208, 0.7);
-	letter-spacing: 1px;
-	text-transform: uppercase;
-}
-
-.tRouteCode {
-	display: block;
-	font-size: 20px;
-	font-weight: 800;
-	color: #ffffff;
-	line-height: 1.2;
-	margin: 2px 0;
-}
-
-.tRouteSub {
-	display: block;
-	font-size: 10px;
-	color: #B7A97C;
-	font-weight: 500;
-}
-
-.tRouteArrow {
-	color: #B7A97C;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.tPassBody {
-	background: #ffffff;
-	border-radius: 18px 18px 0 0;
-	padding: 24px 22px 18px 22px;
+/* Top Artwork Container */
+.tArtContainer {
+	width: 100%;
 	position: relative;
-	color: #1a1f36;
-	text-align: left;
+	background-color: #213D3A;
+	overflow: hidden;
+	aspect-ratio: 1 / 1;
+	max-height: 350px;
 }
 
-.tField {
-	margin-bottom: 13px;
-}
-
-.tFieldRow {
-	display: flex;
-	justify-content: space-between;
-	gap: 16px;
-}
-
-.tFieldRow .tField {
-	flex: 1;
-}
-
-.tLabel {
+.tArtImg {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 	display: block;
-	font-size: 10px;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-	color: #7a8682;
-	margin-bottom: 3px;
 }
 
-.tValue {
-	display: block;
-	font-size: 13.5px;
-	font-weight: 700;
-	color: #1a1f36;
-	line-height: 1.3;
-}
-
-.tValueLarge {
-	font-size: 17px;
-	font-weight: 800;
-	color: #15201E;
-}
-
-.tHighlight {
-	color: #15201E;
-	font-size: 15px;
-	font-weight: 800;
-}
-
-.tMonospace {
-	font-family: monospace;
-	letter-spacing: 0.5px;
-	color: #15201E;
-}
-
-.tPaid {
-	color: #00875a;
-	font-weight: 800;
-}
-
-/* Authentic Ticket Perforation with circular cutout notches */
-.tPerforation {
+/* Perforation Divider with Circular Cutout Notches */
+.tPerforationRow {
 	position: relative;
 	height: 24px;
-	margin: 12px -22px 14px -22px;
+	background-color: #FAF8F5;
 	display: flex;
 	align-items: center;
+	margin: 0;
 }
 
-.tDashedLine {
+.tDottedPerforation {
 	flex: 1;
-	border-top: 2px dashed #d5dbd8;
-	margin: 0 16px;
+	border-top: 2px dotted #C7BCBE;
+	margin: 0 18px;
 }
 
-.tCutout {
-	width: 22px;
-	height: 22px;
-	background-color: #15201E;
+.tNotch {
+	width: 24px;
+	height: 24px;
+	background-color: #151A18; /* matches backdrop tone */
 	border-radius: 50%;
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
 }
 
-.tCutoutLeft {
-	left: -11px;
+.tNotchLeft {
+	left: -12px;
 }
 
-.tCutoutRight {
-	right: -11px;
+.tNotchRight {
+	right: -12px;
 }
 
-/* Barcode Section (Ticket Stub) */
-.tBarcodeSection {
+/* Ticket Stub Body */
+.tStubBody {
+	background: #FAF8F5;
+	padding: 6px 24px 22px 24px;
+	color: #1A1F1D;
+	text-align: left;
+}
+
+.tStubHeader {
 	text-align: center;
-	padding: 4px 0 14px 0;
+	margin-bottom: 14px;
+}
+
+.tStubTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 21px;
+	font-weight: 800;
+	color: #111816;
+	letter-spacing: 0.5px;
+	margin: 0;
+	text-transform: uppercase;
+}
+
+.tStubSubtitle {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 11.5px;
+	color: #6B7571;
+	margin: 3px 0 0 0;
+	font-weight: 500;
+}
+
+.tStubPassenger {
+	margin-bottom: 12px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #ECE7DF;
+}
+
+.tMetaPassengerName {
+	display: block;
+	font-size: 16px;
+	font-weight: 800;
+	color: #111816;
+	line-height: 1.25;
+	margin-top: 2px;
+}
+
+/* Details Grids */
+.tMetaGrid2 {
+	display: grid;
+	grid-template-columns: 1fr 1.6fr;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+
+.tMetaGrid4 {
+	display: grid;
+	grid-template-columns: 1fr 1.2fr 0.9fr 1fr;
+	gap: 8px;
+	margin-bottom: 14px;
+}
+
+.tMetaItem {
+	display: flex;
+	flex-direction: column;
+}
+
+.tMetaLabel {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 9.5px;
+	font-weight: 700;
+	letter-spacing: 0.8px;
+	text-transform: uppercase;
+	color: #8C9692;
+	margin-bottom: 2px;
+}
+
+.tMetaVal {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 13px;
+	font-weight: 700;
+	color: #111816;
+	line-height: 1.2;
+}
+
+/* Barcode Section */
+.tStubBarcodeWrap {
+	text-align: center;
+	padding: 10px 0 14px 0;
+	border-top: 1px solid #ECE7DF;
 }
 
 #receiptBarcodeCanvas {
@@ -1176,27 +1150,28 @@ dialog.successDialog::backdrop {
 	display: block;
 }
 
-.tBarcodeId {
+.tStubBarcodeCode {
 	font-family: monospace;
-	font-size: 12.5px;
+	font-size: 11.5px;
 	font-weight: 700;
-	letter-spacing: 2px;
-	color: #15201E;
+	letter-spacing: 2.5px;
+	color: #111816;
 	margin-top: 6px;
 }
 
-.tBarcodeSub {
-	font-size: 10.5px;
-	color: #7a8682;
-	margin: 4px 0 0 0;
+.tStubBarcodeHint {
+	font-size: 10px;
+	color: #8C9692;
+	margin: 3px 0 0 0;
 	line-height: 1.3;
 }
 
-.tActionSection {
+/* Action Buttons */
+.tStubActions {
 	display: flex;
 	flex-direction: column;
-	gap: 9px;
-	margin-top: 10px;
+	gap: 8px;
+	margin-top: 6px;
 }
 
 .btnDownloadPdf {
@@ -1205,13 +1180,13 @@ dialog.successDialog::backdrop {
 	justify-content: center;
 	gap: 8px;
 	width: 100%;
-	height: 46px;
-	background-color: #213d3a;
+	height: 44px;
+	background-color: #15201E;
 	color: #CFD4D0;
 	border: 1px solid #B7A97C;
 	border-radius: 8px;
 	font-family: 'Plus Jakarta Sans', sans-serif;
-	font-size: 13.5px;
+	font-size: 13px;
 	font-weight: 700;
 	letter-spacing: 0.5px;
 	cursor: pointer;
@@ -1219,38 +1194,29 @@ dialog.successDialog::backdrop {
 }
 
 .btnDownloadPdf:hover {
-	background-color: #2c524e;
+	background-color: #243532;
 	color: #ffffff;
 }
 
 .btnReturnHome {
 	display: block;
 	width: 100%;
-	height: 42px;
-	line-height: 42px;
+	height: 40px;
+	line-height: 40px;
 	text-align: center;
 	background-color: transparent;
-	color: #5b6863;
-	border: 1px solid #d4ded9;
+	color: #6B7571;
+	border: 1px solid #D5CEBF;
 	border-radius: 8px;
-	font-size: 13px;
+	font-size: 12.5px;
 	font-weight: 600;
 	text-decoration: none;
 	transition: color 0.2s, border-color 0.2s;
 }
 
 .btnReturnHome:hover {
-	color: #15201E;
-	border-color: #15201E;
-}
-
-.tPassFooter {
-	text-align: center;
-	margin-top: 14px;
-	font-size: 9.5px;
-	letter-spacing: 1.2px;
-	color: #9aa5a0;
-	font-weight: 700;
+	color: #111816;
+	border-color: #111816;
 }
 
 .checkoutFieldError {

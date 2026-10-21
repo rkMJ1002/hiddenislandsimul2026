@@ -533,8 +533,46 @@ function executePayment() {
 	}, 600);
 }
 
-// Download Real Scannable E-Ticket PDF (Boarding Pass / Festival Pass Style)
-function downloadTicketPdf() {
+let cachedArtworkDataUrl = null;
+
+function loadArtworkDataUrl() {
+	if (cachedArtworkDataUrl) return Promise.resolve(cachedArtworkDataUrl);
+	return new Promise((resolve) => {
+		const domImg = document.getElementById('ticketArtImg');
+		if (domImg && domImg.complete && domImg.naturalWidth > 0) {
+			try {
+				const canvas = document.createElement('canvas');
+				canvas.width = 600;
+				canvas.height = 600;
+				const ctx = canvas.getContext('2d');
+				ctx.drawImage(domImg, 0, 0, 600, 600);
+				cachedArtworkDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+				return resolve(cachedArtworkDataUrl);
+			} catch (e) {}
+		}
+
+		const img = new Image();
+		img.crossOrigin = 'anonymous';
+		img.onload = () => {
+			try {
+				const canvas = document.createElement('canvas');
+				canvas.width = 600;
+				canvas.height = 600;
+				const ctx = canvas.getContext('2d');
+				ctx.drawImage(img, 0, 0, 600, 600);
+				cachedArtworkDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+				resolve(cachedArtworkDataUrl);
+			} catch (e) {
+				resolve(null);
+			}
+		};
+		img.onerror = () => resolve(null);
+		img.src = 'ticket_artwork.jpg';
+	});
+}
+
+// Download Real Scannable E-Ticket PDF (Concert Pass Style Matching User Reference)
+async function downloadTicketPdf() {
 	if (!currentOrderSummary) return;
 	if (!window.jspdf || !window.jspdf.jsPDF) {
 		alert('Modul PDF sedang dimuat, silakan klik kembali.');
@@ -549,225 +587,175 @@ function downloadTicketPdf() {
 			format: 'a5'
 		});
 
-		// Page Canvas Background (Clean subtle festival tint)
-		doc.setFillColor(244, 246, 245);
-		doc.rect(0, 0, 148, 210, "F");
+		// Page Canvas Background (Soft clean tint)
+		doc.setFillColor(243, 240, 233);
+		doc.rect(0, 0, 148, 210, 'F');
 
-		// Boarding Pass Ticket Outer Container Dimensions
-		const cardX = 14;
-		const cardY = 10;
-		const cardW = 120;
-		const cardH = 190;
-		const cardR = 4;
+		// Ticket Dimensions
+		const cardX = 19;
+		const cardY = 11;
+		const cardW = 110;
+		const cardH = 188;
+		const cardR = 6;
+		const imgH = 88;
+		const perfY = cardY + imgH;
 
-		// 1. Ticket Card Body Base (White)
-		doc.setFillColor(255, 255, 255);
-		doc.roundedRect(cardX, cardY, cardW, cardH, cardR, cardR, "F");
+		// 1. Ticket Base Card (Soft cream background)
+		doc.setFillColor(250, 248, 245);
+		doc.roundedRect(cardX, cardY, cardW, cardH, cardR, cardR, 'F');
 
-		// 2. Top Header Banner (Dark Festival Emerald #15201E)
-		doc.setFillColor(21, 32, 30);
-		doc.roundedRect(cardX, cardY, cardW, 40, cardR, cardR, "F");
-		doc.rect(cardX, cardY + cardR, cardW, 40 - cardR, "F"); // square bottom corners of header
+		// 2. Top Artwork (Image 2)
+		const artworkDataUrl = await loadArtworkDataUrl();
+		if (artworkDataUrl) {
+			doc.addImage(artworkDataUrl, 'JPEG', cardX, cardY, cardW, imgH);
+		} else {
+			// Fallback banner if image not loaded
+			doc.setFillColor(33, 61, 58);
+			doc.rect(cardX, cardY, cardW, imgH, 'F');
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(16);
+			doc.setTextColor(255, 255, 255);
+			doc.text('THE HIDDEN ISLAND', 74, cardY + 45, { align: 'center' });
+		}
 
-		// Gold Accent Stripe
-		doc.setFillColor(183, 169, 124);
-		doc.rect(cardX, cardY + 40, cardW, 1.2, "F");
-
-		// Header Content
-		doc.setFont("helvetica", "bold");
-		doc.setFontSize(8);
-		doc.setTextColor(183, 169, 124);
-		doc.text("BOARDING PASS  •  THE HIDDEN ISLAND", 74, cardY + 8.5, { align: "center" });
-
-		// Route Left: Malang / Kosayu
-		doc.setFontSize(7);
-		doc.setFont("helvetica", "normal");
-		doc.setTextColor(207, 212, 208);
-		doc.text("MALANG", cardX + 8, cardY + 16);
-		doc.setFontSize(13);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(255, 255, 255);
-		doc.text("KOSAYU", cardX + 8, cardY + 22);
-		doc.setFontSize(6.5);
-		doc.setFont("helvetica", "normal");
-		doc.setTextColor(183, 169, 124);
-		doc.text("SMAK Kolese Santo Yusup", cardX + 8, cardY + 27);
-
-		// Route Center Arrow
-		doc.setFontSize(14);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(183, 169, 124);
-		doc.text("➔", 74, cardY + 22, { align: "center" });
-
-		// Route Right: Prigen / Bukit Doa
-		doc.setFontSize(7);
-		doc.setFont("helvetica", "normal");
-		doc.setTextColor(207, 212, 208);
-		doc.text("PRIGEN", cardX + cardW - 8, cardY + 16, { align: "right" });
-		doc.setFontSize(13);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(255, 255, 255);
-		doc.text("BUKIT DOA", cardX + cardW - 8, cardY + 22, { align: "right" });
-		doc.setFontSize(6.5);
-		doc.setFont("helvetica", "normal");
-		doc.setTextColor(183, 169, 124);
-		doc.text("The Hidden Island 2026", cardX + cardW - 8, cardY + 27, { align: "right" });
-
-		// Sub-banner
-		doc.setFontSize(6.8);
-		doc.setFont("helvetica", "normal");
-		doc.setTextColor(207, 212, 208);
-		doc.text("FESTIVAL ACCESS & OFFICIAL ENTRANCE PASS", 74, cardY + 36, { align: "center" });
-
-		// 3. Ticket Body (Pure White, NO BOXES, Clean Typography)
-		let curY = cardY + 50;
-
-		// Field: Passenger / Pengunjung
-		doc.setFontSize(7);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(120, 130, 125);
-		doc.text("PENGUNJUNG / PASSENGER", cardX + 8, curY);
-
-		curY += 6;
-		doc.setFontSize(13);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(26, 31, 54);
-		doc.text(currentOrderSummary.name, cardX + 8, curY);
-
-		// Field Row: Open Gate & Tanggal Pelaksanaan
-		curY += 11;
-		doc.setFontSize(7);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(120, 130, 125);
-		doc.text("OPEN GATE", cardX + 8, curY);
-		doc.text("TANGGAL PELAKSANAAN", cardX + 65, curY);
-
-		curY += 5.5;
-		doc.setFontSize(11.5);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(21, 32, 30);
-		doc.text("08.30 WIB", cardX + 8, curY);
-
-		doc.setFontSize(9.5);
-		doc.setTextColor(26, 31, 54);
-		doc.text("Jumat, 23 Oktober 2026", cardX + 65, curY);
-
-		// Field Row: Kategori Tiket & ID Tiket
-		curY += 10;
-		doc.setFontSize(7);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(120, 130, 125);
-		doc.text("KATEGORI TIKET", cardX + 8, curY);
-		doc.text("ID TIKET (BOOKING CODE)", cardX + 65, curY);
-
-		curY += 5.5;
-		doc.setFontSize(9.5);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(26, 31, 54);
-		doc.text(currentOrderSummary.tier + " (1 Tiket)", cardX + 8, curY);
-
-		doc.setFontSize(10.5);
-		doc.setTextColor(21, 32, 30);
-		doc.text(currentOrderSummary.id, cardX + 65, curY);
-
-		// Field Row: Gelang Akses & Status
-		curY += 10;
-		doc.setFontSize(7);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(120, 130, 125);
-		doc.text("GELANG AKSES", cardX + 8, curY);
-		doc.text("STATUS PEMBAYARAN", cardX + 65, curY);
-
-		curY += 5.5;
-		doc.setFontSize(9);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(50, 60, 55);
-		doc.text(currentOrderSummary.wristband, cardX + 8, curY);
-
-		doc.setTextColor(0, 135, 90);
-		doc.text("LUNAS / CONFIRMED", cardX + 65, curY);
-
-		// Field Row: Lokasi Venue
-		curY += 9;
-		doc.setFontSize(7);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(120, 130, 125);
-		doc.text("LOKASI VENUE", cardX + 8, curY);
-
-		curY += 4.5;
-		doc.setFontSize(7.8);
-		doc.setFont("helvetica", "normal");
-		doc.setTextColor(60, 70, 65);
-		doc.text("Bukit Doa Immanuel (BDI) Sukolilo, Prigen, Pasuruan, Jawa Timur", cardX + 8, curY);
-
-		// 4. Perforation Line with Left and Right Notches
-		const perfY = cardY + 126;
-		doc.setDrawColor(210, 218, 214);
-		if (typeof doc.setLineDashPattern === "function") {
-			doc.setLineDashPattern([2, 2], 0);
-		} else if (typeof doc.setLineDash === "function") {
-			doc.setLineDash([2, 2], 0);
+		// 3. Perforation Row with Left & Right Cutout Notches
+		doc.setDrawColor(200, 190, 185);
+		if (typeof doc.setLineDashPattern === 'function') {
+			doc.setLineDashPattern([1, 1.5], 0);
+		} else if (typeof doc.setLineDash === 'function') {
+			doc.setLineDash([1, 1.5], 0);
 		}
 		doc.line(cardX + 6, perfY, cardX + cardW - 6, perfY);
-		if (typeof doc.setLineDashPattern === "function") {
+		if (typeof doc.setLineDashPattern === 'function') {
 			doc.setLineDashPattern([], 0);
-		} else if (typeof doc.setLineDash === "function") {
+		} else if (typeof doc.setLineDash === 'function') {
 			doc.setLineDash([], 0);
 		}
 
-		// Left Cutout Notch
-		doc.setFillColor(244, 246, 245);
-		doc.circle(cardX, perfY, 4, "F");
-		doc.setDrawColor(210, 218, 214);
-		doc.circle(cardX, perfY, 4, "S");
+		// Left Notch
+		doc.setFillColor(243, 240, 233);
+		doc.circle(cardX, perfY, 4, 'F');
+		doc.setDrawColor(200, 190, 185);
+		doc.circle(cardX, perfY, 4, 'S');
 
-		// Right Cutout Notch
-		doc.setFillColor(244, 246, 245);
-		doc.circle(cardX + cardW, perfY, 4, "F");
-		doc.setDrawColor(210, 218, 214);
-		doc.circle(cardX + cardW, perfY, 4, "S");
+		// Right Notch
+		doc.setFillColor(243, 240, 233);
+		doc.circle(cardX + cardW, perfY, 4, 'F');
+		doc.setDrawColor(200, 190, 185);
+		doc.circle(cardX + cardW, perfY, 4, 'S');
 
-		// Clean inner halves of cutouts
-		doc.setFillColor(255, 255, 255);
-		doc.rect(cardX + 0.1, perfY - 3.9, 4, 7.8, "F");
-		doc.rect(cardX + cardW - 4.1, perfY - 3.9, 4, 7.8, "F");
+		// Clean inner halves of notches
+		doc.setFillColor(250, 248, 245);
+		doc.rect(cardX + 0.1, perfY - 3.9, 4, 7.8, 'F');
+		doc.rect(cardX + cardW - 4.1, perfY - 3.9, 4, 7.8, 'F');
 
-		// 5. Barcode Stub (Lower Section)
+		// 4. Ticket Stub Body (Matching Reference)
+		// Title & Tour
+		doc.setFont('helvetica', 'bold');
+		doc.setFontSize(16);
+		doc.setTextColor(17, 24, 22);
+		doc.text('THE HIDDEN ISLAND', 74, perfY + 9, { align: 'center' });
+
+		doc.setFont('helvetica', 'normal');
+		doc.setFontSize(8.5);
+		doc.setTextColor(107, 117, 113);
+		doc.text('Artfest Kolese Santo Yusup 2026', 74, perfY + 14, { align: 'center' });
+
+		// Passenger Row
+		const stubLeft = cardX + 7;
+		let curY = perfY + 22;
+
+		doc.setFontSize(6.5);
+		doc.setFont('helvetica', 'bold');
+		doc.setTextColor(140, 150, 146);
+		doc.text('PASSENGER / PENGUNJUNG', stubLeft, curY);
+
+		curY += 5;
+		doc.setFontSize(11);
+		doc.setFont('helvetica', 'bold');
+		doc.setTextColor(17, 24, 22);
+		doc.text(currentOrderSummary.name, stubLeft, curY);
+
+		// Divider line
+		curY += 4;
+		doc.setDrawColor(236, 231, 223);
+		doc.line(stubLeft, curY, cardX + cardW - 7, curY);
+
+		// Row 1: Date & City/Venue
+		curY += 6;
+		doc.setFontSize(6.5);
+		doc.setFont('helvetica', 'bold');
+		doc.setTextColor(140, 150, 146);
+		doc.text('DATE', stubLeft, curY);
+		doc.text('CITY / VENUE', cardX + 42, curY);
+
+		curY += 4.5;
+		doc.setFontSize(9.5);
+		doc.setFont('helvetica', 'bold');
+		doc.setTextColor(17, 24, 22);
+		doc.text('23 Okt 2026', stubLeft, curY);
+
+		doc.setFontSize(8.8);
+		doc.text('Bukit Doa, Prigen, Pasuruan', cardX + 42, curY);
+
+		// Row 2: Show, Section, Row, Seat
+		curY += 8;
+		doc.setFontSize(6.5);
+		doc.setFont('helvetica', 'bold');
+		doc.setTextColor(140, 150, 146);
+		doc.text('SHOW', stubLeft, curY);
+		doc.text('SECTION', cardX + 28, curY);
+		doc.text('ROW', cardX + 65, curY);
+		doc.text('SEAT', cardX + 83, curY);
+
+		curY += 4.5;
+		doc.setFontSize(9);
+		doc.setFont('helvetica', 'bold');
+		doc.setTextColor(17, 24, 22);
+		doc.text('08:30', stubLeft, curY);
+		doc.text(currentOrderSummary.tier || 'Presale', cardX + 28, curY);
+		doc.text('GA', cardX + 65, curY);
+		doc.text(currentOrderSummary.wristband || 'WRISTBAND', cardX + 83, curY);
+
+		// Separator line before barcode
+		curY += 6;
+		doc.setDrawColor(236, 231, 223);
+		doc.line(stubLeft, curY, cardX + cardW - 7, curY);
+
+		// Barcode
 		const barcodeCanvas = document.getElementById('receiptBarcodeCanvas');
 		if (barcodeCanvas) {
-			const barcodeDataUrl = barcodeCanvas.toDataURL("image/png");
-			doc.addImage(barcodeDataUrl, 'PNG', 34, perfY + 8, 80, 24);
+			const barcodeDataUrl = barcodeCanvas.toDataURL('image/png');
+			doc.addImage(barcodeDataUrl, 'PNG', 39, curY + 3, 70, 18);
 		}
 
-		doc.setFontSize(9);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(21, 32, 30);
-		doc.text("* " + currentOrderSummary.id + " *", 74, perfY + 38, { align: "center" });
+		// Barcode Number in Monospace
+		doc.setFontSize(8);
+		doc.setFont('courier', 'bold');
+		doc.setTextColor(17, 24, 22);
+		doc.text(currentOrderSummary.id, 74, curY + 25.5, { align: 'center' });
 
-		doc.setFontSize(6.8);
-		doc.setFont("helvetica", "normal");
-		doc.setTextColor(120, 130, 125);
-		doc.text("Tunjukkan barcode ini kepada petugas di Gate Check-In untuk scan penukaran wristband fisik.", 74, perfY + 44, { align: "center" });
-
-		// Card Bottom Footer
+		// Hint
 		doc.setFontSize(6);
-		doc.setFont("helvetica", "bold");
-		doc.setTextColor(160, 170, 165);
-		doc.text("WWW.THEHIDDENISLAND.SITE   •   OSIS SMAK KOLESE SANTO YUSUP", 74, cardY + cardH - 5, { align: "center" });
+		doc.setFont('helvetica', 'normal');
+		doc.setTextColor(140, 150, 146);
+		doc.text('Tunjukkan barcode ini kepada petugas di Gate Check-In', 74, curY + 29.5, { align: 'center' });
 
-		// Clean Outer Card Border
-		doc.setDrawColor(210, 218, 214);
-		doc.roundedRect(cardX, cardY, cardW, cardH, cardR, cardR, "S");
+		// Outer Card Border
+		doc.setDrawColor(215, 210, 200);
+		doc.roundedRect(cardX, cardY, cardW, cardH, cardR, cardR, 'S');
 
-		doc.save("E-Ticket_TheHiddenIsland_" + currentOrderSummary.id + ".pdf");
+		doc.save('E-Ticket_TheHiddenIsland_' + currentOrderSummary.id + '.pdf');
 	} catch (e) {
-		console.error("Error generating PDF", e);
-		alert("Gagal mengunduh file PDF tiket. Silakan coba kembali.");
+		console.error('Error generating PDF', e);
+		alert('Gagal mengunduh file PDF tiket. Silakan coba kembali.');
 	}
 }
 
 // Real-time input listeners to clear errors on typing
 document.addEventListener('DOMContentLoaded', () => {
+	loadArtworkDataUrl();
+
 	const nameInput = document.getElementById('contactName');
 	const emailInput = document.getElementById('contactEmail');
 	const phoneInput = document.getElementById('contactPhone');

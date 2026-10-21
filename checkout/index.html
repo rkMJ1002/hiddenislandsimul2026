@@ -12,7 +12,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css?v=2026.9">
+	<link rel="stylesheet" href="style.css?v=2026.10">
 </head>
 <body>
 	<div class="checkoutContainer">
@@ -432,94 +432,82 @@
 		</main>
 	</div>
 
-	<!-- Payment Success Overlay Modal (Boarding Pass / E-Ticket Style) -->
+	<!-- Payment Success Overlay Modal (Concert Pass Style) -->
 	<dialog id="successModal" class="successDialog">
-		<div class="ticketBoardingPass">
-			<!-- Header Banner -->
-			<div class="tPassHeader">
-				<div class="tPassType">FESTIVAL PASS • THE HIDDEN ISLAND</div>
-				<div class="tPassRoute">
-					<div class="tRouteCol">
-						<span class="tRouteCity">MALANG</span>
-						<strong class="tRouteCode">KOSAYU</strong>
-						<span class="tRouteSub">SMAK Kolese Santo Yusup</span>
-					</div>
-					<div class="tRouteArrow">
-						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-							<line x1="5" y1="12" x2="19" y2="12"></line>
-							<polyline points="12 5 19 12 12 19"></polyline>
-						</svg>
-					</div>
-					<div class="tRouteCol tRouteRight">
-						<span class="tRouteCity">PRIGEN</span>
-						<strong class="tRouteCode">BUKIT DOA</strong>
-						<span class="tRouteSub">The Hidden Island 2026</span>
-					</div>
-				</div>
+		<div class="concertTicketPass">
+			<!-- Top Artwork Banner (Image 2) -->
+			<div class="tArtContainer">
+				<img src="ticket_artwork.jpg" alt="The Hidden Island 2026 Artwork" class="tArtImg" id="ticketArtImg">
 			</div>
 
-			<!-- White Ticket Body -->
-			<div class="tPassBody">
-				<div class="tField">
-					<span class="tLabel">Pengunjung / Passenger</span>
-					<strong class="tValue tValueLarge" id="receiptName">-</strong>
+			<!-- Perforation with Notches -->
+			<div class="tPerforationRow">
+				<span class="tNotch tNotchLeft"></span>
+				<span class="tDottedPerforation"></span>
+				<span class="tNotch tNotchRight"></span>
+			</div>
+
+			<!-- Bottom Ticket Stub -->
+			<div class="tStubBody">
+				<div class="tStubHeader">
+					<h2 class="tStubTitle">THE HIDDEN ISLAND</h2>
+					<p class="tStubSubtitle">Artfest Kolese Santo Yusup 2026</p>
 				</div>
 
-				<div class="tFieldRow">
-					<div class="tField">
-						<span class="tLabel">Open Gate</span>
-						<strong class="tValue tHighlight">08.30 WIB</strong>
+				<div class="tStubPassenger">
+					<span class="tMetaLabel">PASSENGER / PENGUNJUNG</span>
+					<strong class="tMetaPassengerName" id="receiptName">-</strong>
+				</div>
+
+				<!-- Meta Grid (Date & City/Venue) -->
+				<div class="tMetaGrid2">
+					<div class="tMetaItem">
+						<span class="tMetaLabel">DATE</span>
+						<strong class="tMetaVal">23 Okt 2026</strong>
 					</div>
-					<div class="tField">
-						<span class="tLabel">Tanggal</span>
-						<strong class="tValue">Jumat, 23 Okt 2026</strong>
+					<div class="tMetaItem">
+						<span class="tMetaLabel">CITY / VENUE</span>
+						<strong class="tMetaVal">Bukit Doa, Prigen, Pasuruan</strong>
 					</div>
 				</div>
 
-				<div class="tFieldRow">
-					<div class="tField">
-						<span class="tLabel">Kategori Tiket</span>
-						<strong class="tValue" id="receiptTier">-</strong>
+				<!-- Meta Grid (Show, Section, Row, Seat) -->
+				<div class="tMetaGrid4">
+					<div class="tMetaItem">
+						<span class="tMetaLabel">SHOW</span>
+						<strong class="tMetaVal">08:30</strong>
 					</div>
-					<div class="tField">
-						<span class="tLabel">ID Tiket (Booking Ref)</span>
-						<strong class="tValue tMonospace" id="receiptRef">-</strong>
+					<div class="tMetaItem">
+						<span class="tMetaLabel">SECTION</span>
+						<strong class="tMetaVal" id="receiptTier">-</strong>
 					</div>
-				</div>
-
-				<div class="tFieldRow">
-					<div class="tField">
-						<span class="tLabel">Gelang Akses</span>
-						<strong class="tValue" id="receiptWristband">Wristband Festival Standar</strong>
+					<div class="tMetaItem">
+						<span class="tMetaLabel">ROW</span>
+						<strong class="tMetaVal">GA</strong>
 					</div>
-					<div class="tField">
-						<span class="tLabel">Status Pembayaran</span>
-						<strong class="tValue tPaid" id="receiptStatus">LUNAS</strong>
+					<div class="tMetaItem">
+						<span class="tMetaLabel">SEAT</span>
+						<strong class="tMetaVal" id="receiptWristband">WRISTBAND</strong>
 					</div>
 				</div>
 
 				<!-- Hidden compatibility elements -->
 				<div style="display:none;">
+					<span id="receiptRef">-</span>
 					<span id="receiptMethod">Card</span>
 					<span id="receiptTotal">IDR 75,000.00</span>
+					<span id="receiptStatus">LUNAS</span>
 				</div>
 
-				<!-- Perforation Cut-out Notch & Dashed Line -->
-				<div class="tPerforation">
-					<span class="tCutout tCutoutLeft"></span>
-					<span class="tDashedLine"></span>
-					<span class="tCutout tCutoutRight"></span>
-				</div>
-
-				<!-- Barcode Section (Ticket Stub) -->
-				<div class="tBarcodeSection">
+				<!-- Barcode Section -->
+				<div class="tStubBarcodeWrap">
 					<canvas id="receiptBarcodeCanvas"></canvas>
-					<div class="tBarcodeId" id="receiptBarcodeCode">HI-2026-XXXX</div>
-					<p class="tBarcodeSub">Tunjukkan barcode ini kepada petugas di Gate Check-In</p>
+					<div class="tStubBarcodeCode" id="receiptBarcodeCode">HI-2026-XXXX</div>
+					<p class="tStubBarcodeHint">Tunjukkan barcode ini kepada petugas di Gate Check-In</p>
 				</div>
 
-				<!-- Actions (PRINT / DOWNLOAD PDF) -->
-				<div class="tActionSection">
+				<!-- Action Buttons -->
+				<div class="tStubActions">
 					<button type="button" class="btnDownloadPdf" id="btnDownloadPdf" onclick="downloadTicketPdf()">
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
 							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -530,20 +518,15 @@
 					</button>
 					<a href="../index.html" class="btnReturnHome">Kembali ke Beranda</a>
 				</div>
-
-				<!-- Ticket Footer -->
-				<div class="tPassFooter">
-					<span>WWW.THEHIDDENISLAND.SITE</span>
-				</div>
 			</div>
 		</div>
 	</dialog>
 
-	<script src="../shared/firebase-config.js?v=2026.9"></script>
-	<script src="../shared/cloud-store.js?v=2026.9"></script>
-	<script src="../shared/jsbarcode.min.js?v=2026.9"></script>
-	<script src="../shared/jspdf.umd.min.js?v=2026.9"></script>
-	<script src="script.js?v=2026.9"></script>
-	<script src="../shared/cookie-consent.js?v=2026.9"></script>
+	<script src="../shared/firebase-config.js?v=2026.10"></script>
+	<script src="../shared/cloud-store.js?v=2026.10"></script>
+	<script src="../shared/jsbarcode.min.js?v=2026.10"></script>
+	<script src="../shared/jspdf.umd.min.js?v=2026.10"></script>
+	<script src="script.js?v=2026.10"></script>
+	<script src="../shared/cookie-consent.js?v=2026.10"></script>
 </body>
 </html>
