@@ -1064,6 +1064,68 @@ function renderInvalidState(code, description) {
 	if (descEl && description) descEl.textContent = description;
 }
 
+// Delete Specific Single Purchase / Order from Scanner
+async function deleteSpecificPurchaseFromScanner(orderId) {
+	const targetId = orderId || currentActiveOrderId;
+	if (!targetId) {
+		showToast("Tidak ada pesanan yang dipilih untuk dihapus.");
+		return;
+	}
+
+	const found = ordersData.find((o) => o && o.id === targetId);
+	const name = found ? found.name : targetId;
+	if (!confirm(`Hapus pesanan tiket ${targetId} (${name}) secara permanen?\n\nData pesanan akan dihapus dari sistem dan kuota tiket akan dikembalikan secara otomatis.`)) {
+		return;
+	}
+
+	showToast(`Sedang menghapus pesanan ${targetId}...`);
+
+	if (window.ArtfestCloud && typeof window.ArtfestCloud.deleteSingleOrder === "function") {
+		await window.ArtfestCloud.deleteSingleOrder(targetId);
+	} else {
+		const idx = ordersData.findIndex((o) => o && o.id === targetId);
+		if (idx !== -1) {
+			const o = ordersData[idx];
+			const qty = Number(o.qty) || 1;
+			const tierStr = (o.tier || "").toLowerCase();
+			const tierKey = tierStr.includes("presale 1") || tierStr === "presale1" ? "presale1" : "presale2";
+
+			ordersData.splice(idx, 1);
+			saveOrdersToStorage();
+
+			const cfgRaw = localStorage.getItem("artfest_ticket_config");
+			if (cfgRaw) {
+				try {
+					const cfg = JSON.parse(cfgRaw);
+					if (cfg[tierKey] && cfg[tierKey].soldSeats > 0) {
+						cfg[tierKey].soldSeats = Math.max(0, cfg[tierKey].soldSeats - qty);
+						localStorage.setItem("artfest_ticket_config", JSON.stringify(cfg));
+					}
+				} catch (e) {}
+			}
+		}
+	}
+
+	// Also remove from scan log if present
+	scanLog = scanLog.filter((item) => item.id !== targetId);
+	saveScanLog();
+	renderLogTable(document.getElementById("logSearchInput") ? document.getElementById("logSearchInput").value.trim() : "");
+
+	// If this was the active order displayed on screen, reset back to standby
+	if (currentActiveOrderId === targetId) {
+		currentActiveOrderId = null;
+		hideAllStates();
+		const standby = document.getElementById("stateStandby");
+		if (standby) standby.style.display = "flex";
+		const timeDisplay = document.getElementById("lastScanTime");
+		if (timeDisplay) timeDisplay.textContent = "Pesanan Dihapus";
+	}
+
+	updateAttendanceMetrics();
+	renderRegisteredQuickChips();
+	showToast(`✓ Pesanan ${targetId} berhasil dihapus.`);
+}
+
 // Undo current check-in (revert to false)
 function undoCurrentCheckIn() {
 	if (!currentActiveOrderId) return;
@@ -1149,9 +1211,14 @@ function renderLogTable(filterQuery = "") {
 			</td>
 			<td>${escapeHtml(item.wristband || "-")}</td>
 			<td>
-				<button type="button" class="btnTableAction" onclick="quickFillAndVerify('${escapeHtml(item.id)}')">
-					Cek Ulang
-				</button>
+				<div class="logActionBtns">
+					<button type="button" class="btnTableAction" onclick="quickFillAndVerify('${escapeHtml(item.id)}')">
+						Cek Ulang
+					</button>
+					<button type="button" class="btnTableDelete" onclick="deleteSpecificPurchaseFromScanner('${escapeHtml(item.id)}')" title="Hapus pesanan tiket ini">
+						Hapus
+					</button>
+				</div>
 			</td>
 		`;
 		tbody.appendChild(tr);

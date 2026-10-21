@@ -185,9 +185,18 @@ function renderOrdersTable(filterQuery = "") {
 				<div>${checkInStatus}</div>
 			</td>
 			<td>
-				<button type="button" class="btnRowAction" onclick="toggleOrderCheckIn('${order.id}')">
-					${order.checkedIn ? 'Batal Scan' : 'Check-in'}
-				</button>
+				<div class="rowActionGroup">
+					<button type="button" class="btnRowAction" onclick="toggleOrderCheckIn('${order.id}')">
+						${order.checkedIn ? 'Batal Scan' : 'Check-in'}
+					</button>
+					<button type="button" class="btnRowDelete" onclick="deleteSingleOrderConfirm('${order.id}')" title="Hapus pesanan ini">
+						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<polyline points="3 6 5 6 21 6"></polyline>
+							<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+						</svg>
+						<span>Hapus</span>
+					</button>
+				</div>
 			</td>
 		`;
 		tbody.appendChild(tr);
@@ -592,6 +601,43 @@ function handleManualOrderSubmit(event) {
 	event.target.reset();
 
 	showToast(`✓ Pesanan baru berhasil ditambahkan: ${randomId} (${name})`);
+}
+
+// Delete Specific Single Purchase / Order
+async function deleteSingleOrderConfirm(orderId) {
+	const order = ordersData.find(o => o && o.id === orderId);
+	if (!order) return;
+
+	const confirmMsg = `Hapus pesanan tiket ${order.id} atas nama "${order.name}"?\n\nKategori: ${order.tier}\nJumlah: ${order.qty || 1} tiket\n\nPesanan ini akan dihapus dari sistem dan kuota tiket akan dikembalikan secara otomatis.`;
+	if (!confirm(confirmMsg)) return;
+
+	showToast(`Sedang menghapus pesanan ${orderId}...`);
+
+	if (window.ArtfestCloud && typeof window.ArtfestCloud.deleteSingleOrder === "function") {
+		await window.ArtfestCloud.deleteSingleOrder(orderId);
+	} else {
+		const idx = ordersData.findIndex(o => o && o.id === orderId);
+		if (idx !== -1) {
+			const qty = Number(order.qty) || 1;
+			const tierStr = (order.tier || "").toLowerCase();
+			const tierKey = tierStr.includes("presale 1") || tierStr === "presale1" ? "presale1" : "presale2";
+
+			ordersData.splice(idx, 1);
+			saveOrdersToStorage();
+
+			const cfg = getStoredTicketConfig();
+			if (cfg[tierKey] && cfg[tierKey].soldSeats > 0) {
+				cfg[tierKey].soldSeats = Math.max(0, cfg[tierKey].soldSeats - qty);
+				localStorage.setItem("artfest_ticket_config", JSON.stringify(cfg));
+			}
+		}
+	}
+
+	renderOrdersTable(document.getElementById("orderSearchInput") ? document.getElementById("orderSearchInput").value.trim() : "");
+	updateMetricCards();
+	renderQuickOrderChips();
+	loadTicketControlConfig();
+	showToast(`✓ Pesanan ${orderId} (${order.name}) berhasil dihapus.`);
 }
 
 // Clear All Orders Data (Reset Permanently in Cloud & Local)

@@ -577,6 +577,45 @@
 			return true;
 		}
 
+		async deleteSingleOrder(orderId) {
+			if (!orderId) return false;
+			const idx = this.ordersData.findIndex((o) => o && o.id === orderId);
+			if (idx === -1) return false;
+
+			this.ordersData.splice(idx, 1);
+			localStorage.setItem("hiddenIslandAllOrders", JSON.stringify(this.ordersData));
+
+			// Recalculate soldSeats accurately from remaining orders
+			this.syncSoldSeatsFromOrders();
+			localStorage.setItem("artfest_ticket_config", JSON.stringify(this.ticketConfig));
+
+			this.notifyOrdersListeners();
+			this.notifyTicketListeners();
+
+			// 1. Push to Cloud synchronously
+			const apiBase = getApiBase();
+			try {
+				await fetch(`${apiBase}/api/orders/${encodeURIComponent(orderId)}`, { method: "DELETE" });
+			} catch (e) {}
+
+			await Promise.all([
+				this.pushCloudOrders(this.ordersData),
+				this.pushCloudConfig(this.ticketConfig)
+			]);
+
+			// 2. Delete from Firestore if configured
+			if (this.isFirebaseReady && this.db && this.fsModules) {
+				try {
+					const { deleteDoc, doc, setDoc } = this.fsModules;
+					await deleteDoc(doc(this.db, "orders", orderId));
+					await setDoc(doc(this.db, "config", "tickets"), this.ticketConfig, { merge: true });
+				} catch (err) {
+					console.error("Gagal delete order di Firestore:", err);
+				}
+			}
+			return true;
+		}
+
 		async clearAllOrders() {
 			this.ordersData = [];
 			localStorage.setItem("hiddenIslandAllOrders", JSON.stringify([]));
