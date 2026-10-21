@@ -15,12 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
 // Load data passed from ticketing modal
 function loadOrderData() {
 	const savedData = sessionStorage.getItem('hiddenIslandOrder');
+	ticketQuantity = 1; // Strictly 1 ticket per order limit
+
 	if (savedData) {
 		try {
 			const order = JSON.parse(savedData);
 			tierName = order.tier || 'Presale 2';
 			basePrice = order.price || 90000;
-			ticketQuantity = order.qty || 1;
+			ticketQuantity = 1; // Order limit strictly one per purchase
 
 			if (order.name) {
 				document.getElementById('cardHolderName').value = order.name;
@@ -180,52 +182,123 @@ function startQrisTimer() {
 	}, 1000);
 }
 
+// Security Validation for Real Email and WhatsApp Phone Number
+const VALID_EMAIL_TLDS = new Set([
+	"com", "net", "org", "edu", "gov", "mil", "int", "id", "co.id", "ac.id", "sch.id", "go.id", "or.id", "web.id", "biz.id", "my.id",
+	"io", "co", "ai", "me", "info", "biz", "app", "dev", "tech", "online", "site", "store", "cloud", "digital", "global", "xyz", "live", "pro", "asia", "club", "space", "tv", "cc", "us", "uk", "co.uk", "de", "fr", "jp", "sg", "au", "my", "nl", "ca", "ch", "se", "no", "es", "it"
+]);
+
+function isValidEmail(email) {
+	if (!email || typeof email !== "string") return false;
+	const trimmed = email.trim().toLowerCase();
+	const emailRegex = /^[a-z0-9._%+-]+@([a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,})$/;
+	const match = trimmed.match(emailRegex);
+	if (!match) return false;
+	
+	const domain = match[1];
+	const parts = domain.split(".");
+	if (parts.length < 2) return false;
+	
+	const sld = parts[parts.length - 2];
+	if (sld.length < 2) return false;
+
+	const tld1 = parts[parts.length - 1];
+	const tld2 = parts.length >= 2 ? `${parts[parts.length - 2]}.${parts[parts.length - 1]}` : "";
+
+	return VALID_EMAIL_TLDS.has(tld1) || VALID_EMAIL_TLDS.has(tld2);
+}
+
+function isValidPhone(phone) {
+	if (!phone || typeof phone !== "string") return false;
+	const clean = phone.replace(/[\s\-\(\)\+]/g, "");
+	let norm = clean;
+	if (norm.startsWith("628")) norm = "08" + norm.slice(3);
+	else if (norm.startsWith("+628")) norm = "08" + norm.slice(4);
+	
+	const re = /^08[1-9][0-9]{7,10}$/;
+	if (!re.test(norm)) return false;
+	
+	const body = norm.slice(2);
+	if (/^(\d)\1+$/.test(body)) return false;
+	return true;
+}
+
+// Global reference for active completed order (for PDF download)
+let currentOrderSummary = null;
+
 // Express Checkout Handler (Pear Pay / DPay)
 function handleExpressPay(provider) {
 	selectedPaymentMethodName = provider;
 	executePayment();
 }
 
-// Main Submit Payment Button with Terms Validation
+// Main Submit Payment Button with Security & Terms Validation
 function executePayment() {
+	const emailInput = document.getElementById('contactEmail');
+	const phoneInput = document.getElementById('contactPhone');
+	const emailError = document.getElementById('checkoutEmailError');
+	const phoneError = document.getElementById('checkoutPhoneError');
+
+	const buyerName = document.getElementById('cardHolderName')?.value?.trim() || 'Pengunjung Festival';
+	const buyerEmail = emailInput?.value?.trim() || '';
+	const buyerPhone = phoneInput?.value?.trim() || '';
+
+	let hasError = false;
+
+	if (!isValidEmail(buyerEmail)) {
+		if (emailInput) emailInput.classList.add('inputError');
+		if (emailError) emailError.style.display = 'block';
+		if (emailInput) emailInput.focus();
+		hasError = true;
+	} else {
+		if (emailInput) emailInput.classList.remove('inputError');
+		if (emailError) emailError.style.display = 'none';
+	}
+
+	if (!isValidPhone(buyerPhone)) {
+		if (phoneInput) phoneInput.classList.add('inputError');
+		if (phoneError) phoneError.style.display = 'block';
+		if (!hasError && phoneInput) phoneInput.focus();
+		hasError = true;
+	} else {
+		if (phoneInput) phoneInput.classList.remove('inputError');
+		if (phoneError) phoneError.style.display = 'none';
+	}
+
+	if (hasError) return;
+
 	const checkTerms = document.getElementById('checkTerms');
-	const errorMsg = document.getElementById('termsErrorMsg');
+	const termsErrorMsg = document.getElementById('termsErrorMsg');
 
 	if (!checkTerms.checked) {
-		errorMsg.style.display = 'block';
+		termsErrorMsg.style.display = 'block';
 		checkTerms.focus();
 		return;
 	} else {
-		errorMsg.style.display = 'none';
+		termsErrorMsg.style.display = 'none';
 	}
 
+	ticketQuantity = 1; // Order limit strictly one per purchase
 	const totalRaw = basePrice * ticketQuantity * (1 - discountPercent);
 	const formatted = currentCurrency === 'IDR'
 		? 'IDR ' + totalRaw.toLocaleString('en-US', { minimumFractionDigits: 2 })
 		: '$' + (totalRaw / exchangeRate).toLocaleString('en-US', { minimumFractionDigits: 2 });
 
-	// Generate unique Order ID & determine wristband tier
+	// Generate unique Order ID
 	const randomId = 'HI-2026-' + String(Math.floor(100 + Math.random() * 900));
 
-	let wristbandStr = 'Perak (Akses Festival)';
-	if (tierName.includes('VIP')) wristbandStr = 'Emas (Akses Depan & VIP Kit)';
-	else if (tierName.includes('Presale 1')) wristbandStr = 'Zamrud (Akses Standar Presale 1)';
-	else if (tierName.includes('Presale 2')) wristbandStr = 'Safir (Akses Standar Presale 2)';
-	else if (tierName.includes('Presale')) wristbandStr = 'Zamrud (Akses Standar)';
+	// Polos wristband without specific gem branding
+	const wristbandStr = 'Wristband Festival';
 
 	// Record order for Admin Dashboard & update sold quotas
 	try {
-		const buyerName = document.getElementById('cardHolderName')?.value?.trim() || 'Pengunjung Festival';
-		const buyerEmail = document.getElementById('contactEmail')?.value?.trim() || 'pembeli@artfestkosayu.id';
-		const buyerPhone = document.getElementById('contactPhone')?.value?.trim() || '08123456789';
-
 		const newOrderRecord = {
 			id: randomId,
 			name: buyerName,
 			email: buyerEmail,
 			phone: buyerPhone,
 			tier: tierName,
-			qty: ticketQuantity,
+			qty: 1,
 			total: Math.round(totalRaw),
 			status: 'Lunas',
 			wristband: wristbandStr,
@@ -246,7 +319,7 @@ function executePayment() {
 				const cfg = JSON.parse(cfgRaw);
 				const tierKey = tierName.toLowerCase().replace(/\s+/g, '');
 				if (cfg[tierKey]) {
-					cfg[tierKey].soldSeats = (cfg[tierKey].soldSeats || 0) + ticketQuantity;
+					cfg[tierKey].soldSeats = (cfg[tierKey].soldSeats || 0) + 1;
 					localStorage.setItem('artfest_ticket_config', JSON.stringify(cfg));
 				}
 			}
@@ -255,12 +328,27 @@ function executePayment() {
 		console.log('Error recording order for admin', e);
 	}
 
+	// Save active order summary in memory for PDF generation
+	currentOrderSummary = {
+		id: randomId,
+		name: buyerName,
+		email: buyerEmail,
+		phone: buyerPhone,
+		tier: tierName,
+		qty: 1,
+		total: Math.round(totalRaw),
+		totalFormatted: formatted,
+		status: 'Lunas',
+		wristband: wristbandStr,
+		date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+	};
+
 	// Update receipt modal details
 	const receiptRef = document.getElementById('receiptRef');
 	if (receiptRef) receiptRef.textContent = randomId;
 
 	const receiptTier = document.getElementById('receiptTier');
-	if (receiptTier) receiptTier.textContent = `${tierName} (${ticketQuantity} Tiket)`;
+	if (receiptTier) receiptTier.textContent = `${tierName} (1 Tiket)`;
 
 	const receiptWristband = document.getElementById('receiptWristband');
 	if (receiptWristband) receiptWristband.textContent = wristbandStr;
@@ -268,6 +356,205 @@ function executePayment() {
 	document.getElementById('receiptMethod').textContent = selectedPaymentMethodName;
 	document.getElementById('receiptTotal').textContent = formatted;
 
+	// Render Real Code 128 Barcode onto Canvas
+	const barcodeCanvas = document.getElementById('receiptBarcodeCanvas');
+	if (barcodeCanvas && window.JsBarcode) {
+		try {
+			JsBarcode(barcodeCanvas, randomId, {
+				format: "CODE128",
+				lineColor: "#111827",
+				width: 2.2,
+				height: 60,
+				displayValue: true,
+				font: "monospace",
+				fontSize: 15,
+				textMargin: 6,
+				background: "#ffffff"
+			});
+		} catch (err) {
+			console.error("Barcode generation error:", err);
+		}
+	}
+
 	const modal = document.getElementById('successModal');
 	modal.showModal();
+
+	// Automatically trigger download of e-ticket PDF after short delay
+	setTimeout(() => {
+		downloadTicketPdf();
+	}, 600);
+}
+
+// Download Real Scannable E-Ticket PDF
+function downloadTicketPdf() {
+	if (!currentOrderSummary) return;
+	if (!window.jspdf || !window.jspdf.jsPDF) {
+		alert('Modul PDF sedang dimuat, silakan klik kembali.');
+		return;
+	}
+
+	try {
+		const { jsPDF } = window.jspdf;
+		const doc = new jsPDF({
+			orientation: 'portrait',
+			unit: 'mm',
+			format: 'a5'
+		});
+
+		// 1. Header Banner (Dark Festival Emerald)
+		doc.setFillColor(21, 32, 30);
+		doc.rect(0, 0, 148, 42, "F");
+
+		doc.setFont("helvetica", "bold");
+		doc.setFontSize(19);
+		doc.setTextColor(234, 230, 217);
+		doc.text("THE HIDDEN ISLAND", 74, 18, { align: "center" });
+
+		doc.setFontSize(8.5);
+		doc.setFont("helvetica", "bold");
+		doc.setTextColor(183, 169, 124);
+		doc.text("ARTFEST KOLESE SANTO YUSUP 2026", 74, 26, { align: "center" });
+
+		doc.setFontSize(7.5);
+		doc.setFont("helvetica", "normal");
+		doc.setTextColor(207, 212, 208);
+		doc.text("OFFICIAL E-TICKET & FESTIVAL PASS", 74, 33, { align: "center" });
+
+		// Gold accent stripe
+		doc.setFillColor(183, 169, 124);
+		doc.rect(0, 42, 148, 1.5, "F");
+
+		// 2. Ticket Details Card
+		doc.setFillColor(248, 250, 249);
+		doc.roundedRect(14, 48, 120, 66, 3, 3, "F");
+		doc.setDrawColor(220, 226, 223);
+		doc.roundedRect(14, 48, 120, 66, 3, 3, "S");
+
+		doc.setFontSize(7.5);
+		doc.setFont("helvetica", "normal");
+		doc.setTextColor(110, 120, 115);
+		doc.text("KODE TIKET (ORDER ID)", 20, 56);
+
+		doc.setFontSize(14);
+		doc.setFont("helvetica", "bold");
+		doc.setTextColor(33, 61, 58);
+		doc.text(currentOrderSummary.id, 20, 63);
+
+		// Status Badge
+		doc.setFillColor(230, 247, 238);
+		doc.roundedRect(88, 52, 40, 8, 2, 2, "F");
+		doc.setFontSize(8);
+		doc.setFont("helvetica", "bold");
+		doc.setTextColor(0, 135, 90);
+		doc.text("LUNAS / CONFIRMED", 108, 57.5, { align: "center" });
+
+		// Card Divider
+		doc.setDrawColor(230, 235, 232);
+		doc.line(20, 67, 128, 67);
+
+		// Row 1: Name & Tier
+		doc.setFontSize(7.5);
+		doc.setFont("helvetica", "normal");
+		doc.setTextColor(110, 120, 115);
+		doc.text("NAMA PEMESAN", 20, 73);
+		doc.setFontSize(9);
+		doc.setFont("helvetica", "bold");
+		doc.setTextColor(26, 31, 54);
+		doc.text(currentOrderSummary.name, 20, 78);
+
+		doc.setFontSize(7.5);
+		doc.setFont("helvetica", "normal");
+		doc.setTextColor(110, 120, 115);
+		doc.text("KATEGORI TIKET", 80, 73);
+		doc.setFontSize(9);
+		doc.setFont("helvetica", "bold");
+		doc.setTextColor(26, 31, 54);
+		doc.text(currentOrderSummary.tier + " (1 Tiket)", 80, 78);
+
+		// Row 2: Email & Phone
+		doc.setFontSize(7.5);
+		doc.setFont("helvetica", "normal");
+		doc.setTextColor(110, 120, 115);
+		doc.text("EMAIL", 20, 85);
+		doc.setFontSize(9);
+		doc.setFont("helvetica", "bold");
+		doc.setTextColor(26, 31, 54);
+		doc.text(currentOrderSummary.email, 20, 90);
+
+		doc.setFontSize(7.5);
+		doc.setFont("helvetica", "normal");
+		doc.setTextColor(110, 120, 115);
+		doc.text("NO. WHATSAPP", 80, 85);
+		doc.setFontSize(9);
+		doc.setFont("helvetica", "bold");
+		doc.setTextColor(26, 31, 54);
+		doc.text(currentOrderSummary.phone, 80, 90);
+
+		// Row 3: Wristband & Total
+		doc.setFontSize(7.5);
+		doc.setFont("helvetica", "normal");
+		doc.setTextColor(110, 120, 115);
+		doc.text("GELANG AKSES", 20, 97);
+		doc.setFontSize(9);
+		doc.setFont("helvetica", "bold");
+		doc.setTextColor(33, 61, 58);
+		doc.text(currentOrderSummary.wristband, 20, 102);
+
+		doc.setFontSize(7.5);
+		doc.setFont("helvetica", "normal");
+		doc.setTextColor(110, 120, 115);
+		doc.text("TOTAL DIBAYAR", 80, 97);
+		doc.setFontSize(9);
+		doc.setFont("helvetica", "bold");
+		doc.setTextColor(183, 169, 124);
+		doc.text(currentOrderSummary.totalFormatted, 80, 102);
+
+		// 3. Location & Schedule Box
+		doc.setFillColor(240, 245, 243);
+		doc.roundedRect(14, 118, 120, 22, 3, 3, "F");
+		doc.setFontSize(7.5);
+		doc.setFont("helvetica", "bold");
+		doc.setTextColor(33, 61, 58);
+		doc.text("LOKASI & JADWAL PENYELENGGARAAN", 20, 124);
+		doc.setFontSize(8);
+		doc.setFont("helvetica", "normal");
+		doc.setTextColor(50, 60, 55);
+		doc.text("Bukit Doa Immanuel (BDI) Sukolilo, Prigen, Pasuruan, Jawa Timur", 20, 130);
+		doc.text("Jumat, 23 Oktober 2026  |  Open Gate Festival: 15.00 WIB", 20, 135);
+
+		// 4. Barcode Box
+		doc.setFillColor(255, 255, 255);
+		doc.roundedRect(14, 144, 120, 36, 3, 3, "F");
+		doc.setDrawColor(210, 218, 214);
+		doc.roundedRect(14, 144, 120, 36, 3, 3, "S");
+
+		// Rasterize barcode canvas
+		const barcodeCanvas = document.getElementById('receiptBarcodeCanvas');
+		if (barcodeCanvas) {
+			const barcodeDataUrl = barcodeCanvas.toDataURL("image/png");
+			doc.addImage(barcodeDataUrl, 'PNG', 28, 146, 92, 24);
+		}
+
+		doc.setFontSize(7);
+		doc.setFont("helvetica", "normal");
+		doc.setTextColor(100, 110, 105);
+		doc.text("Tunjukkan barcode ini kepada petugas di Gate Check-In untuk scan penukaran wristband fisik.", 74, 175, { align: "center" });
+
+		// 5. Notes & Terms
+		doc.setFontSize(6.8);
+		doc.setFont("helvetica", "normal");
+		doc.setTextColor(120, 130, 125);
+		doc.text("• Tiket berlaku untuk 1 (satu) orang dan hanya dapat di-scan 1 kali di Gate Check-In.", 20, 185);
+		doc.text("• Dilarang membagikan barcode kepada pihak lain guna mencegah duplikasi tiket.", 20, 189);
+		doc.text("• Wajib membawa kartu identitas (KTP / Kartu Pelajar) saat penukaran gelang festival.", 20, 193);
+
+		doc.setFontSize(6);
+		doc.setTextColor(160, 170, 165);
+		doc.text("SECURE SYSTEM GENERATED PASS  •  THE HIDDEN ISLAND 2026  •  OSIS SMAK KOLESE SANTO YUSUP", 74, 203, { align: "center" });
+
+		doc.save("E-Ticket_TheHiddenIsland_" + currentOrderSummary.id + ".pdf");
+	} catch (e) {
+		console.error("Error generating PDF", e);
+		alert("Gagal mengunduh file PDF tiket. Silakan coba kembali.");
+	}
 }

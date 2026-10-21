@@ -137,7 +137,8 @@
 					<label class="sectionHeading">Contact</label>
 					<div class="inputFieldWrapper">
 						<label for="contactEmail" class="floatingLabel">Email</label>
-						<input type="email" id="contactEmail" class="stripeInput" placeholder="nama@email.com" required>
+						<input type="email" id="contactEmail" class="stripeInput" placeholder="nama@email.com" autocomplete="email" required>
+						<p class="checkoutFieldError" id="checkoutEmailError" style="display: none;">Email tidak valid. Gunakan email resmi (@gmail.com, @yahoo.com, dll).</p>
 					</div>
 
 					<!-- Phone verification popup card with SVG Flag (No Emojis) -->
@@ -158,8 +159,9 @@
 								</svg>
 								<span class="countryArrow">▾</span>
 							</div>
-							<input type="tel" id="contactPhone" class="phoneInnerInput" placeholder="0812-3456-7890">
+							<input type="tel" id="contactPhone" class="phoneInnerInput" placeholder="0812-3456-7890" autocomplete="tel">
 						</div>
+						<p class="checkoutFieldError" id="checkoutPhoneError" style="display: none;">Nomor WhatsApp tidak valid. Masukkan nomor ponsel aktif (cth: 081234567890).</p>
 						<button type="button" class="btnVerifyPhone" onclick="verifyPhone()" id="btnVerify">Verify</button>
 					</div>
 				</div>
@@ -448,14 +450,34 @@
 				</div>
 			</div>
 
-			<p class="receiptNote">E-Ticket dan QR Code registrasi telah dikirimkan ke WhatsApp & Email Anda.</p>
-			<a href="../index.html" class="btnReturnHome">Kembali ke Beranda</a>
+			<!-- Real Scannable Barcode Container -->
+			<div class="receiptBarcodeCard">
+				<canvas id="receiptBarcodeCanvas"></canvas>
+				<p class="receiptBarcodeSub">Tunjukkan barcode ini kepada petugas di Gate Check-In</p>
+			</div>
+
+			<p class="receiptNote">E-Ticket dan bukti pembayaran resmi telah siap diunduh dalam format PDF.</p>
+
+			<!-- Action Buttons: Download PDF and Return Home -->
+			<div class="receiptActionButtons">
+				<button type="button" class="btnDownloadPdf" id="btnDownloadPdf" onclick="downloadTicketPdf()">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+						<polyline points="7 10 12 15 17 10"></polyline>
+						<line x1="12" y1="15" x2="12" y2="3"></line>
+					</svg>
+					<span>Unduh E-Ticket (PDF)</span>
+				</button>
+				<a href="../index.html" class="btnReturnHome">Kembali ke Beranda</a>
+			</div>
 		</div>
 	</dialog>
 
-	<script src="../shared/firebase-config.js?v=2026.5"></script>
-	<script src="../shared/cloud-store.js?v=2026.5"></script>
-	<script src="script.js?v=2026.5"></script>
-	<script src="../shared/cookie-consent.js?v=2026.5"></script>
+	<script src="../shared/firebase-config.js?v=2026.6"></script>
+	<script src="../shared/cloud-store.js?v=2026.6"></script>
+	<script src="../shared/jsbarcode.min.js?v=2026.6"></script>
+	<script src="../shared/jspdf.umd.min.js?v=2026.6"></script>
+	<script src="script.js?v=2026.6"></script>
+	<script src="../shared/cookie-consent.js?v=2026.6"></script>
 </body>
 </html>

@@ -138,16 +138,15 @@
 					<h3 class="sectionTitle">Detail pemesanan</h3>
 					
 					<div class="orderDetailsCard">
-						<!-- Row 1: Quantity counter with integrated stepper -->
+						<!-- Row 1: Quantity counter (Strictly 1 ticket per order) -->
 						<div class="detailsRow">
 							<div class="rowMeta">
 								<span class="rowLabel">Jumlah Tiket</span>
-								<span class="rowHint">Berlaku untuk seluruh akses yang dipilih.</span>
+								<span class="rowHint">Batas pemesanan: 1 tiket per transaksi.</span>
 							</div>
-							<div class="stepper">
-								<button type="button" class="btnStep" onclick="changeQty(-1)">−</button>
-								<span class="stepValue" id="qtyDisplay">1</span>
-								<button type="button" class="btnStep" onclick="changeQty(1)">+</button>
+							<div class="qtyLockedBadge">
+								<span class="stepValue" id="qtyDisplay">1</span> Tiket
+								<span class="qtyLimitNote">(Maks. 1)</span>
 							</div>
 						</div>
 
@@ -167,14 +166,20 @@
 
 						<div class="cardDivider"></div>
 
-						<!-- Row 3: Customer Inputs nested inside card -->
+						<!-- Row 3: Customer Inputs nested inside card with Real-time Security Validation -->
 						<div class="detailsInputs">
 							<div class="inputField">
-								<input type="text" id="custName" class="nestedInput" placeholder="Nama Lengkap" required>
+								<input type="text" id="custName" class="nestedInput" placeholder="Nama Lengkap" autocomplete="name" required>
 							</div>
 							<div class="inputRow">
-								<input type="email" id="custEmail" class="nestedInput" placeholder="Alamat Email" required>
-								<input type="tel" id="custWa" class="nestedInput" placeholder="Nomor WhatsApp" required>
+								<div class="inputCol">
+									<input type="email" id="custEmail" class="nestedInput" placeholder="Alamat Email (cth: nama@gmail.com)" autocomplete="email" required>
+									<span class="fieldErrorText" id="emailError">Format email tidak valid. Gunakan email resmi (@gmail.com, @yahoo.com, dll).</span>
+								</div>
+								<div class="inputCol">
+									<input type="tel" id="custWa" class="nestedInput" placeholder="Nomor WhatsApp (cth: 081234567890)" autocomplete="tel" required>
+									<span class="fieldErrorText" id="waError">Nomor WhatsApp tidak valid. Masukkan nomor ponsel aktif yang valid.</span>
+								</div>
 							</div>
 						</div>
 
@@ -268,8 +273,8 @@
 		</div>
 	</footer>
 
-	<script src="../shared/firebase-config.js?v=2026.5"></script>
-	<script src="../shared/cloud-store.js?v=2026.5"></script>
+	<script src="../shared/firebase-config.js?v=2026.6"></script>
+	<script src="../shared/cloud-store.js?v=2026.6"></script>
 	<script>
 		const DEFAULT_TICKET_CONFIG = {
 			presale1: {
@@ -481,44 +486,107 @@
 		}
 
 		function changeQty(delta) {
-			currentQty += delta;
-			if (currentQty < 1) currentQty = 1;
-
-			// Check remaining seats for active tier
-			const tierKey = currentTier.toLowerCase().replace(' ', '');
-			let maxAllowed = 5;
-			if (ticketConfig[tierKey]) {
-				const rem = Math.max(0, ticketConfig[tierKey].maxSeats - ticketConfig[tierKey].soldSeats);
-				maxAllowed = Math.min(5, rem);
-			}
-
-			if (currentQty > maxAllowed) currentQty = maxAllowed;
-			document.getElementById('qtyDisplay').textContent = currentQty;
+			// Order limit strictly 1 ticket per purchase
+			currentQty = 1;
+			document.getElementById('qtyDisplay').textContent = 1;
 			updateModalCalculations();
 		}
 
 		function updateModalCalculations() {
+			currentQty = 1; // Enforce single ticket purchase limit
 			const total = currentPrice * currentQty;
 			const formattedTotal = 'Rp ' + total.toLocaleString('id-ID');
 
 			document.getElementById('summaryTierTitle').textContent = currentTier;
-			document.getElementById('summaryTierSubtitle').textContent = currentSubtitle + ' (' + currentQty + ' tiket)';
+			document.getElementById('summaryTierSubtitle').textContent = currentSubtitle + ' (1 tiket)';
 			document.getElementById('summaryTotal').textContent = formattedTotal;
 			document.getElementById('btnTotalPrice').textContent = formattedTotal;
 		}
 
+		// Security Validation for Real Email and WhatsApp Phone Number
+		const VALID_EMAIL_TLDS = new Set([
+			"com", "net", "org", "edu", "gov", "mil", "int", "id", "co.id", "ac.id", "sch.id", "go.id", "or.id", "web.id", "biz.id", "my.id",
+			"io", "co", "ai", "me", "info", "biz", "app", "dev", "tech", "online", "site", "store", "cloud", "digital", "global", "xyz", "live", "pro", "asia", "club", "space", "tv", "cc", "us", "uk", "co.uk", "de", "fr", "jp", "sg", "au", "my", "nl", "ca", "ch", "se", "no", "es", "it"
+		]);
+
+		function isValidEmail(email) {
+			if (!email || typeof email !== "string") return false;
+			const trimmed = email.trim().toLowerCase();
+			const emailRegex = /^[a-z0-9._%+-]+@([a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,})$/;
+			const match = trimmed.match(emailRegex);
+			if (!match) return false;
+			
+			const domain = match[1];
+			const parts = domain.split(".");
+			if (parts.length < 2) return false;
+			
+			const sld = parts[parts.length - 2];
+			if (sld.length < 2) return false;
+
+			const tld1 = parts[parts.length - 1];
+			const tld2 = parts.length >= 2 ? `${parts[parts.length - 2]}.${parts[parts.length - 1]}` : "";
+
+			return VALID_EMAIL_TLDS.has(tld1) || VALID_EMAIL_TLDS.has(tld2);
+		}
+
+		function isValidPhone(phone) {
+			if (!phone || typeof phone !== "string") return false;
+			const clean = phone.replace(/[\s\-\(\)\+]/g, "");
+			let norm = clean;
+			if (norm.startsWith("628")) norm = "08" + norm.slice(3);
+			else if (norm.startsWith("+628")) norm = "08" + norm.slice(4);
+			
+			// Must start with 08[1-9] with 10-13 total digits
+			const re = /^08[1-9][0-9]{7,10}$/;
+			if (!re.test(norm)) return false;
+			
+			const body = norm.slice(2);
+			if (/^(\d)\1+$/.test(body)) return false;
+			return true;
+		}
+
 		function handleOrderSubmit(e) {
 			e.preventDefault();
-			const custName = document.getElementById('custName').value;
-			const custEmail = document.getElementById('custEmail').value;
-			const custWa = document.getElementById('custWa').value;
+			const nameInput = document.getElementById('custName');
+			const emailInput = document.getElementById('custEmail');
+			const waInput = document.getElementById('custWa');
+			const emailError = document.getElementById('emailError');
+			const waError = document.getElementById('waError');
+
+			const custName = nameInput.value.trim();
+			const custEmail = emailInput.value.trim();
+			const custWa = waInput.value.trim();
+
+			let hasError = false;
+
+			if (!isValidEmail(custEmail)) {
+				emailInput.classList.add('inputError');
+				if (emailError) emailError.style.display = 'block';
+				emailInput.focus();
+				hasError = true;
+			} else {
+				emailInput.classList.remove('inputError');
+				if (emailError) emailError.style.display = 'none';
+			}
+
+			if (!isValidPhone(custWa)) {
+				waInput.classList.add('inputError');
+				if (waError) waError.style.display = 'block';
+				if (!hasError) waInput.focus();
+				hasError = true;
+			} else {
+				waInput.classList.remove('inputError');
+				if (waError) waError.style.display = 'none';
+			}
+
+			if (hasError) return;
 
 			const orderData = {
 				tier: currentTier,
 				price: currentPrice,
 				subtitle: currentSubtitle,
-				qty: currentQty,
-				total: currentPrice * currentQty,
+				qty: 1, // Strictly 1 ticket per purchase
+				total: currentPrice,
 				name: custName,
 				email: custEmail,
 				wa: custWa
@@ -527,6 +595,32 @@
 			sessionStorage.setItem('hiddenIslandOrder', JSON.stringify(orderData));
 			window.location.href = '../checkout/index.html';
 		}
+
+		// Real-time input listeners to clear errors on typing
+		document.addEventListener('DOMContentLoaded', () => {
+			const emailInput = document.getElementById('custEmail');
+			const waInput = document.getElementById('custWa');
+			const emailError = document.getElementById('emailError');
+			const waError = document.getElementById('waError');
+
+			if (emailInput) {
+				emailInput.addEventListener('input', () => {
+					if (isValidEmail(emailInput.value.trim())) {
+						emailInput.classList.remove('inputError');
+						if (emailError) emailError.style.display = 'none';
+					}
+				});
+			}
+
+			if (waInput) {
+				waInput.addEventListener('input', () => {
+					if (isValidPhone(waInput.value.trim())) {
+						waInput.classList.remove('inputError');
+						if (waError) waError.style.display = 'none';
+					}
+				});
+			}
+		});
 
 		// Dynamic Navbar: Stays in place, adds shade and shadow when scrolling
 		const mainNavBar = document.getElementById('mainNavBar') || document.querySelector('.navBar');
@@ -584,6 +678,6 @@
 			}
 		});
 	</script>
-	<script src="../shared/cookie-consent.js?v=2026.5"></script>
+	<script src="../shared/cookie-consent.js?v=2026.6"></script>
 </body>
 </html>

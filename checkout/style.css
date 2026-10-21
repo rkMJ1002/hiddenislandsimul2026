@@ -1051,6 +1051,75 @@ dialog.successDialog::backdrop {
 	line-height: 1.4;
 }
 
+.receiptBarcodeCard {
+	background-color: #ffffff;
+	border: 1px dashed #c1c9d2;
+	border-radius: 8px;
+	padding: 12px 14px;
+	margin: 16px 0 18px 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+#receiptBarcodeCanvas {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+.receiptBarcodeSub {
+	font-size: 11px;
+	color: #697386;
+	margin: 8px 0 0 0;
+	line-height: 1.3;
+}
+
+.receiptActionButtons {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-top: 16px;
+}
+
+.btnDownloadPdf {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	height: 46px;
+	background-color: #213d3a;
+	color: #CFD4D0;
+	border: 1px solid #B7A97C;
+	border-radius: 8px;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 14px;
+	font-weight: 700;
+	cursor: pointer;
+	transition: background-color 0.2s, color 0.2s, transform 0.15s;
+}
+
+.btnDownloadPdf:hover {
+	background-color: #2c524e;
+	color: #ffffff;
+	transform: translateY(-1px);
+}
+
+.checkoutFieldError {
+	color: #de350b;
+	font-size: 12px;
+	margin: 6px 0 0 0;
+	line-height: 1.3;
+}
+
+.stripeInput.inputError,
+.phoneInnerInput.inputError {
+	border-color: #de350b !important;
+	background-color: #fff8f7 !important;
+}
+
 .btnReturnHome {
 	display: block;
 	width: 100%;

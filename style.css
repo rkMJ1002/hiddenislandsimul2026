@@ -332,6 +332,70 @@ body {
 }
 
 /* ============================================================
+   SUPPORTED BY SECTION (Placeholders: Gray Circle / Square)
+   ============================================================ */
+.supportedSection {
+	padding: 60px 40px 30px 40px;
+	background: transparent;
+	text-align: center;
+}
+
+.supportedContainer {
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.supportedSection .sectionHeader {
+	margin-bottom: 28px;
+}
+
+.supportedGrid {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 22px 28px;
+}
+
+.placeholderItem {
+	background: rgba(255, 255, 255, 0.06);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.placeholderItem:hover {
+	background: rgba(255, 255, 255, 0.09);
+	border-color: rgba(183, 169, 124, 0.35);
+	transform: translateY(-2px);
+}
+
+.placeholderItem.square {
+	width: 140px;
+	height: 80px;
+	border-radius: 12px;
+}
+
+.placeholderItem.circle {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+}
+
+.placeholderText {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 13px;
+	font-weight: 500;
+	color: rgba(207, 212, 208, 0.6);
+	letter-spacing: 0.02em;
+	text-transform: lowercase;
+	user-select: none;
+}
+
+/* ============================================================
    ABOUT / TENTANG KOSAYU ARTFEST (Fully Seamless, Zero Line)
    ============================================================ */
 .aboutSection {
@@ -374,6 +438,142 @@ body {
 
 .aboutBody p:last-child {
 	margin-bottom: 0;
+}
+
+/* ============================================================
+   ABOUT CAROUSEL (Middle of Description)
+   ============================================================ */
+.aboutCarousel {
+	position: relative;
+	margin: 32px 0 36px 0;
+	width: 100%;
+	border-radius: 18px;
+	overflow: hidden;
+}
+
+.carouselTrackWrapper {
+	overflow: hidden;
+	border-radius: 18px;
+	width: 100%;
+}
+
+.carouselTrack {
+	display: flex;
+	transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+	width: 100%;
+}
+
+.carouselSlide {
+	min-width: 100%;
+	box-sizing: border-box;
+}
+
+.carouselPlaceholderBox {
+	width: 100%;
+	height: 340px;
+	background: rgba(255, 255, 255, 0.06);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.25);
+}
+
+.carouselPlaceholderBox .placeholderText {
+	font-size: 16px;
+	letter-spacing: 0.04em;
+	color: rgba(207, 212, 208, 0.65);
+}
+
+.carouselArrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background: rgba(26, 29, 26, 0.85);
+	border: 1px solid rgba(183, 169, 124, 0.3);
+	color: #CFD4D0;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color 0.2s, border-color 0.2s, transform 0.2s, color 0.2s;
+	z-index: 10;
+	backdrop-filter: blur(6px);
+}
+
+.carouselArrow:hover {
+	background: #B7A97C;
+	color: #282B28;
+	border-color: #B7A97C;
+	transform: translateY(-50%) scale(1.08);
+}
+
+.carouselArrow.prev {
+	left: 14px;
+}
+
+.carouselArrow.next {
+	right: 14px;
+}
+
+.carouselDots {
+	position: absolute;
+	bottom: 16px;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	z-index: 10;
+	background: rgba(26, 29, 26, 0.65);
+	padding: 6px 12px;
+	border-radius: 9999px;
+	backdrop-filter: blur(4px);
+}
+
+.carouselDot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: rgba(207, 212, 208, 0.35);
+	border: none;
+	cursor: pointer;
+	padding: 0;
+	transition: background-color 0.25s, width 0.25s;
+}
+
+.carouselDot.active {
+	background: #B7A97C;
+	width: 22px;
+	border-radius: 9999px;
+}
+
+@media (max-width: 768px) {
+	.carouselPlaceholderBox {
+		height: 220px;
+	}
+	.carouselArrow {
+		width: 36px;
+		height: 36px;
+	}
+	.carouselArrow.prev {
+		left: 8px;
+	}
+	.carouselArrow.next {
+		right: 8px;
+	}
+	.placeholderItem.square {
+		width: 110px;
+		height: 65px;
+	}
+	.placeholderItem.circle {
+		width: 65px;
+		height: 65px;
+	}
 }
 
 /* ============================================================

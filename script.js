@@ -108,3 +108,105 @@ document.addEventListener('click', (e) => {
 	}
 });
 
+// ============================================================
+// ABOUT ARTFEST PHOTO CAROUSEL
+// ============================================================
+(function initAboutCarousel() {
+	const track = document.getElementById('carouselTrack');
+	const prevBtn = document.getElementById('carouselPrevBtn');
+	const nextBtn = document.getElementById('carouselNextBtn');
+	const dotsContainer = document.getElementById('carouselDots');
+	const carousel = document.getElementById('aboutCarousel');
+
+	if (!track || !carousel) return;
+
+	const slides = track.querySelectorAll('.carouselSlide');
+	const dots = dotsContainer ? dotsContainer.querySelectorAll('.carouselDot') : [];
+	const totalSlides = slides.length;
+	let currentIndex = 0;
+	let autoplayTimer = null;
+
+	function updateCarousel() {
+		track.style.transform = `translateX(-${currentIndex * 100}%)`;
+		slides.forEach((s, idx) => {
+			s.classList.toggle('active', idx === currentIndex);
+		});
+		dots.forEach((d, idx) => {
+			d.classList.toggle('active', idx === currentIndex);
+			d.setAttribute('aria-current', idx === currentIndex ? 'true' : 'false');
+		});
+	}
+
+	function goToSlide(index) {
+		currentIndex = (index + totalSlides) % totalSlides;
+		updateCarousel();
+	}
+
+	function nextSlide() {
+		goToSlide(currentIndex + 1);
+	}
+
+	function prevSlide() {
+		goToSlide(currentIndex - 1);
+	}
+
+	if (prevBtn) prevBtn.addEventListener('click', () => {
+		prevSlide();
+		restartAutoplay();
+	});
+
+	if (nextBtn) nextBtn.addEventListener('click', () => {
+		nextSlide();
+		restartAutoplay();
+	});
+
+	dots.forEach((dot, idx) => {
+		dot.addEventListener('click', () => {
+			goToSlide(idx);
+			restartAutoplay();
+		});
+	});
+
+	function startAutoplay() {
+		if (autoplayTimer) clearInterval(autoplayTimer);
+		autoplayTimer = setInterval(nextSlide, 4500);
+	}
+
+	function stopAutoplay() {
+		if (autoplayTimer) {
+			clearInterval(autoplayTimer);
+			autoplayTimer = null;
+		}
+	}
+
+	function restartAutoplay() {
+		stopAutoplay();
+		startAutoplay();
+	}
+
+	carousel.addEventListener('mouseenter', stopAutoplay);
+	carousel.addEventListener('mouseleave', startAutoplay);
+
+	// Mobile Touch Swipe Navigation
+	let touchStartX = 0;
+	let touchEndX = 0;
+
+	carousel.addEventListener('touchstart', (e) => {
+		touchStartX = e.changedTouches[0].screenX;
+		stopAutoplay();
+	}, { passive: true });
+
+	carousel.addEventListener('touchend', (e) => {
+		touchEndX = e.changedTouches[0].screenX;
+		const diff = touchStartX - touchEndX;
+		if (Math.abs(diff) > 40) {
+			if (diff > 0) nextSlide();
+			else prevSlide();
+		}
+		startAutoplay();
+	}, { passive: true });
+
+	startAutoplay();
+	updateCarousel();
+})();
+

@@ -83,6 +83,35 @@
 		</div>
 	</section>
 
+	<!-- Supported by Section -->
+	<section class="supportedSection" id="supported">
+		<div class="supportedContainer">
+			<div class="sectionHeader">
+				<h2 class="sectionTitle">Supported by</h2>
+			</div>
+			<div class="supportedGrid">
+				<div class="placeholderItem square">
+					<span class="placeholderText">placeholder</span>
+				</div>
+				<div class="placeholderItem circle">
+					<span class="placeholderText">placeholder</span>
+				</div>
+				<div class="placeholderItem square">
+					<span class="placeholderText">placeholder</span>
+				</div>
+				<div class="placeholderItem circle">
+					<span class="placeholderText">placeholder</span>
+				</div>
+				<div class="placeholderItem square">
+					<span class="placeholderText">placeholder</span>
+				</div>
+				<div class="placeholderItem circle">
+					<span class="placeholderText">placeholder</span>
+				</div>
+			</div>
+		</div>
+	</section>
+
 	<!-- About / Landasan Teori Event Section -->
 	<section class="aboutSection" id="tentang">
 		<div class="aboutContainer">
@@ -92,16 +121,59 @@
 
 			<div class="aboutBody">
 				<p>
-					Kosayu Artfest adalah acara pentas seni tahunan yang diadakan oleh OSIS SMAK Kolese Santo Yusup sebagai wadah untuk mengekspresikan kreativitas dan bakat siswa dalam seni pertunjukan. Acara ini tidak hanya menjadi ajang untuk menunjukkan potensi, tetapi juga sarana untuk mempererat hubungan antar anggota komunitas sekolah. Selain itu, Kosayu Artfest bertujuan menghadirkan pengalaman seni yang menginspirasi dan menghibur, baik bagi warga sekolah maupun masyarakat umum.
+					Kosayu Artfest adalah pentas seni tahunan persembahan OSIS SMAK Kolese Santo Yusup sebagai wadah ekspresi bakat pertunjukan, musik, dan kreativitas visual komunitas sekolah untuk menghibur serta menginspirasi masyarakat luas.
 				</p>
+
+				<!-- Event Photo Carousel (Middle of Description) -->
+				<div class="aboutCarousel" id="aboutCarousel" role="region" aria-roledescription="carousel" aria-label="Galeri Foto Artfest">
+					<div class="carouselTrackWrapper">
+						<div class="carouselTrack" id="carouselTrack">
+							<div class="carouselSlide active">
+								<div class="carouselPlaceholderBox">
+									<span class="placeholderText">placeholder</span>
+								</div>
+							</div>
+							<div class="carouselSlide">
+								<div class="carouselPlaceholderBox">
+									<span class="placeholderText">placeholder</span>
+								</div>
+							</div>
+							<div class="carouselSlide">
+								<div class="carouselPlaceholderBox">
+									<span class="placeholderText">placeholder</span>
+								</div>
+							</div>
+							<div class="carouselSlide">
+								<div class="carouselPlaceholderBox">
+									<span class="placeholderText">placeholder</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Navigation Arrows -->
+					<button type="button" class="carouselArrow prev" id="carouselPrevBtn" aria-label="Foto Sebelumnya">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+							<polyline points="15 18 9 12 15 6"></polyline>
+						</svg>
+					</button>
+					<button type="button" class="carouselArrow next" id="carouselNextBtn" aria-label="Foto Selanjutnya">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+							<polyline points="9 18 15 12 9 6"></polyline>
+						</svg>
+					</button>
+
+					<!-- Indicator Dots -->
+					<div class="carouselDots" id="carouselDots">
+						<button type="button" class="carouselDot active" data-index="0" aria-label="Slide 1"></button>
+						<button type="button" class="carouselDot" data-index="1" aria-label="Slide 2"></button>
+						<button type="button" class="carouselDot" data-index="2" aria-label="Slide 3"></button>
+						<button type="button" class="carouselDot" data-index="3" aria-label="Slide 4"></button>
+					</div>
+				</div>
+
 				<p>
-					Pada tahun ini, Kosayu Artfest mengambil tema “The Hidden Island”, sebuah tema yang mengajak kita untuk menjelajahi sebuah pulau tersembunyi yang menyimpan berbagai keajaiban, keindahan, dan misteri di dalamnya. Pulau ini menjadi gambaran dari dunia penuh imajinasi, tempat setiap sudut menyimpan cerita dan setiap penemuan membuka kesempatan untuk melihat sesuatu dari perspektif yang baru.
-				</p>
-				<p>
-					Melalui tema ini, Kosayu Artfest ingin mengajak kita semua untuk berani mengeksplorasi kreativitas, menemukan hal-hal baru, dan menuangkan ide melalui berbagai bentuk karya seni. Layaknya sebuah pulau yang belum banyak dijelajahi, setiap individu memiliki imajinasi dan potensi unik yang dapat dikembangkan. “The Hidden Island” menjadi simbol dari petualangan untuk menemukan keindahan yang tersembunyi, menciptakan pengalaman yang berkesan, dan menyatukan berbagai kreativitas dalam satu perayaan seni.
-				</p>
-				<p>
-					Kosayu Artfest bukan sekadar panggung seni, melainkan momen untuk merayakan kreativitas, kerja keras, dan semangat dalam kebersamaan. Acara ini diharapkan menjadi inspirasi bagi setiap individu untuk terus berkarya dan menghadapi perjalanan hidup dengan penuh makna. Dengan semangat tersebut, Kosayu Artfest siap menjadi pengalaman yang membekas di hati dan membawa kebahagiaan bagi semua yang hadir.
+					Mengusung tema “The Hidden Island”, perayaan tahun ini mengajak kita semua menjelajahi keindahan, imajinasi, dan petualangan seni yang tersembunyi dalam satu perayaan festival tak terlupakan.
 				</p>
 			</div>
 		</div>
@@ -265,7 +337,7 @@
 		</div>
 	</footer>
 
-	<script src="script.js"></script>
-	<script src="shared/cookie-consent.js"></script>
+	<script src="script.js?v=2026.6"></script>
+	<script src="shared/cookie-consent.js?v=2026.6"></script>
 </body>
 </html>

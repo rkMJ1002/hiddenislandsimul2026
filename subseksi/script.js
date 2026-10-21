@@ -437,8 +437,7 @@ function handleManualOrderSubmit(event) {
 	const unitPrice = cfg[tierKey] ? cfg[tierKey].price : (tierKey === "presale1" ? 75000 : 90000);
 	const total = unitPrice * qty;
 
-	let wristbandStr = "Zamrud (Akses Standar Presale 1)";
-	if (tierKey === "presale2") wristbandStr = "Safir (Akses Standar Presale 2)";
+	let wristbandStr = "Wristband Festival";
 
 	const randomId = "HI-2026-" + String(Math.floor(100 + Math.random() * 900));
 
