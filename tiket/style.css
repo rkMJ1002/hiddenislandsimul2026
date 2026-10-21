@@ -335,17 +335,17 @@ body {
 	border-radius: 50%;
 	background-color: #4B5E35;
 	display: inline-block;
-	box-shadow: 0 0 6px #4B5E35;
+	box-shadow: none;
 }
 
 .quotaDot.warning {
 	background-color: #B7A97C;
-	box-shadow: 0 0 6px #B7A97C;
+	box-shadow: none;
 }
 
 .quotaDot.danger {
 	background-color: #c95c5c;
-	box-shadow: 0 0 6px #c95c5c;
+	box-shadow: none;
 }
 
 /* Status Badges */
@@ -455,7 +455,7 @@ dialog.ticketModal::backdrop {
 	border-radius: 18px;
 	padding: 28px;
 	color: #CFD4D0;
-	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+	box-shadow: none;
 }
 
 /* Modal Header */

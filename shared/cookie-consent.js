@@ -32,7 +32,7 @@
 			border: 1px solid rgba(183, 169, 124, 0.35);
 			border-radius: 8px;
 			padding: 22px 24px;
-			box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+			box-shadow: none;
 			backdrop-filter: blur(14px);
 			-webkit-backdrop-filter: blur(14px);
 			z-index: 99999;

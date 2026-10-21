@@ -364,7 +364,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
-	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+	box-shadow: none;
 }
 
 .placeholderItem:hover {
@@ -637,7 +637,7 @@ body {
 	border: 1px solid rgba(183, 169, 124, 0.3);
 	border-radius: 8px;
 	overflow: hidden;
-	box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+	box-shadow: none;
 	height: 460px;
 	width: 100%;
 	margin-bottom: 24px;
@@ -719,7 +719,7 @@ body {
 	border-radius: 6px;
 	font-size: 13px;
 	font-weight: 600;
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+	box-shadow: none;
 	opacity: 0;
 	pointer-events: none;
 	transition: opacity 0.25s ease, transform 0.25s ease;
