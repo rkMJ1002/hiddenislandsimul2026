@@ -272,12 +272,125 @@ function switchAdminTab(tabName) {
 }
 
 // Gate Check - In Verification Handler
-function processTicketScan() {
+
+// Web Audio API Synthesizer for Gate Check-In
+function playAdminGateSound(type) {
+	try {
+		const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+		if (!AudioContextClass) return;
+		const ctx = new AudioContextClass();
+		const now = ctx.currentTime;
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.connect(gain);
+		gain.connect(ctx.destination);
+
+		if (type === "success") {
+			osc.type = "sine";
+			osc.frequency.setValueAtTime(880, now);
+			osc.frequency.setValueAtTime(1760, now + 0.08);
+			gain.gain.setValueAtTime(0.3, now);
+			gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+			osc.start(now);
+			osc.stop(now + 0.31);
+		} else if (type === "warning") {
+			osc.type = "sawtooth";
+			osc.frequency.setValueAtTime(320, now);
+			gain.gain.setValueAtTime(0.25, now);
+			gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+			osc.start(now);
+			osc.stop(now + 0.26);
+		} else {
+			osc.type = "square";
+			osc.frequency.setValueAtTime(160, now);
+			gain.gain.setValueAtTime(0.28, now);
+			gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+			osc.start(now);
+			osc.stop(now + 0.36);
+		}
+	} catch (e) {}
+}
+
+// Handler for Subseksi PDF Upload
+async function handleSubseksiPdfUpload(event) {
+	const file = event.target.files && event.target.files[0];
+	if (!file) return;
+
+	showToast("Menganalisis file PDF: " + file.name + "...");
+
+	try {
+		if (window.pdfjsLib && (file.type.includes("pdf") || file.name.toLowerCase().endsWith(".pdf"))) {
+			window.pdfjsLib.GlobalWorkerOptions.workerSrc = "../shared/pdf.worker.min.js";
+			const arrayBuffer = await file.arrayBuffer();
+			const loadingTask = window.pdfjsLib.getDocument({ data: arrayBuffer });
+			const pdfDoc = await loadingTask.promise;
+			const page = await pdfDoc.getPage(1);
+
+			let detectedId = null;
+			// 1. Check text content
+			try {
+				const textContent = await page.getTextContent();
+				const text = textContent.items.map(i => i.str).join(" ");
+				const match = text.match(/\b(HI-2026-\d{3,4}|HI-\d{4}-\d+)\b/i);
+				if (match) detectedId = match[1].toUpperCase();
+			} catch (e) {}
+
+			// 2. Optical Canvas Barcode Scanner
+			if (!detectedId) {
+				const offCanvas = document.createElement("canvas");
+				const viewport = page.getViewport({ scale: 2.0 });
+				offCanvas.width = viewport.width;
+				offCanvas.height = viewport.height;
+				const ctx = offCanvas.getContext("2d");
+				await page.render({ canvasContext: ctx, viewport }).promise;
+
+				if ("BarcodeDetector" in window) {
+					try {
+						const detector = new window.BarcodeDetector({ formats: ["code_128", "code_39"] });
+						const res = await detector.detect(offCanvas);
+						if (res && res.length > 0) detectedId = res[0].rawValue.trim().toUpperCase();
+					} catch (e) {}
+				}
+
+				if (!detectedId && window.ZXing) {
+					try {
+						const luminanceSource = new window.ZXing.HTMLCanvasElementLuminanceSource(offCanvas);
+						const binaryBitmap = new window.ZXing.BinaryBitmap(new window.ZXing.HybridBinarizer(luminanceSource));
+						const reader = new window.ZXing.MultiFormatReader();
+						const zxRes = reader.decode(binaryBitmap);
+						if (zxRes) detectedId = zxRes.getText().trim().toUpperCase();
+					} catch (e) {}
+				}
+			}
+
+			if (detectedId) {
+				const input = document.getElementById("scanTicketInput");
+				if (input) input.value = detectedId;
+				processTicketScan(detectedId);
+				showToast("✓ Barcode terdeteksi dari PDF: " + detectedId);
+			} else {
+				playAdminGateSound("error");
+				alert("Tidak ditemukan barcode Code 128 atau ID tiket 'HI-2026-xxx' pada file PDF ini.");
+			}
+		} else {
+			alert("Format file belum didukung. Harap upload dokumen .pdf e-ticket.");
+		}
+	} catch (err) {
+		console.error("PDF parse error:", err);
+		alert("Gagal membaca dokumen PDF: " + (err.message || err));
+	}
+	event.target.value = "";
+}
+
+function processTicketScan(overrideId) {
 	const input = document.getElementById("scanTicketInput");
 	const resultBox = document.getElementById("scanResultDisplay");
 	if (!input || !resultBox) return;
 
-	const ticketId = input.value.trim().toUpperCase();
+	let rawVal = (overrideId || input.value || "").trim().toUpperCase();
+	const regexMatch = rawVal.match(/\b(HI-2026-\d{3,4}|HI-\d{4}-\d+)\b/i);
+	const ticketId = regexMatch ? regexMatch[1].toUpperCase() : rawVal;
+	if (input && ticketId) input.value = ticketId;
 
 	if (!ticketId) {
 		alert("Harap masukkan ID Pesanan tiket.");
@@ -304,7 +417,8 @@ function processTicketScan() {
 					⚠️ JANGAN BERIKAN GELANG GANDA
 				</div>
 			`;
-			showToast(`Peringatan: ID ${found.id} sudah pernah di-check-in!`);
+			playAdminGateSound("warning");
+			showToast(`⚠️ Peringatan: ID ${found.id} sudah pernah di-check-in!`);
 			return;
 		}
 
@@ -339,6 +453,7 @@ function processTicketScan() {
 				<strong>${escapeHtml(found.wristband || "Akses Standar")}</strong>
 			</div>
 		`;
+		playAdminGateSound("success");
 		showToast(`✓ Check-in sukses: ${found.name} (${found.qty || 1} tiket) diizinkan masuk.`);
 	} else {
 		// Case C: ID not found in database
@@ -352,6 +467,7 @@ function processTicketScan() {
 			<h4 style="margin:0 0 4px 0; color:#ff7b7b; font-family:'Syne',sans-serif; font-size:18px;">ID TIKET TIDAK DITEMUKAN</h4>
 			<div style="font-size:13px; color:rgba(207,212,208,0.75);">Kode ID "${escapeHtml(ticketId)}" tidak terdaftar dalam database resmi pesanan Artfest 2026.</div>
 		`;
+		playAdminGateSound("error");
 		showToast("Peringatan: ID Tiket tidak dikenali!");
 	}
 }
