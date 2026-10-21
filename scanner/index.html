@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+	<title>Pemindai Barcode & E-Ticket PDF — The Hidden Island Artfest 2026</title>
+	<meta name="description" content="Sistem Pemindai Barcode dan Validasi E-Ticket PDF Tamu Gate Check-In The Hidden Island — Artfest Kolese Santo Yusup 2026.">
+	<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+	<link rel="alternate icon" href="../favicon.ico">
+	<link rel="apple-touch-icon" href="../favicon-256.png">
+
+	<!-- Google Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+
+	<link rel="stylesheet" href="style.css?v=2026.7">
+</head>
+<body>
+	<!-- HEADER NAVIGATION -->
+	<header class="scannerHeader">
+		<div class="headerLeft">
+			<a href="/" class="brandLogoLink" title="Ke Halaman Utama">
+				<img src="../logo.png" alt="Logo The Hidden Island" class="brandLogoImg">
+			</a>
+			<div class="brandInfo">
+				<div class="brandBadge">
+					<span class="pulseDot"></span>
+					<span>Gate Check-In & E-Ticket Validator</span>
+				</div>
+				<h1 class="brandTitle">THE HIDDEN ISLAND 2026</h1>
+				<p class="brandSubtitle">Pentas Seni Kolese Santo Yusup • Bukit Doa Immanuel Sukolilo</p>
+			</div>
+		</div>
+
+		<div class="headerRight">
+			<!-- Live Clock -->
+			<div class="clockPill" id="liveClockDisplay">
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="12" cy="12" r="10"></circle>
+					<polyline points="12 6 12 12 16 14"></polyline>
+				</svg>
+				<span id="clockTime">--:--:-- WIB</span>
+			</div>
+
+			<!-- Gate Station Selector -->
+			<div class="gateSelectorGroup">
+				<label for="gateSelect" class="gateLabel">POS GATE:</label>
+				<select id="gateSelect" class="gateSelectInput" onchange="handleGateChange()">
+					<option value="Gate 1 - Bukit Doa">Gate 1 — Pintu Utama (Bukit Doa)</option>
+					<option value="Gate 2 - VIP">Gate 2 — VIP & Fast Track</option>
+					<option value="Gate 3 - OTS & Helpdesk">Gate 3 — OTS & Helpdesk</option>
+				</select>
+			</div>
+
+			<!-- Cloud Sync Status -->
+			<div class="syncPill" id="cloudSyncStatus" title="Status Sinkronisasi Cloud">
+				<span class="syncDot"></span>
+				<span id="syncStatusText">Cloud Aktif</span>
+			</div>
+
+			<!-- Sound Toggle -->
+			<button type="button" class="iconHeaderBtn" id="btnToggleSound" onclick="toggleSoundFX()" title="Nyalakan / Matikan Efek Suara Scanner">
+				<svg id="iconSoundOn" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+					<path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+				</svg>
+				<svg id="iconSoundOff" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+					<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+					<line x1="23" y1="9" x2="17" y2="15"></line>
+					<line x1="17" y1="9" x2="23" y2="15"></line>
+				</svg>
+			</button>
+
+			<!-- Navigation Links -->
+			<a href="../subseksi/" class="btnNavSubseksi" title="Buka Portal Panitia Subseksi">
+				<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+					<polyline points="9 22 9 12 15 12 15 22"></polyline>
+				</svg>
+				<span>Portal Subseksi</span>
+			</a>
+		</div>
+	</header>
+
+	<!-- ATTENDANCE SUMMARY METRICS BAR -->
+	<section class="metricsBanner">
+		<div class="metricBlock">
+			<span class="metricLabel">TOTAL TIKET TERDAFTAR</span>
+			<div class="metricValue" id="metricTotalOrders">0</div>
+			<span class="metricSub" id="metricTotalSub">Semua Pesanan Lunas</span>
+		</div>
+		<div class="metricDivider"></div>
+		<div class="metricBlock activeCount">
+			<span class="metricLabel">SUDAH CHECK-IN (MASUK)</span>
+			<div class="metricValue" id="metricCheckedInCount">0</div>
+			<span class="metricSub" id="metricCheckedInSub">Gelang Diserahkan</span>
+		</div>
+		<div class="metricDivider"></div>
+		<div class="metricBlock">
+			<span class="metricLabel">BELUM HADIR</span>
+			<div class="metricValue" id="metricRemainingCount">0</div>
+			<span class="metricSub">Menunggu di Pintu Gate</span>
+		</div>
+		<div class="metricDivider"></div>
+		<div class="metricBlock progressBlock">
+			<div class="progressHeader">
+				<span class="metricLabel">PERSENTASE KEHADIRAN GATE</span>
+				<span class="progressPercent" id="metricProgressPercent">0%</span>
+			</div>
+			<div class="progressBarTrack">
+				<div class="progressBarFill" id="metricProgressBar" style="width: 0%;"></div>
+			</div>
+			<span class="metricSub">Real-time sinkron ke semua pos panitia</span>
+		</div>
+	</section>
+
+	<!-- MAIN WORKSPACE LAYOUT -->
+	<main class="scannerMainLayout">
+		<!-- LEFT COLUMN: SCANNER INPUTS (PDF, Camera, Manual/Laser) -->
+		<section class="scannerInputCol">
+			<!-- Mode Tabs -->
+			<div class="scannerModeTabs">
+				<button type="button" class="modeTabBtn active" id="tabBtnPdf" onclick="switchScannerMode('pdf')">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+						<polyline points="14 2 14 8 20 8"></polyline>
+						<line x1="16" y1="13" x2="8" y2="13"></line>
+						<line x1="16" y1="17" x2="8" y2="17"></line>
+						<polyline points="10 9 9 9 8 9"></polyline>
+					</svg>
+					<span>Scan File PDF Tamu</span>
+				</button>
+
+				<button type="button" class="modeTabBtn" id="tabBtnCamera" onclick="switchScannerMode('camera')">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+						<circle cx="12" cy="13" r="4"></circle>
+					</svg>
+					<span>Kamera Barcode</span>
+				</button>
+
+				<button type="button" class="modeTabBtn" id="tabBtnManual" onclick="switchScannerMode('manual')">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<rect x="2" y="4" width="20" height="16" rx="2"></rect>
+						<path d="M7 15h0M2 9.5h20"></path>
+					</svg>
+					<span>Input ID / Laser Gun</span>
+				</button>
+			</div>
+
+			<!-- PANEL 1: PDF TICKET SCANNER -->
+			<div class="modePanel active" id="panelPdf">
+				<div class="panelIntro">
+					<h2 class="panelTitle">Pindai E-Ticket PDF Tamu</h2>
+					<p class="panelDesc">
+						Tarik dan letakkan dokumen file PDF e-ticket pengunjung (atau gambar barcode). Sistem akan otomatis membaca barcode Code 128 dan data tiket pengunjung secara instan.
+					</p>
+				</div>
+
+				<!-- Drag & Drop Zone -->
+				<div class="pdfDropzone" id="pdfDropzone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+					<input type="file" id="pdfFileInput" accept=".pdf,image/png,image/jpeg,image/webp,image/bmp" style="display:none;" onchange="handleFileSelected(event)">
+
+					<div class="dropzoneContent" id="dropzoneEmpty">
+						<div class="dropzoneIcon">
+							<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#B7A97C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+								<polyline points="14 2 14 8 20 8"></polyline>
+								<line x1="12" y1="18" x2="12" y2="12"></line>
+								<line x1="9" y1="15" x2="15" y2="15"></line>
+							</svg>
+						</div>
+						<h3 class="dropzoneTitle">Tarik & Letakkan File PDF Tiket di Sini</h3>
+						<p class="dropzoneHint">Mendukung file <strong>.PDF</strong>, gambar <strong>.PNG / .JPG</strong> e-ticket pengunjung</p>
+						<div class="dropzoneActions">
+							<button type="button" class="btnSelectFile" onclick="document.getElementById('pdfFileInput').click()">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+									<polyline points="17 8 12 3 7 8"></polyline>
+									<line x1="12" y1="3" x2="12" y2="15"></line>
+								</svg>
+								<span>Pilih Dokumen PDF Tamu</span>
+							</button>
+							<span class="pasteHint">atau tekan <strong>Ctrl + V</strong> untuk tempel gambar tiket</span>
+						</div>
+					</div>
+
+					<!-- Processing State Spinner -->
+					<div class="dropzoneLoading" id="dropzoneLoading" style="display: none;">
+						<div class="scannerSpinner"></div>
+						<div class="loadingText" id="loadingStatusText">Menganalisis Dokumen PDF & Membaca Barcode...</div>
+					</div>
+
+					<!-- PDF Visual Preview (Shown after upload) -->
+					<div class="pdfPreviewContainer" id="pdfPreviewContainer" style="display: none;">
+						<div class="previewHeader">
+							<div class="previewFileMeta">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a8d58a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<polyline points="20 6 9 17 4 12"></polyline>
+								</svg>
+								<span id="previewFileName">E-Ticket.pdf</span>
+								<span class="previewFileSize" id="previewFileSize">24 KB</span>
+							</div>
+							<button type="button" class="btnResetFile" onclick="resetPdfDropzone()" title="Hapus dan ganti file tiket">
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+								<span>Ganti File</span>
+							</button>
+						</div>
+						<div class="previewCanvasWrapper">
+							<canvas id="pdfRenderCanvas"></canvas>
+							<div class="barcodeScanReticle" id="barcodeScanHighlight">
+								<span class="reticleCorner tl"></span>
+								<span class="reticleCorner tr"></span>
+								<span class="reticleCorner bl"></span>
+								<span class="reticleCorner br"></span>
+								<div class="reticleLaser"></div>
+								<span class="reticleLabel" id="reticleLabel">Barcode Terdeteksi</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Quick Test Helper -->
+				<div class="quickTestRow">
+					<span class="quickTestLabel">Uji Coba Cepat (Tiket Terdaftar di Database):</span>
+					<div class="quickTestChips" id="registeredQuickChips">
+						<!-- Populated from actual orders -->
+					</div>
+				</div>
+			</div>
+
+			<!-- PANEL 2: LIVE CAMERA SCANNER -->
+			<div class="modePanel" id="panelCamera">
+				<div class="panelIntro">
+					<h2 class="panelTitle">Pemindai Kamera Barcode</h2>
+					<p class="panelDesc">
+						Arahkan kamera smartphone atau webcam ke barcode tiket fisik maupun layar HP pengunjung untuk scan otomatis.
+					</p>
+				</div>
+
+				<div class="cameraViewfinderContainer">
+					<!-- Video element -->
+					<div class="videoWrapper">
+						<video id="cameraVideo" playsinline muted autoplay></video>
+						<canvas id="cameraProcessingCanvas" style="display:none;"></canvas>
+
+						<!-- Targeting Guide Overlay -->
+						<div class="targetingOverlay" id="cameraTargetingGuide">
+							<div class="targetingFrame">
+								<div class="cornerMarker c-tl"></div>
+								<div class="cornerMarker c-tr"></div>
+								<div class="cornerMarker c-bl"></div>
+								<div class="cornerMarker c-br"></div>
+								<div class="scannerLaserBeam"></div>
+								<span class="targetingText">Posisikan Barcode di Sini</span>
+							</div>
+						</div>
+
+						<!-- Camera Inactive / Permission Prompt State -->
+						<div class="cameraPlaceholder" id="cameraPlaceholder">
+							<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="rgba(183,169,124,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+								<circle cx="12" cy="13" r="4"></circle>
+							</svg>
+							<div style="font-weight: 600; font-size: 15px; color: #CFD4D0; margin-top: 12px;">Kamera Siap Diaktifkan</div>
+							<p style="font-size: 12px; color: rgba(207,212,208,0.7); max-width: 320px; line-height: 1.5; margin: 8px 0 16px 0;">
+								Klik tombol di bawah untuk membuka akses kamera gate dan mulai pemindaian barcode real-time.
+							</p>
+							<button type="button" class="btnStartCamera" onclick="startCameraScanner()">
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<polygon points="5 3 19 12 5 21 5 3"></polygon>
+								</svg>
+								<span>Mulai Scan Kamera</span>
+							</button>
+						</div>
+					</div>
+
+					<!-- Camera Controls Toolbar -->
+					<div class="cameraControlsRow" id="cameraControlsRow" style="display: none;">
+						<div class="cameraSelectWrapper">
+							<label for="cameraDeviceSelect" class="controlLabel">PILIH KAMERA:</label>
+							<select id="cameraDeviceSelect" class="cameraSelect" onchange="switchCameraDevice()">
+								<!-- Populated dynamically -->
+							</select>
+						</div>
+
+						<div class="cameraActionBtns">
+							<button type="button" class="btnControlIcon" id="btnTorchToggle" onclick="toggleCameraTorch()" title="Nyalakan Lampu Kilat / Senter">
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+								</svg>
+								<span id="torchLabel">Lampu Senter</span>
+							</button>
+
+							<button type="button" class="btnStopCamera" onclick="stopCameraScanner()">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<rect x="6" y="6" width="12" height="12"></rect>
+								</svg>
+								<span>Hentikan Kamera</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- PANEL 3: MANUAL & HARDWARE LASER SCANNER -->
+			<div class="modePanel" id="panelManual">
+				<div class="panelIntro">
+					<h2 class="panelTitle">Input Manual & Handheld Laser Scanner Gun</h2>
+					<p class="panelDesc">
+						Ketik Order ID tiket secara langsung atau gunakan alat pemindai barcode fisik USB / Bluetooth yang terhubung ke laptop/komputer gate.
+					</p>
+				</div>
+
+				<div class="manualCard">
+					<div class="manualInputGroup">
+						<div class="inputIconWrapper">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B7A97C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="2" y="4" width="20" height="16" rx="2"></rect>
+								<path d="M7 15h0M2 9.5h20"></path>
+							</svg>
+						</div>
+						<input type="text" id="manualTicketInput" class="manualInput" placeholder="Masukkan ID Pesanan (cth: HI-2026-123)" autofocus onkeydown="if(event.key==='Enter') executeManualVerification()">
+						<button type="button" class="btnVerifyManual" onclick="executeManualVerification()">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+								<polyline points="20 6 9 17 4 12"></polyline>
+							</svg>
+							<span>Verifikasi Tiket</span>
+						</button>
+					</div>
+
+					<div class="hardwareWedgeNotice">
+						<div class="wedgeNoticeHeader">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a8d58a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<circle cx="12" cy="12" r="10"></circle>
+								<polyline points="12 6 12 12 14 14"></polyline>
+							</svg>
+							<strong>Deteksi Otomatis Handheld Scanner (USB / Wireless) Aktif</strong>
+						</div>
+						<p>
+							Anda dapat langsung menembakkan scanner laser USB / Bluetooth ke tiket kapan saja di halaman ini tanpa perlu mengklik kotak input terlebih dahulu.
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- RIGHT COLUMN: VERIFICATION RESULT DISPLAY & WRISTBAND INSTRUCTIONS -->
+		<section class="scannerResultCol">
+			<div class="resultCardWrapper">
+				<div class="resultCardHeader">
+					<div class="resultCardTitleRow">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B7A97C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+						</svg>
+						<h3 class="resultCardTitle">STATUS VERIFIKASI TIKET & GELANG</h3>
+					</div>
+					<div class="scanTimePill" id="lastScanTime">Siap Memindai</div>
+				</div>
+
+				<!-- Verification Result Body with Dynamic State -->
+				<div class="resultCardBody" id="verificationResultBox">
+					<!-- State 0: STANDBY -->
+					<div class="stateStandby" id="stateStandby">
+						<div class="standbyGraphic">
+							<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(183,169,124,0.4)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+								<line x1="7" y1="8" x2="7" y2="16"></line>
+								<line x1="10" y1="8" x2="10" y2="16"></line>
+								<line x1="13" y1="8" x2="13" y2="16"></line>
+								<line x1="17" y1="8" x2="17" y2="16"></line>
+								<line x1="3" y1="12" x2="21" y2="12"></line>
+							</svg>
+						</div>
+						<h4 class="standbyTitle">Menunggu Pemindaian Tiket</h4>
+						<p class="standbyDesc">
+							Silakan pilih file PDF tiket tamu di sebelah kiri, arahkan barcode ke kamera, atau masukkan ID tiket untuk menampilkan verifikasi.
+						</p>
+					</div>
+
+					<!-- State 1: VALID TICKET (SUCCESS) -->
+					<div class="stateValid" id="stateValid" style="display: none;">
+						<div class="badgeStateBanner validBanner">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a8d58a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+								<polyline points="20 6 9 17 4 12"></polyline>
+							</svg>
+							<span>TIKET VALID — CHECK-IN BERHASIL</span>
+						</div>
+
+						<div class="wristbandInstructionCard">
+							<span class="wristbandLabel">INSTRUKSI PETUGAS PINTU GATE:</span>
+							<div class="wristbandCallout" id="validWristbandCallout">
+								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<circle cx="12" cy="12" r="10"></circle>
+									<polyline points="12 6 12 12 16 14"></polyline>
+								</svg>
+								<span id="validWristbandText">SERAHKAN WRISTBAND FESTIVAL STANDAR</span>
+							</div>
+						</div>
+
+						<div class="guestDetailsGrid">
+							<div class="detailRow">
+								<span class="detailLabel">NAMA PENGUNJUNG:</span>
+								<strong class="detailValue highlightName" id="validGuestName">-</strong>
+							</div>
+							<div class="detailRow">
+								<span class="detailLabel">KODE TIKET (ORDER ID):</span>
+								<strong class="detailValue codeValue" id="validOrderId">-</strong>
+							</div>
+							<div class="detailRow">
+								<span class="detailLabel">KATEGORI TIKET:</span>
+								<strong class="detailValue" id="validTierName">-</strong>
+							</div>
+							<div class="detailRow">
+								<span class="detailLabel">JUMLAH TIKET:</span>
+								<strong class="detailValue" id="validQty">-</strong>
+							</div>
+							<div class="detailRow">
+								<span class="detailLabel">STATUS PEMBAYARAN:</span>
+								<span class="badgePaid" id="validPayStatus">LUNAS</span>
+							</div>
+							<div class="detailRow">
+								<span class="detailLabel">NOMOR WHATSAPP:</span>
+								<span class="detailValue" id="validPhone">-</span>
+							</div>
+							<div class="detailRow">
+								<span class="detailLabel">WAKTU CHECK-IN GATE:</span>
+								<span class="detailValue" id="validCheckInTime">-</span>
+							</div>
+						</div>
+
+						<div class="resultCardActions">
+							<button type="button" class="btnUndoCheckIn" id="btnUndoCheckIn" onclick="undoCurrentCheckIn()">
+								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M3 2v6h6"></path>
+									<path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path>
+								</svg>
+								<span>Batalkan Check-in (Undo)</span>
+							</button>
+						</div>
+					</div>
+
+					<!-- State 2: ALREADY USED (WARNING) -->
+					<div class="stateAlreadyUsed" id="stateAlreadyUsed" style="display: none;">
+						<div class="badgeStateBanner warningBanner">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e6c35c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+								<line x1="12" y1="9" x2="12" y2="13"></line>
+								<line x1="12" y1="17" x2="12.01" y2="17"></line>
+							</svg>
+							<span>PERINGATAN: TIKET SUDAH PERNAH DIGUNAKAN!</span>
+						</div>
+
+						<div class="warningCalloutBox">
+							<div class="warningTitle">🚫 JANGAN SERAHKAN GELANG GANDA!</div>
+							<p class="warningDesc">
+								Barcode tiket ini telah di-scan dan divalidasi sebelumnya. Tiket hanya sah untuk 1 (satu) kali penukaran di pintu masuk festival.
+							</p>
+						</div>
+
+						<div class="guestDetailsGrid">
+							<div class="detailRow">
+								<span class="detailLabel">NAMA PENGUNJUNG:</span>
+								<strong class="detailValue" id="usedGuestName">-</strong>
+							</div>
+							<div class="detailRow">
+								<span class="detailLabel">KODE TIKET:</span>
+								<strong class="detailValue codeValue" id="usedOrderId">-</strong>
+							</div>
+							<div class="detailRow">
+								<span class="detailLabel">TELAH CHECK-IN PADA:</span>
+								<strong class="detailValue warningTimestamp" id="usedCheckInTime">-</strong>
+							</div>
+							<div class="detailRow">
+								<span class="detailLabel">KATEGORI TIKET:</span>
+								<span class="detailValue" id="usedTierName">-</span>
+							</div>
+						</div>
+
+						<div class="resultCardActions">
+							<button type="button" class="btnResetWarning" onclick="resetCurrentTicketStatus()">
+								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<polyline points="1 4 1 10 7 10"></polyline>
+									<path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+								</svg>
+								<span>Reset Status Check-In Tiket Ini</span>
+							</button>
+						</div>
+					</div>
+
+					<!-- State 3: NOT FOUND / INVALID (ERROR) -->
+					<div class="stateInvalid" id="stateInvalid" style="display: none;">
+						<div class="badgeStateBanner invalidBanner">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff7b7b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+								<circle cx="12" cy="12" r="10"></circle>
+								<line x1="15" y1="9" x2="9" y2="15"></line>
+								<line x1="9" y1="9" x2="15" y2="15"></line>
+							</svg>
+							<span>TIKET TIDAK DITEMUKAN / TIDAK VALID</span>
+						</div>
+
+						<div class="invalidCalloutBox">
+							<div class="invalidTitle">Barcode atau ID tidak terdaftar dalam basis data:</div>
+							<div class="invalidCodeSnippet" id="invalidCodeDisplay">-</div>
+							<p class="invalidDesc">
+								Pastikan pengunjung menunjukkan dokumen e-ticket resmi The Hidden Island Artfest 2026. Arahkan pengunjung ke <strong>Pos Helpdesk / OTS Gate 3</strong> untuk pengecekan bukti transfer manual.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<!-- BOTTOM SECTION: LIVE ACTIVITY SCAN LOG -->
+	<section class="activityLogSection">
+		<div class="activityLogHeader">
+			<div class="logHeaderLeft">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B7A97C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+				</svg>
+				<h3 class="logTitle">Log Riwayat Pemindaian Gate Terakhir</h3>
+				<span class="logCountBadge" id="logCountBadge">0 Tercatat</span>
+			</div>
+
+			<div class="logHeaderRight">
+				<input type="text" id="logSearchInput" class="logSearchInput" placeholder="Cari nama atau ID..." oninput="filterLogTable()">
+				<button type="button" class="btnExportLog" onclick="exportScanLogCSV()">
+					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+						<polyline points="7 10 12 15 17 10"></polyline>
+						<line x1="12" y1="15" x2="12" y2="3"></line>
+					</svg>
+					<span>Ekspor Log Hadir (CSV)</span>
+				</button>
+			</div>
+		</div>
+
+		<div class="logTableContainer">
+			<table class="logTable">
+				<thead>
+					<tr>
+						<th>WAKTU SCAN</th>
+						<th>POS GATE</th>
+						<th>KODE TIKET</th>
+						<th>NAMA PENGUNJUNG</th>
+						<th>KATEGORI</th>
+						<th>STATUS SCAN</th>
+						<th>GELANG WRISTBAND</th>
+						<th>AKSI</th>
+					</tr>
+				</thead>
+				<tbody id="logTableBody">
+					<!-- Populated by script.js -->
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+	<!-- TOAST NOTIFICATION -->
+	<div class="scannerToast" id="scannerToast">Notifikasi</div>
+
+	<!-- SCRIPTS -->
+	<script src="../shared/firebase-config.js?v=2026.7"></script>
+	<script src="../shared/cloud-store.js?v=2026.7"></script>
+	<script src="../shared/pdf.min.js?v=2026.7"></script>
+	<script src="../shared/zxing.min.js?v=2026.7"></script>
+	<script src="script.js?v=2026.7"></script>
+	<script src="../shared/cookie-consent.js?v=2026.7"></script>
+</body>
+</html>

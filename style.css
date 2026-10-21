@@ -441,138 +441,140 @@ body {
 }
 
 /* ============================================================
-   ABOUT CAROUSEL (Middle of Description)
+   FRAMELESS PHOTO GALLERY SHOWCASE (Dynamic Edge-to-Edge Stage)
    ============================================================ */
-.aboutCarousel {
+.framelessGalleryStage {
 	position: relative;
-	margin: 32px 0 36px 0;
+	margin: 36px 0 38px 0;
 	width: 100%;
-	border-radius: 18px;
+	border: none; /* Strictly no frame */
+	background: transparent;
 	overflow: hidden;
+	padding: 10px 0;
+	-webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+	mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
 }
 
-.carouselTrackWrapper {
-	overflow: hidden;
-	border-radius: 18px;
+.galleryTrackWrapper {
 	width: 100%;
+	overflow: visible;
 }
 
-.carouselTrack {
+.galleryTrack {
 	display: flex;
-	transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+	transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 	width: 100%;
+	will-change: transform;
 }
 
-.carouselSlide {
-	min-width: 100%;
+.gallerySlide {
+	min-width: 82%;
+	padding: 0 10px;
 	box-sizing: border-box;
+	transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease;
+	transform: scale(0.92);
+	opacity: 0.35;
+	filter: saturate(0.8);
 }
 
-.carouselPlaceholderBox {
+.gallerySlide.active {
+	transform: scale(1);
+	opacity: 1;
+	filter: none;
+}
+
+.framelessPlaceholderCard {
 	width: 100%;
-	height: 340px;
-	background: rgba(255, 255, 255, 0.06);
-	border: 1px solid rgba(255, 255, 255, 0.12);
-	border-radius: 18px;
+	height: 350px;
+	background: #2b302c; /* Blank smooth neutral gray */
+	border: none; /* STRICTLY NO FRAME */
+	outline: none;
+	border-radius: 16px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+	user-select: none;
+	transition: box-shadow 0.3s ease;
+}
+
+.framelessPlaceholderCard .placeholderText {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 15px;
+	font-weight: 500;
+	letter-spacing: 0.05em;
+	color: rgba(207, 212, 208, 0.65);
+	text-transform: lowercase;
+}
+
+/* Frameless Modern Controls Row (Floating Underneath) */
+.galleryControlsRow {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.25);
+	gap: 16px;
+	margin-top: 20px;
 }
 
-.carouselPlaceholderBox .placeholderText {
-	font-size: 16px;
-	letter-spacing: 0.04em;
-	color: rgba(207, 212, 208, 0.65);
-}
-
-.carouselArrow {
-	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
-	width: 44px;
-	height: 44px;
+.galleryNavArrow {
+	width: 38px;
+	height: 38px;
 	border-radius: 50%;
-	background: rgba(26, 29, 26, 0.85);
-	border: 1px solid rgba(183, 169, 124, 0.3);
-	color: #CFD4D0;
+	background: rgba(255, 255, 255, 0.06);
+	border: none;
+	color: rgba(207, 212, 208, 0.7);
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: background-color 0.2s, border-color 0.2s, transform 0.2s, color 0.2s;
-	z-index: 10;
-	backdrop-filter: blur(6px);
+	transition: background-color 0.2s, color 0.2s, transform 0.2s;
 }
 
-.carouselArrow:hover {
+.galleryNavArrow:hover {
 	background: #B7A97C;
 	color: #282B28;
-	border-color: #B7A97C;
-	transform: translateY(-50%) scale(1.08);
+	transform: scale(1.08);
 }
 
-.carouselArrow.prev {
-	left: 14px;
-}
-
-.carouselArrow.next {
-	right: 14px;
-}
-
-.carouselDots {
-	position: absolute;
-	bottom: 16px;
-	left: 50%;
-	transform: translateX(-50%);
+.galleryDotsList {
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	z-index: 10;
-	background: rgba(26, 29, 26, 0.65);
-	padding: 6px 12px;
-	border-radius: 9999px;
-	backdrop-filter: blur(4px);
 }
 
-.carouselDot {
+.galleryDotItem {
 	width: 8px;
 	height: 8px;
 	border-radius: 50%;
-	background: rgba(207, 212, 208, 0.35);
+	background: rgba(207, 212, 208, 0.3);
 	border: none;
 	cursor: pointer;
 	padding: 0;
-	transition: background-color 0.25s, width 0.25s;
+	transition: background-color 0.25s, width 0.25s, border-radius 0.25s;
 }
 
-.carouselDot.active {
+.galleryDotItem.active {
 	background: #B7A97C;
-	width: 22px;
+	width: 24px;
 	border-radius: 9999px;
 }
 
 @media (max-width: 768px) {
-	.carouselPlaceholderBox {
+	.framelessGalleryStage {
+		-webkit-mask-image: none;
+		mask-image: none;
+	}
+	.gallerySlide {
+		min-width: 88%;
+		padding: 0 6px;
+	}
+	.framelessPlaceholderCard {
 		height: 220px;
 	}
-	.carouselArrow {
-		width: 36px;
-		height: 36px;
-	}
-	.carouselArrow.prev {
-		left: 8px;
-	}
-	.carouselArrow.next {
-		right: 8px;
-	}
-	.placeholderItem.square {
-		width: 110px;
-		height: 65px;
-	}
-	.placeholderItem.circle {
-		width: 65px;
-		height: 65px;
+	.galleryNavArrow {
+		width: 34px;
+		height: 34px;
 	}
 }
 

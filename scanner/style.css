@@ -1,0 +1,1555 @@
+/* ============================================================
+   PEMINDAI BARCODE & E-TICKET PDF GATE SCANNER — STYLESHEET
+   The Hidden Island — Artfest Kolese Santo Yusup 2026
+   ============================================================ */
+
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+
+:root {
+	--bg-dark: #141715;
+	--bg-panel: rgba(26, 42, 39, 0.7);
+	--bg-card: rgba(33, 61, 58, 0.5);
+	--border-subtle: rgba(183, 169, 124, 0.22);
+	--border-accent: #B7A97C;
+	--text-light: #CFD4D0;
+	--text-muted: rgba(207, 212, 208, 0.65);
+	--text-gold: #B7A97C;
+	--accent-green: #a8d58a;
+	--accent-green-bg: rgba(0, 135, 90, 0.18);
+	--accent-green-border: rgba(168, 213, 138, 0.6);
+	--accent-yellow: #e6c35c;
+	--accent-yellow-bg: rgba(230, 195, 92, 0.16);
+	--accent-yellow-border: rgba(230, 195, 92, 0.6);
+	--accent-red: #ff7b7b;
+	--accent-red-bg: rgba(220, 60, 60, 0.18);
+	--accent-red-border: rgba(255, 123, 123, 0.6);
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	background-color: var(--bg-dark);
+	background: radial-gradient(circle at 85% 15%, #213D3A 0%, #131715 75%);
+	color: var(--text-light);
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	overflow-x: hidden;
+}
+
+/* ============================================================
+   1. HEADER NAVIGATION
+   ============================================================ */
+.scannerHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 28px;
+	background-color: rgba(18, 25, 23, 0.85);
+	backdrop-filter: blur(14px);
+	-webkit-backdrop-filter: blur(14px);
+	border-bottom: 1px solid var(--border-subtle);
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.headerLeft {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.brandLogoLink {
+	display: block;
+	transition: transform 0.2s;
+}
+
+.brandLogoLink:hover {
+	transform: scale(1.04);
+}
+
+.brandLogoImg {
+	height: 48px;
+	width: auto;
+	object-fit: contain;
+}
+
+.brandInfo {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.brandBadge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	color: var(--text-gold);
+	text-transform: uppercase;
+}
+
+.pulseDot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: #a8d58a;
+	box-shadow: 0 0 8px #a8d58a;
+	animation: pulseGlow 1.8s infinite;
+}
+
+@keyframes pulseGlow {
+	0%, 100% { opacity: 1; transform: scale(1); }
+	50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+.brandTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 20px;
+	font-weight: 800;
+	color: var(--text-light);
+	margin: 0;
+	letter-spacing: -0.01em;
+}
+
+.brandSubtitle {
+	font-size: 11px;
+	color: var(--text-muted);
+	margin: 0;
+}
+
+.headerRight {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.clockPill {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background-color: rgba(33, 61, 58, 0.4);
+	border: 1px solid var(--border-subtle);
+	padding: 7px 12px;
+	border-radius: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--text-light);
+	font-family: monospace;
+}
+
+.gateSelectorGroup {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background-color: rgba(33, 61, 58, 0.4);
+	border: 1px solid var(--border-subtle);
+	padding: 4px 10px;
+	border-radius: 6px;
+}
+
+.gateLabel {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	color: var(--text-gold);
+}
+
+.gateSelectInput {
+	background: transparent;
+	border: none;
+	color: var(--text-light);
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	outline: none;
+	padding: 2px 4px;
+}
+
+.gateSelectInput option {
+	background-color: #1a2320;
+	color: #CFD4D0;
+}
+
+.syncPill {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background-color: rgba(0, 135, 90, 0.2);
+	border: 1px solid rgba(168, 213, 138, 0.4);
+	color: #a8d58a;
+	padding: 6px 12px;
+	border-radius: 6px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.syncDot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background-color: #a8d58a;
+	box-shadow: 0 0 6px #a8d58a;
+}
+
+.iconHeaderBtn {
+	background-color: rgba(33, 61, 58, 0.5);
+	border: 1px solid var(--border-subtle);
+	color: var(--text-light);
+	padding: 8px;
+	border-radius: 6px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s;
+}
+
+.iconHeaderBtn:hover {
+	border-color: var(--border-accent);
+	color: var(--text-gold);
+	background-color: rgba(183, 169, 124, 0.15);
+}
+
+.btnNavSubseksi {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background-color: #B7A97C;
+	color: #161816;
+	text-decoration: none;
+	font-size: 12px;
+	font-weight: 700;
+	padding: 8px 14px;
+	border-radius: 6px;
+	transition: background-color 0.2s, transform 0.1s;
+}
+
+.btnNavSubseksi:hover {
+	background-color: #cbbe93;
+	transform: translateY(-1px);
+}
+
+/* ============================================================
+   2. ATTENDANCE METRICS BANNER
+   ============================================================ */
+.metricsBanner {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	background-color: rgba(22, 33, 31, 0.85);
+	border-bottom: 1px solid var(--border-subtle);
+	padding: 16px 28px;
+	flex-wrap: wrap;
+	gap: 16px;
+}
+
+.metricBlock {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.metricLabel {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	color: var(--text-gold);
+	text-transform: uppercase;
+}
+
+.metricValue {
+	font-family: 'Syne', sans-serif;
+	font-size: 26px;
+	font-weight: 800;
+	color: #ffffff;
+	line-height: 1.1;
+}
+
+.metricBlock.activeCount .metricValue {
+	color: #a8d58a;
+	text-shadow: 0 0 12px rgba(168, 213, 138, 0.35);
+}
+
+.metricSub {
+	font-size: 11px;
+	color: var(--text-muted);
+}
+
+.metricDivider {
+	width: 1px;
+	height: 40px;
+	background-color: rgba(183, 169, 124, 0.2);
+}
+
+.progressBlock {
+	min-width: 260px;
+	flex: 1;
+	max-width: 380px;
+}
+
+.progressHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 6px;
+}
+
+.progressPercent {
+	font-family: 'Syne', sans-serif;
+	font-weight: 800;
+	font-size: 14px;
+	color: #a8d58a;
+}
+
+.progressBarTrack {
+	width: 100%;
+	height: 8px;
+	background-color: rgba(33, 61, 58, 0.6);
+	border-radius: 99px;
+	overflow: hidden;
+	margin-bottom: 4px;
+	border: 1px solid rgba(183, 169, 124, 0.2);
+}
+
+.progressBarFill {
+	height: 100%;
+	background: linear-gradient(90deg, #157347, #a8d58a);
+	border-radius: 99px;
+	transition: width 0.4s ease;
+	box-shadow: 0 0 8px rgba(168, 213, 138, 0.6);
+}
+
+/* ============================================================
+   3. MAIN WORKSPACE LAYOUT (2 COLUMNS)
+   ============================================================ */
+.scannerMainLayout {
+	display: grid;
+	grid-template-columns: 1.25fr 1fr;
+	gap: 24px;
+	padding: 24px 28px;
+	max-width: 1560px;
+	margin: 0 auto;
+	width: 100%;
+	flex: 1;
+}
+
+/* LEFT COLUMN */
+.scannerInputCol {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.scannerModeTabs {
+	display: flex;
+	gap: 8px;
+	background-color: rgba(22, 33, 31, 0.6);
+	padding: 6px;
+	border-radius: 8px;
+	border: 1px solid var(--border-subtle);
+}
+
+.modeTabBtn {
+	flex: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 10px 14px;
+	border: none;
+	background: transparent;
+	color: var(--text-muted);
+	font-size: 12px;
+	font-weight: 700;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s;
+	white-space: nowrap;
+}
+
+.modeTabBtn:hover {
+	color: var(--text-light);
+	background-color: rgba(33, 61, 58, 0.4);
+}
+
+.modeTabBtn.active {
+	background-color: #213D3A;
+	color: #B7A97C;
+	border: 1px solid rgba(183, 169, 124, 0.4);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.modePanel {
+	display: none;
+	background-color: var(--bg-panel);
+	border: 1px solid var(--border-subtle);
+	border-radius: 10px;
+	padding: 24px;
+	box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+}
+
+.modePanel.active {
+	display: block;
+	animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; transform: translateY(6px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.panelIntro {
+	margin-bottom: 20px;
+}
+
+.panelTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 18px;
+	font-weight: 800;
+	color: var(--text-light);
+	margin: 0 0 6px 0;
+}
+
+.panelDesc {
+	font-size: 12px;
+	color: var(--text-muted);
+	line-height: 1.5;
+	margin: 0;
+}
+
+/* ============================================================
+   PANEL 1: PDF DROPZONE & PREVIEW
+   ============================================================ */
+.pdfDropzone {
+	border: 2px dashed rgba(183, 169, 124, 0.45);
+	background-color: rgba(26, 36, 33, 0.5);
+	border-radius: 10px;
+	padding: 32px 20px;
+	text-align: center;
+	cursor: pointer;
+	transition: all 0.25s ease;
+	position: relative;
+	overflow: hidden;
+}
+
+.pdfDropzone:hover, .pdfDropzone.dragover {
+	border-color: #B7A97C;
+	background-color: rgba(33, 61, 58, 0.45);
+	box-shadow: 0 0 24px rgba(183, 169, 124, 0.2);
+}
+
+.dropzoneIcon {
+	margin-bottom: 12px;
+	display: inline-block;
+	animation: bounceSoft 2.5s infinite;
+}
+
+@keyframes bounceSoft {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-5px); }
+}
+
+.dropzoneTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 17px;
+	font-weight: 700;
+	color: #ffffff;
+	margin: 0 0 6px 0;
+}
+
+.dropzoneHint {
+	font-size: 12px;
+	color: var(--text-muted);
+	margin: 0 0 18px 0;
+}
+
+.dropzoneHint strong {
+	color: var(--text-light);
+}
+
+.dropzoneActions {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
+
+.btnSelectFile {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background-color: #B7A97C;
+	color: #141715;
+	font-size: 13px;
+	font-weight: 700;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background-color 0.2s, transform 0.1s;
+}
+
+.btnSelectFile:hover {
+	background-color: #cbbe93;
+	transform: translateY(-1px);
+}
+
+.pasteHint {
+	font-size: 11px;
+	color: rgba(207, 212, 208, 0.5);
+}
+
+.pasteHint strong {
+	color: var(--text-gold);
+}
+
+/* Spinner */
+.dropzoneLoading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 14px;
+	padding: 30px;
+}
+
+.scannerSpinner {
+	width: 44px;
+	height: 44px;
+	border: 3px solid rgba(183, 169, 124, 0.2);
+	border-top-color: #B7A97C;
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+
+.loadingText {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text-gold);
+}
+
+/* PDF Preview Box */
+.pdfPreviewContainer {
+	text-align: left;
+}
+
+.previewHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-bottom: 12px;
+	margin-bottom: 12px;
+	border-bottom: 1px solid var(--border-subtle);
+}
+
+.previewFileMeta {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #ffffff;
+}
+
+.previewFileSize {
+	font-size: 11px;
+	color: var(--text-muted);
+	font-weight: 400;
+}
+
+.btnResetFile {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	background: transparent;
+	border: 1px solid rgba(255, 123, 123, 0.4);
+	color: #ff7b7b;
+	padding: 5px 10px;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.btnResetFile:hover {
+	background-color: rgba(255, 123, 123, 0.15);
+}
+
+.previewCanvasWrapper {
+	position: relative;
+	background-color: #ffffff;
+	border-radius: 6px;
+	overflow: hidden;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	max-height: 380px;
+}
+
+#pdfRenderCanvas {
+	max-width: 100%;
+	max-height: 380px;
+	object-fit: contain;
+	display: block;
+}
+
+.barcodeScanReticle {
+	position: absolute;
+	bottom: 24px;
+	width: 82%;
+	height: 64px;
+	border: 2px solid #a8d58a;
+	box-shadow: 0 0 16px rgba(168, 213, 138, 0.6);
+	border-radius: 4px;
+	pointer-events: none;
+	animation: pulseReticle 2s infinite;
+}
+
+@keyframes pulseReticle {
+	0%, 100% { border-color: #a8d58a; box-shadow: 0 0 16px rgba(168, 213, 138, 0.6); }
+	50% { border-color: #B7A97C; box-shadow: 0 0 24px rgba(183, 169, 124, 0.8); }
+}
+
+.reticleLaser {
+	width: 100%;
+	height: 2px;
+	background-color: #a8d58a;
+	box-shadow: 0 0 8px #a8d58a;
+	position: absolute;
+	top: 0;
+	animation: laserSweep 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes laserSweep {
+	0% { top: 4px; }
+	100% { top: 56px; }
+}
+
+.reticleLabel {
+	position: absolute;
+	top: -20px;
+	left: 8px;
+	background-color: #141715;
+	color: #a8d58a;
+	font-size: 10px;
+	font-weight: 700;
+	padding: 2px 6px;
+	border-radius: 3px;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+}
+
+/* Quick Test Chips */
+.quickTestRow {
+	margin-top: 18px;
+	padding-top: 14px;
+	border-top: 1px solid var(--border-subtle);
+}
+
+.quickTestLabel {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	color: var(--text-gold);
+	text-transform: uppercase;
+	display: block;
+	margin-bottom: 8px;
+}
+
+.quickTestChips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.quickChip {
+	background-color: rgba(33, 61, 58, 0.45);
+	border: 1px solid var(--border-subtle);
+	color: var(--text-light);
+	font-size: 11px;
+	font-weight: 600;
+	padding: 5px 10px;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.quickChip:hover {
+	border-color: var(--border-accent);
+	color: var(--text-gold);
+	background-color: rgba(183, 169, 124, 0.2);
+}
+
+.quickChip.isDone {
+	opacity: 0.55;
+	border-style: dashed;
+}
+
+/* ============================================================
+   PANEL 2: LIVE CAMERA SCANNER
+   ============================================================ */
+.cameraViewfinderContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.videoWrapper {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	max-height: 420px;
+	background-color: #0b0e0c;
+	border-radius: 8px;
+	overflow: hidden;
+	border: 1px solid var(--border-subtle);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#cameraVideo {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.targetingOverlay {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+}
+
+.targetingFrame {
+	width: 78%;
+	height: 60%;
+	position: relative;
+	border: 1px dashed rgba(183, 169, 124, 0.35);
+	border-radius: 8px;
+	box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+}
+
+.cornerMarker {
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-color: #B7A97C;
+	border-style: solid;
+}
+
+.c-tl { top: -2px; left: -2px; border-width: 3px 0 0 3px; border-top-left-radius: 6px; }
+.c-tr { top: -2px; right: -2px; border-width: 3px 3px 0 0; border-top-right-radius: 6px; }
+.c-bl { bottom: -2px; left: -2px; border-width: 0 0 3px 3px; border-bottom-left-radius: 6px; }
+.c-br { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; border-bottom-right-radius: 6px; }
+
+.scannerLaserBeam {
+	width: 100%;
+	height: 2px;
+	background-color: #a8d58a;
+	box-shadow: 0 0 10px #a8d58a, 0 0 20px #a8d58a;
+	position: absolute;
+	top: 10px;
+	animation: laserSweepCamera 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes laserSweepCamera {
+	0% { top: 5%; opacity: 0.8; }
+	100% { top: 92%; opacity: 1; }
+}
+
+.targetingText {
+	position: absolute;
+	bottom: -28px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	color: #B7A97C;
+	background-color: rgba(18, 25, 23, 0.8);
+	padding: 3px 10px;
+	border-radius: 4px;
+	white-space: nowrap;
+	text-transform: uppercase;
+}
+
+.cameraPlaceholder {
+	position: absolute;
+	inset: 0;
+	background-color: rgba(18, 25, 23, 0.95);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 24px;
+	z-index: 10;
+}
+
+.btnStartCamera {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background-color: #B7A97C;
+	color: #141715;
+	font-size: 13px;
+	font-weight: 700;
+	padding: 11px 22px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background-color 0.2s, transform 0.1s;
+}
+
+.btnStartCamera:hover {
+	background-color: #cbbe93;
+	transform: scale(1.02);
+}
+
+.cameraControlsRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	flex-wrap: wrap;
+	padding: 10px 14px;
+	background-color: rgba(22, 33, 31, 0.6);
+	border: 1px solid var(--border-subtle);
+	border-radius: 6px;
+}
+
+.cameraSelectWrapper {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.controlLabel {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	color: var(--text-gold);
+}
+
+.cameraSelect {
+	background-color: rgba(33, 61, 58, 0.5);
+	border: 1px solid var(--border-subtle);
+	color: var(--text-light);
+	padding: 6px 10px;
+	border-radius: 4px;
+	font-size: 12px;
+	outline: none;
+}
+
+.cameraActionBtns {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.btnControlIcon {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background-color: rgba(33, 61, 58, 0.5);
+	border: 1px solid var(--border-subtle);
+	color: var(--text-light);
+	padding: 6px 12px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.btnControlIcon.active {
+	background-color: #B7A97C;
+	color: #141715;
+	border-color: #B7A97C;
+}
+
+.btnStopCamera {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background-color: rgba(180, 40, 40, 0.2);
+	border: 1px solid rgba(255, 123, 123, 0.4);
+	color: #ff7b7b;
+	padding: 6px 12px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.btnStopCamera:hover {
+	background-color: rgba(180, 40, 40, 0.4);
+}
+
+/* ============================================================
+   PANEL 3: MANUAL & HARDWARE LASER SCANNER
+   ============================================================ */
+.manualCard {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.manualInputGroup {
+	display: flex;
+	gap: 8px;
+	position: relative;
+}
+
+.inputIconWrapper {
+	position: absolute;
+	left: 14px;
+	top: 50%;
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+.manualInput {
+	flex: 1;
+	background-color: rgba(18, 25, 23, 0.85);
+	border: 1px solid var(--border-subtle);
+	color: #ffffff;
+	font-size: 15px;
+	font-weight: 600;
+	padding: 12px 14px 12px 46px;
+	border-radius: 6px;
+	outline: none;
+	transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.manualInput:focus {
+	border-color: var(--border-accent);
+	box-shadow: 0 0 12px rgba(183, 169, 124, 0.25);
+}
+
+.btnVerifyManual {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background-color: #B7A97C;
+	color: #141715;
+	font-size: 13px;
+	font-weight: 700;
+	padding: 0 20px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background-color 0.2s, transform 0.1s;
+	white-space: nowrap;
+}
+
+.btnVerifyManual:hover {
+	background-color: #cbbe93;
+	transform: translateY(-1px);
+}
+
+.hardwareWedgeNotice {
+	background-color: rgba(33, 61, 58, 0.35);
+	border: 1px solid rgba(168, 213, 138, 0.3);
+	border-radius: 6px;
+	padding: 14px 16px;
+}
+
+.wedgeNoticeHeader {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #a8d58a;
+	font-size: 13px;
+	margin-bottom: 6px;
+}
+
+.hardwareWedgeNotice p {
+	font-size: 12px;
+	color: var(--text-muted);
+	line-height: 1.5;
+	margin: 0;
+}
+
+/* ============================================================
+   4. RIGHT COLUMN: VERIFICATION RESULT CARD
+   ============================================================ */
+.scannerResultCol {
+	display: flex;
+	flex-direction: column;
+}
+
+.resultCardWrapper {
+	background-color: var(--bg-panel);
+	border: 1px solid var(--border-subtle);
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+	display: flex;
+	flex-direction: column;
+	min-height: 480px;
+}
+
+.resultCardHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	background-color: rgba(22, 33, 31, 0.7);
+	border-bottom: 1px solid var(--border-subtle);
+}
+
+.resultCardTitleRow {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.resultCardTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 14px;
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	color: var(--text-gold);
+	margin: 0;
+}
+
+.scanTimePill {
+	font-size: 11px;
+	color: var(--text-muted);
+	font-family: monospace;
+	background-color: rgba(33, 61, 58, 0.4);
+	padding: 4px 8px;
+	border-radius: 4px;
+}
+
+.resultCardBody {
+	padding: 24px;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+/* STATE 0: STANDBY */
+.stateStandby {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	padding: 40px 20px;
+}
+
+.standbyGraphic {
+	margin-bottom: 16px;
+}
+
+.standbyTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 18px;
+	font-weight: 700;
+	color: #ffffff;
+	margin: 0 0 8px 0;
+}
+
+.standbyDesc {
+	font-size: 13px;
+	color: var(--text-muted);
+	max-width: 380px;
+	line-height: 1.5;
+	margin: 0;
+}
+
+/* STATE BANNERS */
+.badgeStateBanner {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	padding: 14px 18px;
+	border-radius: 8px;
+	font-family: 'Syne', sans-serif;
+	font-size: 16px;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.validBanner {
+	background-color: var(--accent-green-bg);
+	border: 1px solid var(--accent-green-border);
+	color: var(--accent-green);
+	box-shadow: 0 0 20px rgba(168, 213, 138, 0.2);
+}
+
+.warningBanner {
+	background-color: var(--accent-yellow-bg);
+	border: 1px solid var(--accent-yellow-border);
+	color: var(--accent-yellow);
+	box-shadow: 0 0 20px rgba(230, 195, 92, 0.2);
+}
+
+.invalidBanner {
+	background-color: var(--accent-red-bg);
+	border: 1px solid var(--accent-red-border);
+	color: var(--accent-red);
+	box-shadow: 0 0 20px rgba(255, 123, 123, 0.2);
+}
+
+/* WRISTBAND CALLOUT */
+.wristbandInstructionCard {
+	background: linear-gradient(135deg, rgba(33, 61, 58, 0.8), rgba(21, 32, 30, 0.9));
+	border: 1px solid var(--border-accent);
+	border-radius: 8px;
+	padding: 16px;
+	margin-bottom: 20px;
+}
+
+.wristbandLabel {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	color: var(--text-gold);
+	text-transform: uppercase;
+	display: block;
+	margin-bottom: 8px;
+}
+
+.wristbandCallout {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	color: #ffffff;
+	font-family: 'Syne', sans-serif;
+	font-size: 16px;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+}
+
+/* GUEST DETAILS GRID */
+.guestDetailsGrid {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	background-color: rgba(18, 25, 23, 0.6);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	padding: 16px;
+	margin-bottom: 20px;
+}
+
+.detailRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-bottom: 8px;
+	border-bottom: 1px solid rgba(183, 169, 124, 0.12);
+}
+
+.detailRow:last-child {
+	padding-bottom: 0;
+	border-bottom: none;
+}
+
+.detailLabel {
+	font-size: 11px;
+	color: var(--text-muted);
+	font-weight: 600;
+}
+
+.detailValue {
+	font-size: 13px;
+	color: var(--text-light);
+	font-weight: 600;
+}
+
+.highlightName {
+	font-size: 15px;
+	font-weight: 700;
+	color: #ffffff;
+}
+
+.codeValue {
+	font-family: monospace;
+	color: var(--text-gold);
+	font-size: 14px;
+}
+
+.badgePaid {
+	background-color: rgba(0, 135, 90, 0.25);
+	border: 1px solid #a8d58a;
+	color: #a8d58a;
+	font-size: 11px;
+	font-weight: 700;
+	padding: 2px 8px;
+	border-radius: 4px;
+}
+
+.warningTimestamp {
+	color: #e6c35c;
+}
+
+/* WARNING & INVALID CALLOUTS */
+.warningCalloutBox {
+	background-color: rgba(180, 140, 40, 0.15);
+	border: 1px solid #e6c35c;
+	border-radius: 6px;
+	padding: 14px 16px;
+	margin-bottom: 18px;
+}
+
+.warningTitle {
+	font-size: 14px;
+	font-weight: 800;
+	color: #e6c35c;
+	margin-bottom: 4px;
+}
+
+.warningDesc {
+	font-size: 12px;
+	color: rgba(207, 212, 208, 0.85);
+	line-height: 1.5;
+	margin: 0;
+}
+
+.invalidCalloutBox {
+	background-color: rgba(180, 40, 40, 0.15);
+	border: 1px solid #ff7b7b;
+	border-radius: 6px;
+	padding: 18px;
+	text-align: center;
+}
+
+.invalidTitle {
+	font-size: 13px;
+	color: #CFD4D0;
+	margin-bottom: 8px;
+}
+
+.invalidCodeSnippet {
+	font-family: monospace;
+	font-size: 18px;
+	font-weight: 700;
+	color: #ff7b7b;
+	background-color: rgba(0, 0, 0, 0.35);
+	padding: 8px;
+	border-radius: 4px;
+	margin-bottom: 12px;
+	border: 1px dashed rgba(255, 123, 123, 0.4);
+}
+
+.invalidDesc {
+	font-size: 12px;
+	color: rgba(207, 212, 208, 0.7);
+	line-height: 1.5;
+	margin: 0;
+}
+
+/* ACTIONS */
+.resultCardActions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+.btnUndoCheckIn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background: transparent;
+	border: 1px solid rgba(255, 123, 123, 0.4);
+	color: #ff7b7b;
+	padding: 8px 14px;
+	border-radius: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.btnUndoCheckIn:hover {
+	background-color: rgba(255, 123, 123, 0.15);
+}
+
+.btnResetWarning {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background-color: rgba(180, 140, 40, 0.2);
+	border: 1px solid #e6c35c;
+	color: #e6c35c;
+	padding: 8px 14px;
+	border-radius: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.btnResetWarning:hover {
+	background-color: rgba(180, 140, 40, 0.35);
+}
+
+/* ============================================================
+   5. BOTTOM ACTIVITY LOG TABLE
+   ============================================================ */
+.activityLogSection {
+	background-color: var(--bg-panel);
+	border-top: 1px solid var(--border-subtle);
+	padding: 24px 28px;
+	margin-top: 12px;
+}
+
+.activityLogHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.logHeaderLeft {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.logTitle {
+	font-family: 'Syne', sans-serif;
+	font-size: 16px;
+	font-weight: 800;
+	color: var(--text-light);
+	margin: 0;
+}
+
+.logCountBadge {
+	font-size: 11px;
+	background-color: rgba(33, 61, 58, 0.5);
+	border: 1px solid var(--border-subtle);
+	color: var(--text-gold);
+	padding: 2px 8px;
+	border-radius: 4px;
+}
+
+.logHeaderRight {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.logSearchInput {
+	background-color: rgba(18, 25, 23, 0.7);
+	border: 1px solid var(--border-subtle);
+	color: #ffffff;
+	font-size: 12px;
+	padding: 7px 12px;
+	border-radius: 6px;
+	outline: none;
+	width: 200px;
+}
+
+.logSearchInput:focus {
+	border-color: var(--border-accent);
+}
+
+.btnExportLog {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background-color: rgba(33, 61, 58, 0.5);
+	border: 1px solid var(--border-subtle);
+	color: var(--text-light);
+	font-size: 12px;
+	font-weight: 600;
+	padding: 7px 14px;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.btnExportLog:hover {
+	border-color: var(--border-accent);
+	color: var(--text-gold);
+}
+
+.logTableContainer {
+	overflow-x: auto;
+	border-radius: 8px;
+	border: 1px solid var(--border-subtle);
+}
+
+.logTable {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 12px;
+	text-align: left;
+}
+
+.logTable th {
+	background-color: rgba(18, 25, 23, 0.9);
+	color: var(--text-gold);
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	padding: 12px 14px;
+	border-bottom: 1px solid var(--border-subtle);
+	white-space: nowrap;
+}
+
+.logTable td {
+	padding: 12px 14px;
+	border-bottom: 1px solid rgba(183, 169, 124, 0.1);
+	color: var(--text-light);
+	white-space: nowrap;
+}
+
+.logTable tr:hover {
+	background-color: rgba(33, 61, 58, 0.25);
+}
+
+.statusPill {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 3px 8px;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 700;
+}
+
+.statusPill.valid {
+	background-color: rgba(0, 135, 90, 0.25);
+	color: #a8d58a;
+	border: 1px solid rgba(168, 213, 138, 0.4);
+}
+
+.statusPill.duplicate {
+	background-color: rgba(230, 195, 92, 0.2);
+	color: #e6c35c;
+	border: 1px solid rgba(230, 195, 92, 0.4);
+}
+
+.statusPill.invalid {
+	background-color: rgba(220, 60, 60, 0.2);
+	color: #ff7b7b;
+	border: 1px solid rgba(255, 123, 123, 0.4);
+}
+
+.btnTableAction {
+	background: none;
+	border: 1px solid var(--border-subtle);
+	color: var(--text-light);
+	font-size: 11px;
+	padding: 3px 8px;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.btnTableAction:hover {
+	border-color: #ff7b7b;
+	color: #ff7b7b;
+}
+
+/* ============================================================
+   6. TOAST NOTIFICATION
+   ============================================================ */
+.scannerToast {
+	position: fixed;
+	bottom: 24px;
+	right: 24px;
+	background-color: #213D3A;
+	color: #CFD4D0;
+	border: 1px solid #B7A97C;
+	padding: 12px 20px;
+	border-radius: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+	opacity: 0;
+	transform: translateY(20px);
+	pointer-events: none;
+	transition: opacity 0.25s ease, transform 0.25s ease;
+	z-index: 99999;
+}
+
+.scannerToast.show {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* ============================================================
+   7. RESPONSIVE BREAKPOINTS
+   ============================================================ */
+@media (max-width: 1024px) {
+	.scannerMainLayout {
+		grid-template-columns: 1fr;
+	}
+
+	.metricsBanner {
+		justify-content: flex-start;
+	}
+
+	.metricDivider {
+		display: none;
+	}
+}
+
+@media (max-width: 680px) {
+	.scannerHeader {
+		padding: 12px 16px;
+	}
+
+	.brandTitle {
+		font-size: 17px;
+	}
+
+	.metricsBanner {
+		padding: 12px 16px;
+		gap: 12px;
+	}
+
+	.metricValue {
+		font-size: 22px;
+	}
+
+	.scannerMainLayout {
+		padding: 16px;
+	}
+
+	.modeTabBtn {
+		font-size: 11px;
+		padding: 8px 10px;
+	}
+
+	.modePanel {
+		padding: 16px;
+	}
+}

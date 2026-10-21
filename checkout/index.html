@@ -12,7 +12,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="style.css?v=2026.7">
 </head>
 <body>
 	<div class="checkoutContainer">
@@ -134,7 +134,19 @@
 
 				<!-- Contact Section -->
 				<div class="checkoutSection">
-					<label class="sectionHeading">Contact</label>
+					<label class="sectionHeading">Contact & Data Pemesan</label>
+
+					<!-- Invisible honeypot field for bot/spam prevention -->
+					<div style="display:none !important; visibility:hidden; position:absolute; left:-9999px;" aria-hidden="true">
+						<input type="text" id="checkoutHoneypot" name="user_bot_check" tabindex="-1" autocomplete="off">
+					</div>
+
+					<div class="inputFieldWrapper" style="margin-bottom: 14px;">
+						<label for="contactName" class="floatingLabel">Nama Lengkap</label>
+						<input type="text" id="contactName" class="stripeInput" placeholder="Nama Lengkap Sesuai KTP / Kartu Pelajar" autocomplete="name" required>
+						<p class="checkoutFieldError" id="checkoutNameError" style="display: none;">Nama tidak valid. Masukkan nama lengkap asli (bukan huruf acak).</p>
+					</div>
+
 					<div class="inputFieldWrapper">
 						<label for="contactEmail" class="floatingLabel">Email</label>
 						<input type="email" id="contactEmail" class="stripeInput" placeholder="nama@email.com" autocomplete="email" required>
@@ -473,11 +485,11 @@
 		</div>
 	</dialog>
 
-	<script src="../shared/firebase-config.js?v=2026.6"></script>
-	<script src="../shared/cloud-store.js?v=2026.6"></script>
-	<script src="../shared/jsbarcode.min.js?v=2026.6"></script>
-	<script src="../shared/jspdf.umd.min.js?v=2026.6"></script>
-	<script src="script.js?v=2026.6"></script>
-	<script src="../shared/cookie-consent.js?v=2026.6"></script>
+	<script src="../shared/firebase-config.js?v=2026.7"></script>
+	<script src="../shared/cloud-store.js?v=2026.7"></script>
+	<script src="../shared/jsbarcode.min.js?v=2026.7"></script>
+	<script src="../shared/jspdf.umd.min.js?v=2026.7"></script>
+	<script src="script.js?v=2026.7"></script>
+	<script src="../shared/cookie-consent.js?v=2026.7"></script>
 </body>
 </html>

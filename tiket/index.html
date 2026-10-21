@@ -12,7 +12,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="style.css?v=2026.7">
 </head>
 <body>
 	<!-- Fixed Navbar: Sits transparent at the top, stays in place with a shadow and shade when scrolling -->
@@ -168,8 +168,14 @@
 
 						<!-- Row 3: Customer Inputs nested inside card with Real-time Security Validation -->
 						<div class="detailsInputs">
+							<!-- Invisible honeypot field for bot/spam prevention -->
+							<div style="display:none !important; visibility:hidden; position:absolute; left:-9999px;" aria-hidden="true">
+								<input type="text" id="custHoneypot" name="user_bot_check" tabindex="-1" autocomplete="off">
+							</div>
+
 							<div class="inputField">
-								<input type="text" id="custName" class="nestedInput" placeholder="Nama Lengkap" autocomplete="name" required>
+								<input type="text" id="custName" class="nestedInput" placeholder="Nama Lengkap (Sesuai KTP / Kartu Pelajar)" autocomplete="name" required>
+								<span class="fieldErrorText" id="nameError">Nama tidak valid. Masukkan nama lengkap asli (bukan huruf acak).</span>
 							</div>
 							<div class="inputRow">
 								<div class="inputCol">
@@ -273,8 +279,8 @@
 		</div>
 	</footer>
 
-	<script src="../shared/firebase-config.js?v=2026.6"></script>
-	<script src="../shared/cloud-store.js?v=2026.6"></script>
+	<script src="../shared/firebase-config.js?v=2026.7"></script>
+	<script src="../shared/cloud-store.js?v=2026.7"></script>
 	<script>
 		const DEFAULT_TICKET_CONFIG = {
 			presale1: {
@@ -503,53 +509,160 @@
 			document.getElementById('btnTotalPrice').textContent = formattedTotal;
 		}
 
-		// Security Validation for Real Email and WhatsApp Phone Number
-		const VALID_EMAIL_TLDS = new Set([
-			"com", "net", "org", "edu", "gov", "mil", "int", "id", "co.id", "ac.id", "sch.id", "go.id", "or.id", "web.id", "biz.id", "my.id",
-			"io", "co", "ai", "me", "info", "biz", "app", "dev", "tech", "online", "site", "store", "cloud", "digital", "global", "xyz", "live", "pro", "asia", "club", "space", "tv", "cc", "us", "uk", "co.uk", "de", "fr", "jp", "sg", "au", "my", "nl", "ca", "ch", "se", "no", "es", "it"
+		// ============================================================
+		// STRICT ANTI-SPAM & REAL DATA VALIDATION ENGINE
+		// ============================================================
+		const TRUSTED_EMAIL_DOMAINS = new Set([
+			"gmail.com", "googlemail.com",
+			"yahoo.com", "yahoo.co.id", "ymail.com", "rocketmail.com",
+			"outlook.com", "hotmail.com", "live.com", "msn.com", "outlook.co.id",
+			"icloud.com", "me.com", "mac.com",
+			"proton.me", "protonmail.com",
+			"zoho.com", "mail.com", "aol.com", "gmx.com"
 		]);
 
+		const TRUSTED_INSTITUTIONAL_SUFFIXES = [
+			".sch.id", ".ac.id", ".edu", ".go.id", ".or.id", ".co.id"
+		];
+
+		const VALID_ID_MOBILE_PREFIXES = new Set([
+			"0811", "0812", "0813", "0821", "0822", "0823", "0851", "0852", "0853",
+			"0814", "0815", "0816", "0855", "0856", "0857", "0858",
+			"0817", "0818", "0819", "0859", "0877", "0878",
+			"0831", "0832", "0833", "0838",
+			"0881", "0882", "0883", "0884", "0885", "0886", "0887", "0888", "0889",
+			"0895", "0896", "0897", "0898", "0899"
+		]);
+
+		const SPAM_NAMES = new Set([
+			"test", "testing", "tester", "admin", "administrator", "asdf", "asdfgh", "qwerty", "zxcv",
+			"fake", "dummy", "spam", "user", "pengunjung", "anonim", "anonymous", "none", "null", "undefined"
+		]);
+
+		function isValidName(name) {
+			if (!name || typeof name !== "string") return { valid: false, reason: "Nama lengkap wajib diisi." };
+			const trimmed = name.trim();
+
+			if (trimmed.length < 3) {
+				return { valid: false, reason: "Nama terlalu pendek (minimal 3 karakter)." };
+			}
+			if (trimmed.length > 50) {
+				return { valid: false, reason: "Nama terlalu panjang (maksimal 50 karakter)." };
+			}
+			if (!/^[a-zA-Z\s'’.\-]+$/.test(trimmed)) {
+				return { valid: false, reason: "Nama hanya boleh berisi huruf dan spasi." };
+			}
+
+			const lower = trimmed.toLowerCase();
+			if (SPAM_NAMES.has(lower)) {
+				return { valid: false, reason: "Gunakan nama asli (bukan nama percobaan)." };
+			}
+
+			// Must contain vowels
+			if (!/[aeiouyAEIOUY]/.test(trimmed)) {
+				return { valid: false, reason: "Nama tidak valid (tidak memiliki huruf vokal)." };
+			}
+
+			// Block 5+ consecutive consonants (blocks keyboard mash like hsfkjbjwri)
+			if (/[bcdfghjklmnpqrstvwxz]{5,}/i.test(trimmed)) {
+				return { valid: false, reason: "Nama terdeteksi acak/keyboard smash." };
+			}
+
+			// Block repetitive identical letters like 'aaaa'
+			if (/([a-zA-Z])\1{2,}/i.test(trimmed)) {
+				return { valid: false, reason: "Nama mengandung pengulangan huruf yang tidak wajar." };
+			}
+
+			return { valid: true };
+		}
+
 		function isValidEmail(email) {
-			if (!email || typeof email !== "string") return false;
+			if (!email || typeof email !== "string") return { valid: false, reason: "Alamat email wajib diisi." };
 			const trimmed = email.trim().toLowerCase();
-			const emailRegex = /^[a-z0-9._%+-]+@([a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,})$/;
+			const emailRegex = /^[a-z0-9._%+-]+@([a-z0-9.-]+\.[a-z]{2,})$/;
 			const match = trimmed.match(emailRegex);
-			if (!match) return false;
-			
-			const domain = match[1];
-			const parts = domain.split(".");
-			if (parts.length < 2) return false;
-			
-			const sld = parts[parts.length - 2];
-			if (sld.length < 2) return false;
+			if (!match) return { valid: false, reason: "Format email tidak valid (contoh: nama@gmail.com)." };
 
-			const tld1 = parts[parts.length - 1];
-			const tld2 = parts.length >= 2 ? `${parts[parts.length - 2]}.${parts[parts.length - 1]}` : "";
+			const [localPart, domain] = trimmed.split("@");
 
-			return VALID_EMAIL_TLDS.has(tld1) || VALID_EMAIL_TLDS.has(tld2);
+			if (localPart.length < 3 || localPart.length > 50) {
+				return { valid: false, reason: "Username email terlalu pendek atau tidak wajar." };
+			}
+
+			// Block 5+ consecutive consonants in username (blocks keysmash like jsbgeougr)
+			if (/[bcdfghjklmnpqrstvwxyz]{5,}/.test(localPart)) {
+				return { valid: false, reason: "Username email terdeteksi acak/tidak wajar." };
+			}
+
+			const isTrustedProvider = TRUSTED_EMAIL_DOMAINS.has(domain);
+			const isTrustedSuffix = TRUSTED_INSTITUTIONAL_SUFFIXES.some(suffix => {
+				if (!domain.endsWith(suffix)) return false;
+				const prefix = domain.slice(0, domain.length - suffix.length);
+				return prefix.length >= 2 && !/[bcdfghjklmnpqrstvwxyz]{5,}/.test(prefix);
+			});
+
+			if (!isTrustedProvider && !isTrustedSuffix) {
+				return { 
+					valid: false, 
+					reason: "Gunakan penyedia email resmi (@gmail.com, @yahoo.com, @outlook.com, dll. atau email sekolah/kampus .sch.id / .ac.id)." 
+				};
+			}
+
+			return { valid: true };
 		}
 
 		function isValidPhone(phone) {
-			if (!phone || typeof phone !== "string") return false;
+			if (!phone || typeof phone !== "string") return { valid: false, reason: "Nomor WhatsApp wajib diisi." };
 			const clean = phone.replace(/[\s\-\(\)\+]/g, "");
 			let norm = clean;
 			if (norm.startsWith("628")) norm = "08" + norm.slice(3);
 			else if (norm.startsWith("+628")) norm = "08" + norm.slice(4);
-			
-			// Must start with 08[1-9] with 10-13 total digits
-			const re = /^08[1-9][0-9]{7,10}$/;
-			if (!re.test(norm)) return false;
-			
-			const body = norm.slice(2);
-			if (/^(\d)\1+$/.test(body)) return false;
-			return true;
+
+			if (!/^\d+$/.test(norm)) {
+				return { valid: false, reason: "Nomor WhatsApp hanya boleh berisi angka." };
+			}
+
+			if (norm.length < 10 || norm.length > 13) {
+				return { valid: false, reason: "Nomor WhatsApp harus 10–13 digit." };
+			}
+
+			const prefix = norm.slice(0, 4);
+			if (!VALID_ID_MOBILE_PREFIXES.has(prefix)) {
+				return { valid: false, reason: "Prefix operator tidak valid untuk nomor seluler Indonesia (contoh valid: 0812..., 0821..., 0857...)." };
+			}
+
+			const remainder = norm.slice(4);
+			if (/^(\d)\1+$/.test(remainder)) {
+				return { valid: false, reason: "Nomor WhatsApp tidak boleh berisi angka berulang yang sama." };
+			}
+
+			return { valid: true };
 		}
 
 		function handleOrderSubmit(e) {
 			e.preventDefault();
+
+			// Honeypot anti-bot check
+			const hp = document.getElementById('custHoneypot');
+			if (hp && hp.value) {
+				console.warn('Bot detected and blocked.');
+				return;
+			}
+
+			// Cooldown rate limiter: prevent spamming orders within 30 seconds
+			const LAST_ORDER_KEY = 'hi_last_order_ts';
+			const lastOrderTime = Number(localStorage.getItem(LAST_ORDER_KEY) || 0);
+			const timeDiff = Date.now() - lastOrderTime;
+			if (timeDiff < 25000) {
+				const remainingSec = Math.ceil((25000 - timeDiff) / 1000);
+				alert(`Mohon tunggu ${remainingSec} detik sebelum membuat pemesanan berikutnya untuk mencegah spam.`);
+				return;
+			}
+
 			const nameInput = document.getElementById('custName');
 			const emailInput = document.getElementById('custEmail');
 			const waInput = document.getElementById('custWa');
+			const nameError = document.getElementById('nameError');
 			const emailError = document.getElementById('emailError');
 			const waError = document.getElementById('waError');
 
@@ -559,19 +672,44 @@
 
 			let hasError = false;
 
-			if (!isValidEmail(custEmail)) {
+			// Validate Name
+			const nameRes = isValidName(custName);
+			if (!nameRes.valid) {
+				nameInput.classList.add('inputError');
+				if (nameError) {
+					nameError.textContent = nameRes.reason;
+					nameError.style.display = 'block';
+				}
+				nameInput.focus();
+				hasError = true;
+			} else {
+				nameInput.classList.remove('inputError');
+				if (nameError) nameError.style.display = 'none';
+			}
+
+			// Validate Email
+			const emailRes = isValidEmail(custEmail);
+			if (!emailRes.valid) {
 				emailInput.classList.add('inputError');
-				if (emailError) emailError.style.display = 'block';
-				emailInput.focus();
+				if (emailError) {
+					emailError.textContent = emailRes.reason;
+					emailError.style.display = 'block';
+				}
+				if (!hasError) emailInput.focus();
 				hasError = true;
 			} else {
 				emailInput.classList.remove('inputError');
 				if (emailError) emailError.style.display = 'none';
 			}
 
-			if (!isValidPhone(custWa)) {
+			// Validate WhatsApp
+			const waRes = isValidPhone(custWa);
+			if (!waRes.valid) {
 				waInput.classList.add('inputError');
-				if (waError) waError.style.display = 'block';
+				if (waError) {
+					waError.textContent = waRes.reason;
+					waError.style.display = 'block';
+				}
 				if (!hasError) waInput.focus();
 				hasError = true;
 			} else {
@@ -580,6 +718,9 @@
 			}
 
 			if (hasError) return;
+
+			// Record order attempt
+			localStorage.setItem(LAST_ORDER_KEY, String(Date.now()));
 
 			const orderData = {
 				tier: currentTier,
@@ -598,14 +739,27 @@
 
 		// Real-time input listeners to clear errors on typing
 		document.addEventListener('DOMContentLoaded', () => {
+			const nameInput = document.getElementById('custName');
 			const emailInput = document.getElementById('custEmail');
 			const waInput = document.getElementById('custWa');
+			const nameError = document.getElementById('nameError');
 			const emailError = document.getElementById('emailError');
 			const waError = document.getElementById('waError');
 
+			if (nameInput) {
+				nameInput.addEventListener('input', () => {
+					const res = isValidName(nameInput.value.trim());
+					if (res.valid) {
+						nameInput.classList.remove('inputError');
+						if (nameError) nameError.style.display = 'none';
+					}
+				});
+			}
+
 			if (emailInput) {
 				emailInput.addEventListener('input', () => {
-					if (isValidEmail(emailInput.value.trim())) {
+					const res = isValidEmail(emailInput.value.trim());
+					if (res.valid) {
 						emailInput.classList.remove('inputError');
 						if (emailError) emailError.style.display = 'none';
 					}
@@ -614,7 +768,8 @@
 
 			if (waInput) {
 				waInput.addEventListener('input', () => {
-					if (isValidPhone(waInput.value.trim())) {
+					const res = isValidPhone(waInput.value.trim());
+					if (res.valid) {
 						waInput.classList.remove('inputError');
 						if (waError) waError.style.display = 'none';
 					}
@@ -678,6 +833,6 @@
 			}
 		});
 	</script>
-	<script src="../shared/cookie-consent.js?v=2026.6"></script>
+	<script src="../shared/cookie-consent.js?v=2026.7"></script>
 </body>
 </html>

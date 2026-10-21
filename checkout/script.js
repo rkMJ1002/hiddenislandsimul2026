@@ -25,7 +25,10 @@ function loadOrderData() {
 			ticketQuantity = 1; // Order limit strictly one per purchase
 
 			if (order.name) {
-				document.getElementById('cardHolderName').value = order.name;
+				const contactNameInput = document.getElementById('contactName');
+				if (contactNameInput) contactNameInput.value = order.name;
+				const cardHolderInput = document.getElementById('cardHolderName');
+				if (cardHolderInput) cardHolderInput.value = order.name;
 			}
 			if (order.email) {
 				document.getElementById('contactEmail').value = order.email;
@@ -182,45 +185,134 @@ function startQrisTimer() {
 	}, 1000);
 }
 
-// Security Validation for Real Email and WhatsApp Phone Number
-const VALID_EMAIL_TLDS = new Set([
-	"com", "net", "org", "edu", "gov", "mil", "int", "id", "co.id", "ac.id", "sch.id", "go.id", "or.id", "web.id", "biz.id", "my.id",
-	"io", "co", "ai", "me", "info", "biz", "app", "dev", "tech", "online", "site", "store", "cloud", "digital", "global", "xyz", "live", "pro", "asia", "club", "space", "tv", "cc", "us", "uk", "co.uk", "de", "fr", "jp", "sg", "au", "my", "nl", "ca", "ch", "se", "no", "es", "it"
+// ============================================================
+// STRICT ANTI-SPAM & REAL DATA VALIDATION ENGINE
+// ============================================================
+const TRUSTED_EMAIL_DOMAINS = new Set([
+	"gmail.com", "googlemail.com",
+	"yahoo.com", "yahoo.co.id", "ymail.com", "rocketmail.com",
+	"outlook.com", "hotmail.com", "live.com", "msn.com", "outlook.co.id",
+	"icloud.com", "me.com", "mac.com",
+	"proton.me", "protonmail.com",
+	"zoho.com", "mail.com", "aol.com", "gmx.com"
 ]);
 
+const TRUSTED_INSTITUTIONAL_SUFFIXES = [
+	".sch.id", ".ac.id", ".edu", ".go.id", ".or.id", ".co.id"
+];
+
+const VALID_ID_MOBILE_PREFIXES = new Set([
+	"0811", "0812", "0813", "0821", "0822", "0823", "0851", "0852", "0853",
+	"0814", "0815", "0816", "0855", "0856", "0857", "0858",
+	"0817", "0818", "0819", "0859", "0877", "0878",
+	"0831", "0832", "0833", "0838",
+	"0881", "0882", "0883", "0884", "0885", "0886", "0887", "0888", "0889",
+	"0895", "0896", "0897", "0898", "0899"
+]);
+
+const SPAM_NAMES = new Set([
+	"test", "testing", "tester", "admin", "administrator", "asdf", "asdfgh", "qwerty", "zxcv",
+	"fake", "dummy", "spam", "user", "pengunjung", "anonim", "anonymous", "none", "null", "undefined"
+]);
+
+function isValidName(name) {
+	if (!name || typeof name !== "string") return { valid: false, reason: "Nama lengkap wajib diisi." };
+	const trimmed = name.trim();
+
+	if (trimmed.length < 3) {
+		return { valid: false, reason: "Nama terlalu pendek (minimal 3 karakter)." };
+	}
+	if (trimmed.length > 50) {
+		return { valid: false, reason: "Nama terlalu panjang (maksimal 50 karakter)." };
+	}
+	if (!/^[a-zA-Z\s'’.\-]+$/.test(trimmed)) {
+		return { valid: false, reason: "Nama hanya boleh berisi huruf dan spasi." };
+	}
+
+	const lower = trimmed.toLowerCase();
+	if (SPAM_NAMES.has(lower)) {
+		return { valid: false, reason: "Gunakan nama asli (bukan nama percobaan)." };
+	}
+
+	// Must contain vowels
+	if (!/[aeiouyAEIOUY]/.test(trimmed)) {
+		return { valid: false, reason: "Nama tidak valid (tidak memiliki huruf vokal)." };
+	}
+
+	// Block 5+ consecutive consonants (blocks keyboard mash like hsfkjbjwri)
+	if (/[bcdfghjklmnpqrstvwxz]{5,}/i.test(trimmed)) {
+		return { valid: false, reason: "Nama terdeteksi acak/keyboard smash." };
+	}
+
+	// Block repetitive identical letters like 'aaaa'
+	if (/([a-zA-Z])\1{2,}/i.test(trimmed)) {
+		return { valid: false, reason: "Nama mengandung pengulangan huruf yang tidak wajar." };
+	}
+
+	return { valid: true };
+}
+
 function isValidEmail(email) {
-	if (!email || typeof email !== "string") return false;
+	if (!email || typeof email !== "string") return { valid: false, reason: "Alamat email wajib diisi." };
 	const trimmed = email.trim().toLowerCase();
-	const emailRegex = /^[a-z0-9._%+-]+@([a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,})$/;
+	const emailRegex = /^[a-z0-9._%+-]+@([a-z0-9.-]+\.[a-z]{2,})$/;
 	const match = trimmed.match(emailRegex);
-	if (!match) return false;
-	
-	const domain = match[1];
-	const parts = domain.split(".");
-	if (parts.length < 2) return false;
-	
-	const sld = parts[parts.length - 2];
-	if (sld.length < 2) return false;
+	if (!match) return { valid: false, reason: "Format email tidak valid (contoh: nama@gmail.com)." };
 
-	const tld1 = parts[parts.length - 1];
-	const tld2 = parts.length >= 2 ? `${parts[parts.length - 2]}.${parts[parts.length - 1]}` : "";
+	const [localPart, domain] = trimmed.split("@");
 
-	return VALID_EMAIL_TLDS.has(tld1) || VALID_EMAIL_TLDS.has(tld2);
+	if (localPart.length < 3 || localPart.length > 50) {
+		return { valid: false, reason: "Username email terlalu pendek atau tidak wajar." };
+	}
+
+	// Block 5+ consecutive consonants in username (blocks keysmash like jsbgeougr)
+	if (/[bcdfghjklmnpqrstvwxyz]{5,}/.test(localPart)) {
+		return { valid: false, reason: "Username email terdeteksi acak/tidak wajar." };
+	}
+
+	const isTrustedProvider = TRUSTED_EMAIL_DOMAINS.has(domain);
+	const isTrustedSuffix = TRUSTED_INSTITUTIONAL_SUFFIXES.some(suffix => {
+		if (!domain.endsWith(suffix)) return false;
+		const prefix = domain.slice(0, domain.length - suffix.length);
+		return prefix.length >= 2 && !/[bcdfghjklmnpqrstvwxyz]{5,}/.test(prefix);
+	});
+
+	if (!isTrustedProvider && !isTrustedSuffix) {
+		return { 
+			valid: false, 
+			reason: "Gunakan penyedia email resmi (@gmail.com, @yahoo.com, @outlook.com, dll. atau email sekolah/kampus .sch.id / .ac.id)." 
+		};
+	}
+
+	return { valid: true };
 }
 
 function isValidPhone(phone) {
-	if (!phone || typeof phone !== "string") return false;
+	if (!phone || typeof phone !== "string") return { valid: false, reason: "Nomor WhatsApp wajib diisi." };
 	const clean = phone.replace(/[\s\-\(\)\+]/g, "");
 	let norm = clean;
 	if (norm.startsWith("628")) norm = "08" + norm.slice(3);
 	else if (norm.startsWith("+628")) norm = "08" + norm.slice(4);
-	
-	const re = /^08[1-9][0-9]{7,10}$/;
-	if (!re.test(norm)) return false;
-	
-	const body = norm.slice(2);
-	if (/^(\d)\1+$/.test(body)) return false;
-	return true;
+
+	if (!/^\d+$/.test(norm)) {
+		return { valid: false, reason: "Nomor WhatsApp hanya boleh berisi angka." };
+	}
+
+	if (norm.length < 10 || norm.length > 13) {
+		return { valid: false, reason: "Nomor WhatsApp harus 10–13 digit." };
+	}
+
+	const prefix = norm.slice(0, 4);
+	if (!VALID_ID_MOBILE_PREFIXES.has(prefix)) {
+		return { valid: false, reason: "Prefix operator tidak valid untuk nomor seluler Indonesia (contoh valid: 0812..., 0821..., 0857...)." };
+	}
+
+	const remainder = norm.slice(4);
+	if (/^(\d)\1+$/.test(remainder)) {
+		return { valid: false, reason: "Nomor WhatsApp tidak boleh berisi angka berulang yang sama." };
+	}
+
+	return { valid: true };
 }
 
 // Global reference for active completed order (for PDF download)
@@ -234,30 +326,74 @@ function handleExpressPay(provider) {
 
 // Main Submit Payment Button with Security & Terms Validation
 function executePayment() {
+	// Honeypot anti-bot check
+	const hp = document.getElementById('checkoutHoneypot');
+	if (hp && hp.value) {
+		console.warn('Bot submission blocked.');
+		return;
+	}
+
+	// Rate limiter: prevent spamming orders within 25 seconds
+	const LAST_ORDER_KEY = 'hi_last_order_ts';
+	const lastOrderTime = Number(localStorage.getItem(LAST_ORDER_KEY) || 0);
+	const timeDiff = Date.now() - lastOrderTime;
+	if (timeDiff < 25000) {
+		const remainingSec = Math.ceil((25000 - timeDiff) / 1000);
+		alert(`Mohon tunggu ${remainingSec} detik sebelum melakukan pemesanan berikutnya untuk mencegah spam.`);
+		return;
+	}
+
+	const nameInput = document.getElementById('contactName') || document.getElementById('cardHolderName');
 	const emailInput = document.getElementById('contactEmail');
 	const phoneInput = document.getElementById('contactPhone');
+	const nameError = document.getElementById('checkoutNameError');
 	const emailError = document.getElementById('checkoutEmailError');
 	const phoneError = document.getElementById('checkoutPhoneError');
 
-	const buyerName = document.getElementById('cardHolderName')?.value?.trim() || 'Pengunjung Festival';
+	const buyerName = nameInput?.value?.trim() || '';
 	const buyerEmail = emailInput?.value?.trim() || '';
 	const buyerPhone = phoneInput?.value?.trim() || '';
 
 	let hasError = false;
 
-	if (!isValidEmail(buyerEmail)) {
+	// Validate Name
+	const nameRes = isValidName(buyerName);
+	if (!nameRes.valid) {
+		if (nameInput) nameInput.classList.add('inputError');
+		if (nameError) {
+			nameError.textContent = nameRes.reason;
+			nameError.style.display = 'block';
+		}
+		if (nameInput) nameInput.focus();
+		hasError = true;
+	} else {
+		if (nameInput) nameInput.classList.remove('inputError');
+		if (nameError) nameError.style.display = 'none';
+	}
+
+	// Validate Email
+	const emailRes = isValidEmail(buyerEmail);
+	if (!emailRes.valid) {
 		if (emailInput) emailInput.classList.add('inputError');
-		if (emailError) emailError.style.display = 'block';
-		if (emailInput) emailInput.focus();
+		if (emailError) {
+			emailError.textContent = emailRes.reason;
+			emailError.style.display = 'block';
+		}
+		if (!hasError && emailInput) emailInput.focus();
 		hasError = true;
 	} else {
 		if (emailInput) emailInput.classList.remove('inputError');
 		if (emailError) emailError.style.display = 'none';
 	}
 
-	if (!isValidPhone(buyerPhone)) {
+	// Validate WhatsApp
+	const phoneRes = isValidPhone(buyerPhone);
+	if (!phoneRes.valid) {
 		if (phoneInput) phoneInput.classList.add('inputError');
-		if (phoneError) phoneError.style.display = 'block';
+		if (phoneError) {
+			phoneError.textContent = phoneRes.reason;
+			phoneError.style.display = 'block';
+		}
 		if (!hasError && phoneInput) phoneInput.focus();
 		hasError = true;
 	} else {
@@ -277,6 +413,9 @@ function executePayment() {
 	} else {
 		termsErrorMsg.style.display = 'none';
 	}
+
+	// Record timestamp for rate limit cooldown
+	localStorage.setItem(LAST_ORDER_KEY, String(Date.now()));
 
 	ticketQuantity = 1; // Order limit strictly one per purchase
 	const totalRaw = basePrice * ticketQuantity * (1 - discountPercent);
@@ -507,7 +646,10 @@ function downloadTicketPdf() {
 		doc.setFontSize(9);
 		doc.setFont("helvetica", "bold");
 		doc.setTextColor(183, 169, 124);
-		doc.text(currentOrderSummary.totalFormatted, 80, 102);
+		const displayTotal = currentOrderSummary.total
+			? 'Rp ' + Number(currentOrderSummary.total).toLocaleString('id-ID')
+			: currentOrderSummary.totalFormatted;
+		doc.text(displayTotal, 80, 102);
 
 		// 3. Location & Schedule Box
 		doc.setFillColor(240, 245, 243);
@@ -558,3 +700,43 @@ function downloadTicketPdf() {
 		alert("Gagal mengunduh file PDF tiket. Silakan coba kembali.");
 	}
 }
+
+// Real-time input listeners to clear errors on typing
+document.addEventListener('DOMContentLoaded', () => {
+	const nameInput = document.getElementById('contactName');
+	const emailInput = document.getElementById('contactEmail');
+	const phoneInput = document.getElementById('contactPhone');
+	const nameError = document.getElementById('checkoutNameError');
+	const emailError = document.getElementById('checkoutEmailError');
+	const phoneError = document.getElementById('checkoutPhoneError');
+
+	if (nameInput) {
+		nameInput.addEventListener('input', () => {
+			const res = isValidName(nameInput.value.trim());
+			if (res.valid) {
+				nameInput.classList.remove('inputError');
+				if (nameError) nameError.style.display = 'none';
+			}
+		});
+	}
+
+	if (emailInput) {
+		emailInput.addEventListener('input', () => {
+			const res = isValidEmail(emailInput.value.trim());
+			if (res.valid) {
+				emailInput.classList.remove('inputError');
+				if (emailError) emailError.style.display = 'none';
+			}
+		});
+	}
+
+	if (phoneInput) {
+		phoneInput.addEventListener('input', () => {
+			const res = isValidPhone(phoneInput.value.trim());
+			if (res.valid) {
+				phoneInput.classList.remove('inputError');
+				if (phoneError) phoneError.style.display = 'none';
+			}
+		});
+	}
+});
