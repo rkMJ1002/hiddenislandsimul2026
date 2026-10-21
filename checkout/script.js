@@ -532,37 +532,74 @@ function executePayment() {
 
 let cachedArtworkDataUrl = null;
 
-function loadArtworkDataUrl() {
+function loadArtworkDataUrl(darkBgHex = '#151A18') {
 	if (cachedArtworkDataUrl) return Promise.resolve(cachedArtworkDataUrl);
 	return new Promise((resolve) => {
-		const domImg = document.getElementById('ticketArtImg');
-		if (domImg && domImg.complete && domImg.naturalWidth > 0) {
+		const processImg = (imgSource) => {
 			try {
 				const canvas = document.createElement('canvas');
-				canvas.width = 600;
-				canvas.height = 600;
+				const canvasW = 880;
+				const canvasH = 704; // 880 * (88 / 110)
+				canvas.width = canvasW;
+				canvas.height = canvasH;
 				const ctx = canvas.getContext('2d');
-				ctx.drawImage(domImg, 0, 0, 600, 600);
-				cachedArtworkDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+				if (!ctx) return resolve(null);
+
+				// Fill entire background with the dark PDF canvas tone so the curved corners blend 100% seamlessly
+				ctx.fillStyle = darkBgHex;
+				ctx.fillRect(0, 0, canvasW, canvasH);
+
+				// Corner radius on canvas: 880 * (6 / 110) = 48px
+				const r = 48;
+
+				ctx.save();
+				ctx.beginPath();
+				if (typeof ctx.roundRect === 'function') {
+					ctx.roundRect(0, 0, canvasW, canvasH, [r, r, 0, 0]);
+				} else {
+					ctx.moveTo(r, 0);
+					ctx.lineTo(canvasW - r, 0);
+					ctx.quadraticCurveTo(canvasW, 0, canvasW, r);
+					ctx.lineTo(canvasW, canvasH);
+					ctx.lineTo(0, canvasH);
+					ctx.lineTo(0, r);
+					ctx.quadraticCurveTo(0, 0, r, 0);
+					ctx.closePath();
+				}
+				ctx.clip();
+
+				const nw = imgSource.naturalWidth || imgSource.width || 600;
+				const nh = imgSource.naturalHeight || imgSource.height || 600;
+				const imgAspect = nw / nh;
+				const targetAspect = canvasW / canvasH;
+				let sx = 0, sy = 0, sW = nw, sH = nh;
+				if (imgAspect > targetAspect) {
+					sW = nh * targetAspect;
+					sx = (nw - sW) / 2;
+				} else {
+					sH = nw / targetAspect;
+					sy = (nh - sH) / 2;
+				}
+
+				ctx.drawImage(imgSource, sx, sy, sW, sH, 0, 0, canvasW, canvasH);
+				ctx.restore();
+
+				cachedArtworkDataUrl = canvas.toDataURL('image/png');
 				return resolve(cachedArtworkDataUrl);
-			} catch (e) {}
+			} catch (e) {
+				console.warn('Artwork canvas processing error:', e);
+				resolve(null);
+			}
+		};
+
+		const domImg = document.getElementById('ticketArtImg');
+		if (domImg && domImg.complete && domImg.naturalWidth > 0) {
+			return processImg(domImg);
 		}
 
 		const img = new Image();
 		img.crossOrigin = 'anonymous';
-		img.onload = () => {
-			try {
-				const canvas = document.createElement('canvas');
-				canvas.width = 600;
-				canvas.height = 600;
-				const ctx = canvas.getContext('2d');
-				ctx.drawImage(img, 0, 0, 600, 600);
-				cachedArtworkDataUrl = canvas.toDataURL('image/jpeg', 0.88);
-				resolve(cachedArtworkDataUrl);
-			} catch (e) {
-				resolve(null);
-			}
-		};
+		img.onload = () => processImg(img);
 		img.onerror = () => resolve(null);
 		img.src = 'ticket_artwork.jpg';
 	});
@@ -584,8 +621,9 @@ async function downloadTicketPdf() {
 			format: 'a5'
 		});
 
-		// Page Canvas Background (Soft clean tint)
-		doc.setFillColor(243, 240, 233);
+		// 1. Page Canvas Background (Dark festival tone matching site and modal)
+		const darkR = 21, darkG = 26, darkB = 24; // #151A18
+		doc.setFillColor(darkR, darkG, darkB);
 		doc.rect(0, 0, 148, 210, 'F');
 
 		// Ticket Dimensions
@@ -596,15 +634,16 @@ async function downloadTicketPdf() {
 		const cardR = 6;
 		const imgH = 88;
 		const perfY = cardY + imgH;
+		const notchR = 4.5;
 
-		// 1. Ticket Base Card (Soft cream background)
+		// 2. Ticket Base Card (Soft cream background)
 		doc.setFillColor(250, 248, 245);
 		doc.roundedRect(cardX, cardY, cardW, cardH, cardR, cardR, 'F');
 
-		// 2. Top Artwork (Image 2)
-		const artworkDataUrl = await loadArtworkDataUrl();
+		// 3. Top Artwork (Image 2) with rounded top corners
+		const artworkDataUrl = await loadArtworkDataUrl('#151A18');
 		if (artworkDataUrl) {
-			doc.addImage(artworkDataUrl, 'JPEG', cardX, cardY, cardW, imgH);
+			doc.addImage(artworkDataUrl, 'PNG', cardX, cardY, cardW, imgH);
 		} else {
 			// Fallback banner if image not loaded
 			doc.setFillColor(33, 61, 58);
@@ -615,26 +654,21 @@ async function downloadTicketPdf() {
 			doc.text('THE HIDDEN ISLAND', 74, cardY + 45, { align: 'center' });
 		}
 
-		// 3. Perforation Row with Left & Right Cutout Notches
+		// 4. Perforation Row with Left & Right Cutout Notches
 		doc.setDrawColor(190, 180, 175);
 		if (typeof doc.setLineDashPattern === 'function') {
 			doc.setLineDashPattern([1, 1.5], 0);
 		} else if (typeof doc.setLineDash === 'function') {
 			doc.setLineDash([1, 1.5], 0);
 		}
-		doc.line(cardX + 4.5, perfY, cardX + cardW - 4.5, perfY);
+		doc.line(cardX + notchR, perfY, cardX + cardW - notchR, perfY);
 		if (typeof doc.setLineDashPattern === 'function') {
 			doc.setLineDashPattern([], 0);
 		} else if (typeof doc.setLineDash === 'function') {
 			doc.setLineDash([], 0);
 		}
 
-		// Cutout notches (bites into card with canvas background color)
-		doc.setFillColor(243, 240, 233);
-		doc.circle(cardX, perfY, 4.5, 'F');
-		doc.circle(cardX + cardW, perfY, 4.5, 'F');
-
-		// 4. Ticket Stub Body (Matching Reference)
+		// 5. Ticket Stub Body (Matching Reference)
 		// Title & Tour
 		doc.setFont('helvetica', 'bold');
 		doc.setFontSize(16);
@@ -728,7 +762,13 @@ async function downloadTicketPdf() {
 
 		// Outer Card Border
 		doc.setDrawColor(215, 210, 200);
+		doc.setLineWidth(0.35);
 		doc.roundedRect(cardX, cardY, cardW, cardH, cardR, cardR, 'S');
+
+		// Cutout notches: Drawn AFTER outer card border so they cleanly bite into the card and erase the outer border stroke
+		doc.setFillColor(darkR, darkG, darkB);
+		doc.circle(cardX, perfY, notchR, 'F');
+		doc.circle(cardX + cardW, perfY, notchR, 'F');
 
 		doc.save('E-Ticket_TheHiddenIsland_' + currentOrderSummary.id + '.pdf');
 	} catch (e) {
