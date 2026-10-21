@@ -109,7 +109,7 @@ document.addEventListener('click', (e) => {
 });
 
 // ============================================================
-// ABOUT ARTFEST PHOTO CAROUSEL (Frameless Multi-Card Stage)
+// ABOUT ARTFEST PHOTO CAROUSEL (Flat Natural Slider)
 // ============================================================
 (function initAboutCarousel() {
 	const track = document.getElementById('carouselTrack');
@@ -120,26 +120,15 @@ document.addEventListener('click', (e) => {
 
 	if (!track || !carousel) return;
 
-	const slides = track.querySelectorAll('.gallerySlide, .carouselSlide');
-	const dots = dotsContainer ? dotsContainer.querySelectorAll('.galleryDotItem, .carouselDot') : [];
+	const slides = track.querySelectorAll('.flatCarouselSlide, .gallerySlide, .carouselSlide');
+	const dots = dotsContainer ? dotsContainer.querySelectorAll('.flatDot, .galleryDotItem, .carouselDot') : [];
 	const totalSlides = slides.length;
 	let currentIndex = 0;
 	let autoplayTimer = null;
 
 	function updateCarousel() {
-		const activeSlide = slides[currentIndex];
-		if (!activeSlide) return;
+		track.style.transform = `translateX(-${currentIndex * 100}%)`;
 
-		const slideWidth = activeSlide.offsetWidth;
-		const containerWidth = carousel.offsetWidth;
-		const centerOffset = (containerWidth - slideWidth) / 2;
-		const targetX = centerOffset - (currentIndex * slideWidth);
-
-		track.style.transform = `translateX(${targetX}px)`;
-
-		slides.forEach((s, idx) => {
-			s.classList.toggle('active', idx === currentIndex);
-		});
 		dots.forEach((d, idx) => {
 			d.classList.toggle('active', idx === currentIndex);
 			d.setAttribute('aria-current', idx === currentIndex ? 'true' : 'false');
@@ -196,8 +185,6 @@ document.addEventListener('click', (e) => {
 	carousel.addEventListener('mouseenter', stopAutoplay);
 	carousel.addEventListener('mouseleave', startAutoplay);
 
-	window.addEventListener('resize', updateCarousel, { passive: true });
-
 	// Mobile Touch Swipe Navigation
 	let touchStartX = 0;
 	let touchEndX = 0;
@@ -217,8 +204,7 @@ document.addEventListener('click', (e) => {
 		startAutoplay();
 	}, { passive: true });
 
-	// Initial layout rendering
-	setTimeout(updateCarousel, 50);
+	updateCarousel();
 	startAutoplay();
 })();
 

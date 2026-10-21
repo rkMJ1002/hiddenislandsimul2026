@@ -441,140 +441,129 @@ body {
 }
 
 /* ============================================================
-   FRAMELESS PHOTO GALLERY SHOWCASE (Dynamic Edge-to-Edge Stage)
+   FLAT NATURAL PHOTO CAROUSEL
    ============================================================ */
+.flatCarousel,
 .framelessGalleryStage {
 	position: relative;
-	margin: 36px 0 38px 0;
+	margin: 28px 0;
 	width: 100%;
-	border: none; /* Strictly no frame */
-	background: transparent;
-	overflow: hidden;
-	padding: 10px 0;
-	-webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
-	mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
 }
 
+.flatCarouselViewport,
 .galleryTrackWrapper {
 	width: 100%;
-	overflow: visible;
+	overflow: hidden;
+	border-radius: 8px;
 }
 
+.flatCarouselTrack,
 .galleryTrack {
 	display: flex;
-	transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 	width: 100%;
+	transition: transform 0.35s ease;
 	will-change: transform;
 }
 
+.flatCarouselSlide,
 .gallerySlide {
-	min-width: 82%;
-	padding: 0 10px;
+	min-width: 100%;
+	width: 100%;
 	box-sizing: border-box;
-	transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease;
-	transform: scale(0.92);
-	opacity: 0.35;
-	filter: saturate(0.8);
 }
 
-.gallerySlide.active {
-	transform: scale(1);
-	opacity: 1;
-	filter: none;
-}
-
+.flatPlaceholderBox,
 .framelessPlaceholderCard {
 	width: 100%;
-	height: 350px;
-	background: #2b302c; /* Blank smooth neutral gray */
-	border: none; /* STRICTLY NO FRAME */
-	outline: none;
-	border-radius: 16px;
+	height: 320px;
+	background: #282d2a; /* Flat solid neutral dark gray */
+	border: none;
+	border-radius: 8px;
+	box-shadow: none;
 	display: flex;
-	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
 	user-select: none;
-	transition: box-shadow 0.3s ease;
 }
 
+.flatPlaceholderBox .placeholderText,
 .framelessPlaceholderCard .placeholderText {
 	font-family: 'Plus Jakarta Sans', sans-serif;
-	font-size: 15px;
+	font-size: 14px;
 	font-weight: 500;
-	letter-spacing: 0.05em;
 	color: rgba(207, 212, 208, 0.65);
 	text-transform: lowercase;
 }
 
-/* Frameless Modern Controls Row (Floating Underneath) */
+/* Flat Minimalist Controls */
+.flatCarouselControls,
 .galleryControlsRow {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 16px;
-	margin-top: 20px;
+	gap: 14px;
+	margin-top: 14px;
 }
 
+.flatArrowBtn,
 .galleryNavArrow {
-	width: 38px;
-	height: 38px;
+	width: 34px;
+	height: 34px;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.06);
-	border: none;
-	color: rgba(207, 212, 208, 0.7);
+	background: transparent;
+	border: 1px solid rgba(207, 212, 208, 0.25);
+	color: #CFD4D0;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: background-color 0.2s, color 0.2s, transform 0.2s;
+	padding: 0;
+	transition: border-color 0.2s, color 0.2s;
 }
 
+.flatArrowBtn:hover,
 .galleryNavArrow:hover {
-	background: #B7A97C;
-	color: #282B28;
-	transform: scale(1.08);
+	border-color: #B7A97C;
+	color: #B7A97C;
+	background: transparent;
+	transform: none;
 }
 
+.flatCarouselDots,
 .galleryDotsList {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 }
 
+.flatDot,
 .galleryDotItem {
 	width: 8px;
 	height: 8px;
 	border-radius: 50%;
-	background: rgba(207, 212, 208, 0.3);
+	background: rgba(207, 212, 208, 0.25);
 	border: none;
 	cursor: pointer;
 	padding: 0;
-	transition: background-color 0.25s, width 0.25s, border-radius 0.25s;
+	transition: background-color 0.2s;
 }
 
+.flatDot.active,
 .galleryDotItem.active {
 	background: #B7A97C;
-	width: 24px;
-	border-radius: 9999px;
+	width: 8px;
+	border-radius: 50%;
 }
 
 @media (max-width: 768px) {
-	.framelessGalleryStage {
-		-webkit-mask-image: none;
-		mask-image: none;
-	}
-	.gallerySlide {
-		min-width: 88%;
-		padding: 0 6px;
-	}
+	.flatPlaceholderBox,
 	.framelessPlaceholderCard {
-		height: 220px;
+		height: 200px;
 	}
+	.flatArrowBtn,
 	.galleryNavArrow {
-		width: 34px;
-		height: 34px;
+		width: 30px;
+		height: 30px;
 	}
 }
 
