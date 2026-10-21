@@ -1,6 +1,6 @@
 // Waktu target Open Gate Pentas Seni
-// 23 Oktober 2026, 15:00:00 WIB
-const openGateDate = new Date("2026-10-23T15:00:00").getTime();
+// 23 Oktober 2026, 08:30:00 WIB
+const openGateDate = new Date("2026-10-23T08:30:00").getTime();
 
 function updateCountdown() {
 	const now = new Date().getTime();

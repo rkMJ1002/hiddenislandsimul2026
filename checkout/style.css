@@ -973,115 +973,230 @@ body {
 	color: #1a1f36;
 }
 
+/* ============================================================ */
+/* SUCCESS OVERLAY — BOARDING PASS / FESTIVAL PASS MODAL        */
+/* ============================================================ */
 dialog.successDialog {
 	border: none;
 	background: transparent;
 	padding: 0;
 	margin: auto;
-	max-width: 440px;
-	width: 90%;
+	max-width: 410px;
+	width: 92%;
+	outline: none;
 }
 
 dialog.successDialog::backdrop {
-	background: rgba(0, 0, 0, 0.6);
-	backdrop-filter: blur(6px);
+	background: rgba(10, 15, 14, 0.78);
+	backdrop-filter: blur(4px);
 }
 
-.successCard {
-	background: #ffffff;
-	border-radius: 16px;
-	padding: 36px 30px;
-	text-align: center;
-	border: 1px solid #dcdfe4;
-	box-shadow: none;
+.ticketBoardingPass {
+	background: #15201E;
+	border: 1px solid #2B3D38;
+	border-radius: 20px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
 }
 
-.checkCircle {
-	width: 56px;
-	height: 56px;
-	background-color: #00875a;
+.tPassHeader {
+	background: #15201E;
+	padding: 22px 22px 18px 22px;
 	color: #ffffff;
-	font-size: 26px;
-	font-weight: bold;
-	border-radius: 50%;
+	text-align: center;
+}
+
+.tPassType {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 10.5px;
+	font-weight: 700;
+	letter-spacing: 1.8px;
+	color: #B7A97C;
+	text-transform: uppercase;
+	margin-bottom: 14px;
+}
+
+.tPassRoute {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.tRouteCol {
+	text-align: left;
+	flex: 1;
+}
+
+.tRouteCol.tRouteRight {
+	text-align: right;
+}
+
+.tRouteCity {
+	display: block;
+	font-size: 10px;
+	font-weight: 600;
+	color: rgba(207, 212, 208, 0.7);
+	letter-spacing: 1px;
+	text-transform: uppercase;
+}
+
+.tRouteCode {
+	display: block;
+	font-size: 20px;
+	font-weight: 800;
+	color: #ffffff;
+	line-height: 1.2;
+	margin: 2px 0;
+}
+
+.tRouteSub {
+	display: block;
+	font-size: 10px;
+	color: #B7A97C;
+	font-weight: 500;
+}
+
+.tRouteArrow {
+	color: #B7A97C;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin: 0 auto 18px auto;
 }
 
-.successTitle {
-	font-size: 22px;
-	font-weight: 700;
+.tPassBody {
+	background: #ffffff;
+	border-radius: 18px 18px 0 0;
+	padding: 24px 22px 18px 22px;
+	position: relative;
 	color: #1a1f36;
-	margin: 0 0 8px 0;
-}
-
-.successSubtitle {
-	font-size: 14px;
-	color: #4f566b;
-	margin: 0 0 24px 0;
-	line-height: 1.4;
-}
-
-.receiptSummary {
-	background-color: #f7f9fa;
-	border: 1px solid #e3e8ee;
-	border-radius: 8px;
-	padding: 14px 16px;
-	margin-bottom: 18px;
 	text-align: left;
 }
 
-.receiptRow {
+.tField {
+	margin-bottom: 13px;
+}
+
+.tFieldRow {
 	display: flex;
 	justify-content: space-between;
-	font-size: 13px;
-	color: #4f566b;
-	padding: 4px 0;
+	gap: 16px;
 }
 
-.receiptRow strong {
+.tFieldRow .tField {
+	flex: 1;
+}
+
+.tLabel {
+	display: block;
+	font-size: 10px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: #7a8682;
+	margin-bottom: 3px;
+}
+
+.tValue {
+	display: block;
+	font-size: 13.5px;
+	font-weight: 700;
 	color: #1a1f36;
+	line-height: 1.3;
 }
 
-.receiptNote {
-	font-size: 12px;
-	color: #8792a2;
-	margin: 0 0 24px 0;
-	line-height: 1.4;
+.tValueLarge {
+	font-size: 17px;
+	font-weight: 800;
+	color: #15201E;
 }
 
-.receiptBarcodeCard {
-	background-color: #ffffff;
-	border: 1px dashed #c1c9d2;
-	border-radius: 8px;
-	padding: 12px 14px;
-	margin: 16px 0 18px 0;
+.tHighlight {
+	color: #15201E;
+	font-size: 15px;
+	font-weight: 800;
+}
+
+.tMonospace {
+	font-family: monospace;
+	letter-spacing: 0.5px;
+	color: #15201E;
+}
+
+.tPaid {
+	color: #00875a;
+	font-weight: 800;
+}
+
+/* Authentic Ticket Perforation with circular cutout notches */
+.tPerforation {
+	position: relative;
+	height: 24px;
+	margin: 12px -22px 14px -22px;
 	display: flex;
-	flex-direction: column;
 	align-items: center;
-	justify-content: center;
+}
+
+.tDashedLine {
+	flex: 1;
+	border-top: 2px dashed #d5dbd8;
+	margin: 0 16px;
+}
+
+.tCutout {
+	width: 22px;
+	height: 22px;
+	background-color: #15201E;
+	border-radius: 50%;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.tCutoutLeft {
+	left: -11px;
+}
+
+.tCutoutRight {
+	right: -11px;
+}
+
+/* Barcode Section (Ticket Stub) */
+.tBarcodeSection {
+	text-align: center;
+	padding: 4px 0 14px 0;
 }
 
 #receiptBarcodeCanvas {
 	max-width: 100%;
 	height: auto;
+	margin: 0 auto;
 	display: block;
 }
 
-.receiptBarcodeSub {
-	font-size: 11px;
-	color: #697386;
-	margin: 8px 0 0 0;
+.tBarcodeId {
+	font-family: monospace;
+	font-size: 12.5px;
+	font-weight: 700;
+	letter-spacing: 2px;
+	color: #15201E;
+	margin-top: 6px;
+}
+
+.tBarcodeSub {
+	font-size: 10.5px;
+	color: #7a8682;
+	margin: 4px 0 0 0;
 	line-height: 1.3;
 }
 
-.receiptActionButtons {
+.tActionSection {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
-	margin-top: 16px;
+	gap: 9px;
+	margin-top: 10px;
 }
 
 .btnDownloadPdf {
@@ -1096,16 +1211,46 @@ dialog.successDialog::backdrop {
 	border: 1px solid #B7A97C;
 	border-radius: 8px;
 	font-family: 'Plus Jakarta Sans', sans-serif;
-	font-size: 14px;
+	font-size: 13.5px;
 	font-weight: 700;
+	letter-spacing: 0.5px;
 	cursor: pointer;
-	transition: background-color 0.2s, color 0.2s, transform 0.15s;
+	transition: background-color 0.2s, color 0.2s;
 }
 
 .btnDownloadPdf:hover {
 	background-color: #2c524e;
 	color: #ffffff;
-	transform: translateY(-1px);
+}
+
+.btnReturnHome {
+	display: block;
+	width: 100%;
+	height: 42px;
+	line-height: 42px;
+	text-align: center;
+	background-color: transparent;
+	color: #5b6863;
+	border: 1px solid #d4ded9;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: color 0.2s, border-color 0.2s;
+}
+
+.btnReturnHome:hover {
+	color: #15201E;
+	border-color: #15201E;
+}
+
+.tPassFooter {
+	text-align: center;
+	margin-top: 14px;
+	font-size: 9.5px;
+	letter-spacing: 1.2px;
+	color: #9aa5a0;
+	font-weight: 700;
 }
 
 .checkoutFieldError {
@@ -1119,23 +1264,6 @@ dialog.successDialog::backdrop {
 .phoneInnerInput.inputError {
 	border-color: #de350b !important;
 	background-color: #fff8f7 !important;
-}
-
-.btnReturnHome {
-	display: block;
-	width: 100%;
-	height: 44px;
-	line-height: 44px;
-	background-color: #1a1f36;
-	color: #ffffff;
-	text-decoration: none;
-	border-radius: 8px;
-	font-size: 14px;
-	font-weight: 600;
-}
-
-.btnReturnHome:hover {
-	background-color: #000000;
 }
 
 @media (max-width: 900px) {

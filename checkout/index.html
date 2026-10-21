@@ -12,7 +12,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css?v=2026.8">
+	<link rel="stylesheet" href="style.css?v=2026.9">
 </head>
 <body>
 	<div class="checkoutContainer">
@@ -432,64 +432,118 @@
 		</main>
 	</div>
 
-	<!-- Payment Success Overlay Modal -->
+	<!-- Payment Success Overlay Modal (Boarding Pass / E-Ticket Style) -->
 	<dialog id="successModal" class="successDialog">
-		<div class="successCard">
-			<div class="checkCircle">✓</div>
-			<h2 class="successTitle">Pembayaran Berhasil!</h2>
-			<p class="successSubtitle">Terima kasih atas pemesanan tiket Anda untuk <strong>The Hidden Island 2026</strong>.</p>
-			
-			<div class="receiptSummary">
-				<div class="receiptRow">
-					<span>Nomor Referensi (ID Tiket):</span>
-					<strong id="receiptRef" style="font-family: monospace; letter-spacing: 0.5px; color: #213d3a;">-</strong>
-				</div>
-				<div class="receiptRow">
-					<span>Kategori Tiket:</span>
-					<strong id="receiptTier">-</strong>
-				</div>
-				<div class="receiptRow">
-					<span>Gelang Akses:</span>
-					<strong id="receiptWristband">-</strong>
-				</div>
-				<div class="receiptRow">
-					<span>Metode Pembayaran:</span>
-					<strong id="receiptMethod">Card</strong>
-				</div>
-				<div class="receiptRow">
-					<span>Total Dibayar:</span>
-					<strong id="receiptTotal">IDR 75,000.00</strong>
+		<div class="ticketBoardingPass">
+			<!-- Header Banner -->
+			<div class="tPassHeader">
+				<div class="tPassType">FESTIVAL PASS • THE HIDDEN ISLAND</div>
+				<div class="tPassRoute">
+					<div class="tRouteCol">
+						<span class="tRouteCity">MALANG</span>
+						<strong class="tRouteCode">KOSAYU</strong>
+						<span class="tRouteSub">SMAK Kolese Santo Yusup</span>
+					</div>
+					<div class="tRouteArrow">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="5" y1="12" x2="19" y2="12"></line>
+							<polyline points="12 5 19 12 12 19"></polyline>
+						</svg>
+					</div>
+					<div class="tRouteCol tRouteRight">
+						<span class="tRouteCity">PRIGEN</span>
+						<strong class="tRouteCode">BUKIT DOA</strong>
+						<span class="tRouteSub">The Hidden Island 2026</span>
+					</div>
 				</div>
 			</div>
 
-			<!-- Real Scannable Barcode Container -->
-			<div class="receiptBarcodeCard">
-				<canvas id="receiptBarcodeCanvas"></canvas>
-				<p class="receiptBarcodeSub">Tunjukkan barcode ini kepada petugas di Gate Check-In</p>
-			</div>
+			<!-- White Ticket Body -->
+			<div class="tPassBody">
+				<div class="tField">
+					<span class="tLabel">Pengunjung / Passenger</span>
+					<strong class="tValue tValueLarge" id="receiptName">-</strong>
+				</div>
 
-			<p class="receiptNote">E-Ticket dan bukti pembayaran resmi telah siap diunduh dalam format PDF.</p>
+				<div class="tFieldRow">
+					<div class="tField">
+						<span class="tLabel">Open Gate</span>
+						<strong class="tValue tHighlight">08.30 WIB</strong>
+					</div>
+					<div class="tField">
+						<span class="tLabel">Tanggal</span>
+						<strong class="tValue">Jumat, 23 Okt 2026</strong>
+					</div>
+				</div>
 
-			<!-- Action Buttons: Download PDF and Return Home -->
-			<div class="receiptActionButtons">
-				<button type="button" class="btnDownloadPdf" id="btnDownloadPdf" onclick="downloadTicketPdf()">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-						<polyline points="7 10 12 15 17 10"></polyline>
-						<line x1="12" y1="15" x2="12" y2="3"></line>
-					</svg>
-					<span>Unduh E-Ticket (PDF)</span>
-				</button>
-				<a href="../index.html" class="btnReturnHome">Kembali ke Beranda</a>
+				<div class="tFieldRow">
+					<div class="tField">
+						<span class="tLabel">Kategori Tiket</span>
+						<strong class="tValue" id="receiptTier">-</strong>
+					</div>
+					<div class="tField">
+						<span class="tLabel">ID Tiket (Booking Ref)</span>
+						<strong class="tValue tMonospace" id="receiptRef">-</strong>
+					</div>
+				</div>
+
+				<div class="tFieldRow">
+					<div class="tField">
+						<span class="tLabel">Gelang Akses</span>
+						<strong class="tValue" id="receiptWristband">Wristband Festival Standar</strong>
+					</div>
+					<div class="tField">
+						<span class="tLabel">Status Pembayaran</span>
+						<strong class="tValue tPaid" id="receiptStatus">LUNAS</strong>
+					</div>
+				</div>
+
+				<!-- Hidden compatibility elements -->
+				<div style="display:none;">
+					<span id="receiptMethod">Card</span>
+					<span id="receiptTotal">IDR 75,000.00</span>
+				</div>
+
+				<!-- Perforation Cut-out Notch & Dashed Line -->
+				<div class="tPerforation">
+					<span class="tCutout tCutoutLeft"></span>
+					<span class="tDashedLine"></span>
+					<span class="tCutout tCutoutRight"></span>
+				</div>
+
+				<!-- Barcode Section (Ticket Stub) -->
+				<div class="tBarcodeSection">
+					<canvas id="receiptBarcodeCanvas"></canvas>
+					<div class="tBarcodeId" id="receiptBarcodeCode">HI-2026-XXXX</div>
+					<p class="tBarcodeSub">Tunjukkan barcode ini kepada petugas di Gate Check-In</p>
+				</div>
+
+				<!-- Actions (PRINT / DOWNLOAD PDF) -->
+				<div class="tActionSection">
+					<button type="button" class="btnDownloadPdf" id="btnDownloadPdf" onclick="downloadTicketPdf()">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+							<polyline points="7 10 12 15 17 10"></polyline>
+							<line x1="12" y1="15" x2="12" y2="3"></line>
+						</svg>
+						<span>UNDUH E-TICKET (PDF)</span>
+					</button>
+					<a href="../index.html" class="btnReturnHome">Kembali ke Beranda</a>
+				</div>
+
+				<!-- Ticket Footer -->
+				<div class="tPassFooter">
+					<span>WWW.THEHIDDENISLAND.SITE</span>
+				</div>
 			</div>
 		</div>
 	</dialog>
 
-	<script src="../shared/firebase-config.js?v=2026.7"></script>
-	<script src="../shared/cloud-store.js?v=2026.7"></script>
-	<script src="../shared/jsbarcode.min.js?v=2026.7"></script>
-	<script src="../shared/jspdf.umd.min.js?v=2026.7"></script>
-	<script src="script.js?v=2026.7"></script>
-	<script src="../shared/cookie-consent.js?v=2026.7"></script>
+	<script src="../shared/firebase-config.js?v=2026.9"></script>
+	<script src="../shared/cloud-store.js?v=2026.9"></script>
+	<script src="../shared/jsbarcode.min.js?v=2026.9"></script>
+	<script src="../shared/jspdf.umd.min.js?v=2026.9"></script>
+	<script src="script.js?v=2026.9"></script>
+	<script src="../shared/cookie-consent.js?v=2026.9"></script>
 </body>
 </html>
