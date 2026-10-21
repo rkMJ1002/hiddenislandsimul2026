@@ -30,9 +30,69 @@ if (window.pdfjsLib) {
 }
 
 // ============================================================
+// AUTHENTICATION (Matching Portal Subseksi)
+// Credentials: Username "artfest", Password "2026"
+// ============================================================
+const VALID_USERNAME = "artfest";
+const VALID_PASSWORD = "2026";
+
+function checkScannerSessionAuth() {
+	const isAuth = sessionStorage.getItem("artfest_admin_authenticated") === "true";
+	const loginView = document.getElementById("loginView");
+	const appView = document.getElementById("scannerAppView");
+
+	if (isAuth) {
+		if (loginView) loginView.style.display = "none";
+		if (appView) appView.style.display = "flex";
+	} else {
+		if (loginView) loginView.style.display = "flex";
+		if (appView) appView.style.display = "none";
+	}
+}
+
+function handleScannerLogin(event) {
+	event.preventDefault();
+	const userField = document.getElementById("adminUsername");
+	const passField = document.getElementById("adminPassword");
+	const errorMsg = document.getElementById("loginErrorMsg");
+
+	const enteredUser = userField ? userField.value.trim() : "";
+	const enteredPass = passField ? passField.value.trim() : "";
+
+	if (enteredUser === VALID_USERNAME && enteredPass === VALID_PASSWORD) {
+		sessionStorage.setItem("artfest_admin_authenticated", "true");
+		if (errorMsg) errorMsg.style.display = "none";
+		if (userField) userField.value = "";
+		if (passField) passField.value = "";
+		checkScannerSessionAuth();
+		showToast("Akses panitia scanner berhasil dibuka.");
+	} else {
+		if (errorMsg) errorMsg.style.display = "block";
+		if (passField) passField.focus();
+	}
+}
+
+function handleScannerLogout() {
+	if (confirm("Apakah Anda yakin ingin keluar dari Portal Scanner Gate?")) {
+		sessionStorage.removeItem("artfest_admin_authenticated");
+		if (isScanningCamera) stopCameraScanner();
+		checkScannerSessionAuth();
+		showToast("Anda telah keluar dari sesi scanner.");
+	}
+}
+
+function togglePasswordVisibility() {
+	const passInput = document.getElementById("adminPassword");
+	if (passInput) {
+		passInput.type = passInput.type === "password" ? "text" : "password";
+	}
+}
+
+// ============================================================
 // 1. INITIALIZATION ON DOM READY
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
+	checkScannerSessionAuth();
 	initLiveClock();
 	loadStoredOrders();
 	loadStoredLog();
@@ -573,7 +633,13 @@ async function startCameraScanner() {
 			audio: false
 		};
 
-		cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+		try {
+			cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+		} catch (initialErr) {
+			console.warn("Retrying camera with generic mobile constraints...", initialErr);
+			cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
+				.catch(() => navigator.mediaDevices.getUserMedia({ video: true, audio: false }));
+		}
 		video.srcObject = cameraStream;
 		await video.play();
 
@@ -958,7 +1024,7 @@ function renderValidState(order) {
 	document.getElementById("validQty").textContent = `${order.qty || 1} Tiket`;
 	document.getElementById("validPayStatus").textContent = order.status || "LUNAS";
 	document.getElementById("validPhone").textContent = order.phone || order.email || "-";
-	document.getElementById("validCheckInTime").textContent = `${order.checkInTime} • ${activeGate}`;
+	document.getElementById("validCheckInTime").textContent = order.checkInTime || "-";
 
 	const wristbandText = document.getElementById("validWristbandText");
 	const wristbandCallout = document.getElementById("validWristbandCallout");
@@ -1061,7 +1127,7 @@ function renderLogTable(filterQuery = "") {
 	if (filtered.length === 0) {
 		tbody.innerHTML = `
 			<tr>
-				<td colspan="8" style="text-align:center; padding: 32px 14px; color:rgba(207,212,208,0.5);">
+				<td colspan="7" style="text-align:center; padding: 32px 14px; color:rgba(207,212,208,0.5);">
 					Belum ada riwayat pemindaian tiket gate pada sesi ini.
 				</td>
 			</tr>
@@ -1073,7 +1139,6 @@ function renderLogTable(filterQuery = "") {
 		const tr = document.createElement("tr");
 		tr.innerHTML = `
 			<td style="font-family:monospace; color:#B7A97C;">${escapeHtml(item.time)}</td>
-			<td>${escapeHtml(item.gate || "Gate 1")}</td>
 			<td style="font-family:monospace; font-weight:700;">${escapeHtml(item.id)}</td>
 			<td style="font-weight:600; color:#ffffff;">${escapeHtml(item.name)}</td>
 			<td>${escapeHtml(item.tier)}</td>
@@ -1112,10 +1177,9 @@ function exportScanLogCSV() {
 		return `"${s}"`;
 	};
 
-	const headers = ["WAKTU", "POS GATE", "KODE TIKET", "NAMA PENGUNJUNG", "KATEGORI", "STATUS", "WRISTBAND", "METODE SCAN"];
+	const headers = ["WAKTU", "KODE TIKET", "NAMA PENGUNJUNG", "KATEGORI", "STATUS", "WRISTBAND", "METODE SCAN"];
 	const rows = scanLog.map((l) => [
 		l.time || "",
-		l.gate || "",
 		l.id || "",
 		l.name || "",
 		l.tier || "",

@@ -12,7 +12,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="style.css?v=2026.8">
 </head>
 <body>
 
@@ -150,15 +150,13 @@
 					</svg>
 					<span>Kontrol Tiket & Kuota</span>
 				</button>
-				<button type="button" class="adminTabBtn" id="btnTabScanner" onclick="switchAdminTab('scanner')">
+				<a href="../scanner/" class="adminTabBtn adminTabBtnLink" title="Buka Halaman Scanner E-Ticket Gate">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<rect x="3" y="3" width="7" height="7"></rect>
-						<rect x="14" y="3" width="7" height="7"></rect>
-						<rect x="14" y="14" width="7" height="7"></rect>
-						<rect x="3" y="14" width="7" height="7"></rect>
+						<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+						<circle cx="12" cy="13" r="4"></circle>
 					</svg>
-					<span>Gate Check - In</span>
-				</button>
+					<span>Scanner Tiket</span>
+				</a>
 			</nav>
 
 			<!-- PANEL 1: ORDERS LIST -->
@@ -368,76 +366,6 @@
 					<span id="saveStatusIndicator" style="font-size: 13px; color: #a8d58a; display: none;">✓ Pengaturan tersimpan dan aktif di halaman tiket</span>
 				</div>
 			</section>
-
-			<!-- PANEL 3: GATE CHECK - IN -->
-			<section class="tabPanel" id="panelScanner">
-				<!-- Standalone Scanner Callout Banner -->
-				<div class="dedicatedScannerBanner">
-					<div class="dedicatedBannerLeft">
-						<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#B7A97C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path></svg>
-						<div>
-							<h4 style="margin:0 0 4px 0; font-family:'Syne',sans-serif; color:#ffffff; font-size:16px;">Sistem Pemindai Barcode &amp; E-Ticket PDF Khusus Gate</h4>
-							<p style="margin:0; font-size:12px; color:rgba(207,212,208,0.75);">Gunakan website pemindai mandiri fullscreen untuk petugas gate: drag-and-drop file PDF tamu, scanner kamera barcode langsung, dan laser gun.</p>
-						</div>
-					</div>
-					<a href="../scanner/" target="_blank" class="btnOpenDedicatedScanner">
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M7 15h0M2 9.5h20"></path></svg>
-						<span>Buka Website Scanner Mandiri (/scanner/)</span>
-					</a>
-				</div>
-
-				<div class="scannerContainer">
-					<div class="scannerCard">
-						<h3 class="scannerCardTitle">Gate Check - In (Pintu Masuk Festival)</h3>
-						<p class="scannerCardDesc">
-							Verifikasi e-ticket pengunjung saat Open Gate di Bukit Doa Immanuel Sukolilo (23 Oktober 2026) dan validasi penyerahan gelang wristband secara langsung.
-						</p>
-
-						<div class="subseksiPdfDrop">
-							<div style="display:flex; align-items:center; gap:8px;">
-								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B7A97C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-								<span style="font-size:12px; color:rgba(207,212,208,0.85);">Pindai Dokumen PDF E-Ticket Tamu:</span>
-							</div>
-							<input type="file" id="subseksiPdfFileInput" accept=".pdf,image/*" style="display:none;" onchange="handleSubseksiPdfUpload(event)">
-							<button type="button" class="subseksiPdfBtn" onclick="document.getElementById('subseksiPdfFileInput').click()">
-								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-								<span>Upload File PDF Tamu</span>
-							</button>
-						</div>
-
-						<div class="scanInputRow">
-							<input type="text" id="scanTicketInput" class="formInput" placeholder="Masukkan ID Pesanan (cth: HI-2026-xxx)" onkeydown="if(event.key==='Enter') processTicketScan()">
-							<button type="button" class="btnLoginSubmit" style="margin-top:0; white-space:nowrap;" onclick="processTicketScan()">
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-									<polyline points="20 6 9 17 4 12"></polyline>
-								</svg>
-								<span>Verifikasi Tiket</span>
-							</button>
-						</div>
-
-						<div style="margin-top: 14px;">
-							<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #B7A97C; text-transform: uppercase; display: block; margin-bottom: 8px;">
-								Pesanan Tiket Terdaftar (Klik untuk Verifikasi Cepat):
-							</span>
-							<div style="display:flex; gap:8px; flex-wrap:wrap;" id="quickOrderChipsWrapper">
-								<!-- Populated dynamically from actual orders by script.js -->
-							</div>
-						</div>
-					</div>
-
-					<div class="scannerCard">
-						<h3 class="scannerCardTitle">Status Verifikasi & Gelang Wristband</h3>
-						<div class="scanResultBox" id="scanResultDisplay">
-							<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:rgba(207,212,208,0.4); margin-bottom:10px;">
-								<circle cx="12" cy="12" r="10"></circle>
-								<line x1="12" y1="8" x2="12" y2="12"></line>
-								<line x1="12" y1="16" x2="12.01" y2="16"></line>
-							</svg>
-							<span style="color:rgba(207,212,208,0.6); font-size:14px;">Masukkan ID Pesanan untuk memverifikasi tiket pengunjung</span>
-						</div>
-					</div>
-				</div>
-			</section>
 		</main>
 	</div>
 
@@ -547,11 +475,11 @@
 	<!-- Toast Element -->
 	<div class="adminToast" id="adminToast">Pemberitahuan</div>
 
-	<script src="../shared/firebase-config.js?v=2026.7"></script>
-	<script src="../shared/cloud-store.js?v=2026.7"></script>
-	<script src="../shared/pdf.min.js?v=2026.7"></script>
-	<script src="../shared/zxing.min.js?v=2026.7"></script>
-	<script src="script.js?v=2026.7"></script>
-	<script src="../shared/cookie-consent.js?v=2026.7"></script>
+	<script src="../shared/firebase-config.js?v=2026.8"></script>
+	<script src="../shared/cloud-store.js?v=2026.8"></script>
+	<script src="../shared/pdf.min.js?v=2026.8"></script>
+	<script src="../shared/zxing.min.js?v=2026.8"></script>
+	<script src="script.js?v=2026.8"></script>
+	<script src="../shared/cookie-consent.js?v=2026.8"></script>
 </body>
 </html>

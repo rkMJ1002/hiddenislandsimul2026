@@ -250,7 +250,7 @@ function updateMetricCards() {
 
 // Switch between Admin Tabs
 function switchAdminTab(tabName) {
-	const tabs = ["orders", "tickets", "scanner"];
+	const tabs = ["orders", "tickets"];
 
 	tabs.forEach(t => {
 		const btn = document.getElementById(`btnTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
